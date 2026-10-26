@@ -121,6 +121,7 @@ Coordination happened in GitHub Discussions (#1 "Plan & gates" and #2 "Bot bus")
   - `X-Content-Type-Options: nosniff` and other security headers
   - dependency audits (`npm audit`, `cargo audit`)
   - non-root Docker users
+- **Known flake:** the Python backend once returned a connection reset instead of 413 for a 2.2 MB body in CI (`pin-precedence-pairs`, 1 of 2 runs). It didn't reproduce locally in 20 runs. It falls under PROFILE-TRANSPORT-1 (closing the connection after a refused body).
 - **Dev servers:** the Python and PHP backends run on development HTTP servers. Grok's red team found request-framing weaknesses there (conflicting Content-Length and Transfer-Encoding) and a ~30 µs timing difference for hidden notes on Deno and PHP ([`grok/redteam-findings.md`](https://github.com/CoeusCC/team-notes-polyglot/blob/grok/workspace/grok/redteam-findings.md)).
 
 ## What I'd change, add, or stop doing with more time
