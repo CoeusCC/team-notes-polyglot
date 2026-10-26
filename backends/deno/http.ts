@@ -1,5 +1,5 @@
 import {
-  etagFor, isJsonContentType, isoNow, MAX_REQUEST_BYTES, parseArchived, parseCreate, parseIfMatch, parsePatch,
+  etagFor, isJsonContentType, isoNow, MAX_REQUEST_BYTES, parseArchived, parseCreate, parseIfMatch, parsePatch, parseTeam,
   type FieldError,
 } from "./domain.ts";
 import type { Note, Store, User } from "./store.ts";
@@ -102,8 +102,48 @@ async function route(req: Request, store: Store): Promise<Response> {
     return json(200, { id: user.id, name: user.name, teams: store.teamsOf(user.id) });
   }
   if (path === "/teams" && method === "GET") return json(200, { items: store.teamsOf(user.id) });
+  if (path === "/teams" && method === "POST") {
+    const body = await readJson(req);
+    if (!body.ok) return body.res;
+    const parsed = parseTeam(body.value);
+    if (!parsed.ok) return invalid(parsed.errors);
+    const { id, name } = parsed.value;
+    if (!store.createTeam(id, name, user.id)) return problem(409, "Team id already taken");
+    return json(201, { id, name, role: "owner" }, { location: `/teams/${id}` });
+  }
 
-  let m = /^\/teams\/([^/]+)\/notes$/.exec(path);
+  let m = /^\/teams\/([^/]+)$/.exec(path);
+  if (m && method === "GET") {
+    const t = store.getTeam(safeDecode(m[1]) ?? "", user.id);
+    return t ? json(200, t) : notFound();
+  }
+
+  m = /^\/teams\/([^/]+)\/members$/.exec(path);
+  if (m && method === "GET") {
+    const teamId = safeDecode(m[1]) ?? "";
+    return store.isMember(teamId, user.id) ? json(200, { items: store.members(teamId) }) : notFound();
+  }
+
+  m = /^\/teams\/([^/]+)\/members\/([^/]+)$/.exec(path);
+  if (m && (method === "PUT" || method === "DELETE")) {
+    const teamId = safeDecode(m[1]);
+    const userId = safeDecode(m[2]);
+    const mine = teamId === null ? null : store.getTeam(teamId, user.id);
+    if (!mine || teamId === null) return notFound();
+    if (mine.role !== "owner") return problem(403, "Forbidden");
+    const bad = await checkIgnoredBody(req);
+    if (bad) return bad;
+    if (method === "PUT") {
+      const target = userId === null ? null : store.userById(userId);
+      if (!target) return invalid([{ field: "userId", message: "unknown user" }]);
+      return json(200, { id: target.id, name: target.name, role: store.addMember(teamId, target.id) });
+    }
+    if (userId !== null && !store.removeMember(teamId, userId)) return problem(409, "Cannot remove the last owner");
+    return new Response(null, { status: 204 });
+  }
+
+
+  m = /^\/teams\/([^/]+)\/notes$/.exec(path);
   if (m && (method === "GET" || method === "POST")) {
     const teamId = safeDecode(m[1]);
     if (teamId === null) return notFound();

@@ -87,3 +87,27 @@ export function parseArchived(raw: string | null): Parsed<boolean> {
   if (raw === "true") return { ok: true, value: true };
   return { ok: false, errors: [{ field: "archived", message: "must be true or false" }] };
 }
+
+export const SLUG_RE = /^[a-z0-9-]{3,40}$/;
+export const MAX_TEAM_NAME = 80;
+
+export function parseTeam(input: unknown): Parsed<{ id: string; name: string }> {
+  if (input === null || typeof input !== "object" || Array.isArray(input)) {
+    return { ok: false, errors: [{ field: "$", message: "must be a JSON object" }] };
+  }
+  const obj = input as Record<string, unknown>;
+  const errors: FieldError[] = [];
+  for (const k of Object.keys(obj)) if (k !== "id" && k !== "name") errors.push({ field: k, message: "unknown field" });
+  let id = "", name = "";
+  if (typeof obj.id !== "string") errors.push({ field: "id", message: obj.id === undefined ? "is required" : "must be a string" });
+  else if (!SLUG_RE.test(obj.id)) errors.push({ field: "id", message: "must match ^[a-z0-9-]{3,40}$" });
+  else id = obj.id;
+  if (typeof obj.name !== "string") errors.push({ field: "name", message: obj.name === undefined ? "is required" : "must be a string" });
+  else {
+    const t = trimWs(obj.name);
+    const n = cpLength(t);
+    if (n < 1 || n > MAX_TEAM_NAME) errors.push({ field: "name", message: `must be 1-${MAX_TEAM_NAME} characters after trimming` });
+    else name = t;
+  }
+  return errors.length ? { ok: false, errors } : { ok: true, value: { id, name } };
+}
