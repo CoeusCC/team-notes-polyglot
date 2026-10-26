@@ -5,3 +5,5 @@ node_modules/
 .bot-bus/
 evidence/tmp/
 .obsidian/
+.claude/worktrees/
+evidence/*.server.log
