@@ -124,6 +124,48 @@ pub fn parse_patch(v: &Value) -> Result<NotePatch, Vec<FieldError>> {
     Err(errors)
 }
 
+#[derive(Debug)]
+pub struct NewTeam {
+    pub id: String,
+    pub name: String,
+}
+
+/// A team slug: `^[a-z0-9-]{3,40}$` (ASCII only, checked by hand).
+pub fn valid_slug(s: &str) -> bool {
+    (3..=40).contains(&s.len()) && s.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+}
+
+pub fn parse_team(v: &Value) -> Result<NewTeam, Vec<FieldError>> {
+    let Some(obj) = v.as_object() else {
+        return Err(vec![err("$", "request body must be a JSON object")]);
+    };
+    let mut errors = Vec::new();
+    let (mut id, mut name) = (None, None);
+    for (k, val) in obj {
+        match k.as_str() {
+            "id" => match val.as_str() {
+                Some(s) if valid_slug(s) => id = Some(s.to_string()),
+                _ => errors.push(err("id", "must match ^[a-z0-9-]{3,40}$")),
+            },
+            "name" => match val.as_str().map(str::trim) {
+                Some(t) if (1..=80).contains(&t.chars().count()) => name = Some(t.to_string()),
+                _ => errors.push(err("name", "must be 1-80 characters after trimming")),
+            },
+            k => errors.push(err(k, "unknown field")),
+        }
+    }
+    if !obj.contains_key("id") {
+        errors.push(err("id", "is required"));
+    }
+    if !obj.contains_key("name") {
+        errors.push(err("name", "is required"));
+    }
+    match (errors.is_empty(), id, name) {
+        (true, Some(id), Some(name)) => Ok(NewTeam { id, name }),
+        _ => Err(errors),
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum Precondition {
     /// Missing header, empty, or a list containing `*`: 428.
@@ -246,6 +288,23 @@ mod tests {
             assert_eq!(fields(parse_create(&v)), ["$"]);
         }
         assert_eq!(fields(parse_create(&json!({"title":"t","__proto__":{}}))), ["__proto__"]);
+    }
+
+    #[test]
+    fn team_slug_validation() {
+        for ok in ["abc", "a-1", "---", &"a".repeat(40), "t-123"] {
+            assert!(valid_slug(ok), "{ok}");
+        }
+        for bad in ["", "ab", "AB", "ABC", "a_b", "abc ", "ab\n", "\u{e9}-\u{e9}", "\u{65e5}\u{672c}\u{8a9e}", &"a".repeat(41)] {
+            assert!(!valid_slug(bad), "{bad:?}");
+        }
+        assert!(parse_team(&json!({"id": "abc", "name": " Hi "})).unwrap().name == "Hi");
+        assert_eq!(fields(parse_team(&json!({"id": "AB", "name": "x"}))), ["id"]);
+        assert_eq!(fields(parse_team(&json!({"id": "abc", "name": "  "}))), ["name"]);
+        assert_eq!(fields(parse_team(&json!({"id": "abc", "name": "n", "owner": "bob"}))), ["owner"]);
+        assert_eq!(fields(parse_team(&json!({}))), ["id", "name"]);
+        assert!(parse_team(&json!({"id": "abc", "name": "\u{1f600}".repeat(80)})).is_ok());
+        assert!(parse_team(&json!({"id": "abc", "name": "\u{1f600}".repeat(81)})).is_err());
     }
 
     #[test]
