@@ -154,6 +154,7 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
 <tr><td>Hidden notes answer about 30 µs slower than missing ones on Deno and PHP</td><td>Timing side channel. Not yet pinned by a rule.</td></tr>
 <tr><td>Small parsing differences: node-ts accepts a JSON byte-order mark, and Java rejects duplicate JSON keys (the others take the last value)</td><td>Found by Grok's red team round 2. Candidates for the next rules.</td></tr>
 <tr><td>.NET returned 500 when a request had both Content-Length and Transfer-Encoding</td><td>Found by Grok's red team round 2. Fixed: now 400.</td></tr>
+<tr><td>Final red team (all 9 backends): Java sent a body on HEAD; Node and Bun returned 500 on deeply nested JSON; Go and .NET mishandled malformed paths. No authorization, isolation, lost-update or injection defects.</td><td>All 4 fixed and verified at 97/97 (evidence/redteam.final.md)</td></tr>
 <tr><td>No pagination, rate limiting, security headers or dependency audit</td><td>Listed in the README under "What I'd change".</td></tr>
 </table></div>
 
