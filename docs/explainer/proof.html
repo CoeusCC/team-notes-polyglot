@@ -45,11 +45,11 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
 
 <div class="wrap">
 <h1>Spec-First Proof Ledger</h1>
-<p class="lede">How Team Notes was shown to work: one contract, a growing set of ratified acceptance criteria (ACs), five independent implementations, and checks that are built to fail.</p>
+<p class="lede">How Team Notes was shown to work: one contract, a growing set of ratified acceptance criteria (ACs), nine independent implementations, and checks that are built to fail.</p>
 
 <div class="headline">
-  <div><b>5 / 5</b><span>backends at 89/89 cases (16:06 official run)</span></div>
-  <div><b>4 / 4</b><span>rebuilds green on their <i>first</i> run, from the spec alone</span></div>
+  <div><b>9 / 9</b><span>backends at 97/97 cases, 40/40 ACs (16:52 freeze run)</span></div>
+  <div><b>8 / 8</b><span>rebuilds green on their <i>first</i> run against the spec they were given (Java: 93/94)</span></div>
   <div><b>5 / 5</b><span>deliberate faults caught by the suite</span></div>
   <div><b>0</b><span>lost updates under 32-way contention, on every backend</span></div>
 </div>
@@ -65,7 +65,10 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
   <li class="turn"><time>15:50</time>The green rebuilds still <i>disagreed</i> in 7 places. They became 10 core cards plus 3 profiles. Patrick reversed one Claude recommendation (uniform 415).</li>
   <li class="turn"><time>15:58</time>Tier 3 (teams) reinstated because the project was ahead of schedule. All 5 backends reach 88/88 in 3–4 minutes each.</li>
   <li><time>16:06</time>403/409 order pinned. Official run: <b>5/5 at 89/89, 37/37 ACs</b>.</li>
-  <li><time>16:09</time>Red team (fuzzer, mutation, Grok probes) finds 500s, lone-surrogate corruption and NUL truncation. These became new cards, and fixes are under way.</li>
+  <li><time>16:09</time>Red team (fuzzer, mutation, Grok probes) finds 500s, lone-surrogate corruption and NUL truncation. These became cards FMT-3 and AUTHN-3, fixed in every backend.</li>
+  <li><time>16:17</time>Go, Java, .NET and Bun built from the spec in Docker: 94/94 on first run (Java 93/94).</li>
+  <li class="turn"><time>16:18</time>"Do the ACs still hold?" A probe across 5 backends found 3 new divergences, which became card AUTHN-4.</li>
+  <li><time>16:52</time><b>Gate 4, freeze</b>: <b>9/9 backends at 97/97, 40/40 ACs</b>.</li>
 </ol></div>
 
 <h2>From the spec alone, first try</h2>
@@ -77,6 +80,7 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
 <tr><td>python</td><td>Claude Sonnet</td><td class="n"><span class="tag pass">45/45</span></td><td class="n">0</td><td class="n">≈3 min</td></tr>
 <tr><td>php</td><td>Claude Sonnet</td><td class="n"><span class="tag pass">45/45</span></td><td class="n">0</td><td class="n">≈3 min</td></tr>
 <tr><td>rust</td><td>Claude Sonnet</td><td class="n"><span class="tag pass">45/45</span></td><td class="n">0</td><td class="n">≈4 min</td></tr>
+<tr><td>go · java · dotnet · bun (Docker)</td><td>Claude Sonnet</td><td class="n"><span class="tag pass">94/94</span> (java 93/94)</td><td class="n">0 (java 1)</td><td class="n">≈4–6 min</td></tr>
 <tr><td>grok-python · grok-deno · grok-php</td><td>Grok</td><td class="n"><span class="tag pass">45/45</span> ×3</td><td class="n">—</td><td class="n">verified by Claude</td></tr>
 </table></div>
 

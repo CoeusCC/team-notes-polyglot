@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Notes Docs</title>
+<style>
+:root{--bg:#f4f5f1;--fg:#1c211f;--muted:#5e6863;--rule:#d3d9d4;--accent:#2f6b55}
+@media (prefers-color-scheme:dark){:root{--bg:#131816;--fg:#e2e8e4;--muted:#98a59e;--rule:#2b3430;--accent:#7cc4a6}}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,sans-serif;max-width:720px;margin:0 auto;padding:48px 16px}
+h1{font:600 32px/1.2 Georgia,serif;margin:0 0 8px}p{color:var(--muted)}a{color:var(--accent)}
+ul{padding:0;list-style:none}li{border-top:1px solid var(--rule);padding:12px 0}li b{display:block}
+</style></head><body>
+<h1>Team Notes</h1>
+<p>A REST API for team-shared notes. One OpenAPI contract, 40 ratified acceptance criteria and 97 conformance cases, implemented nine times.</p>
+<ul>
+<li><a href="api.html"><b>API reference</b></a>Generated from spec/openapi.yaml (Redoc).</li>
+<li><a href="explainer/proof.html"><b>Proof ledger</b></a>Gates, rebuilds from the spec, divergences turned into cards, falsification, red team, benchmarks.</li>
+<li><a href="https://github.com/CoeusCC/team-notes-polyglot/blob/main/docs/SERVICE.md"><b>How the service works</b></a>Model, visibility, concurrency, deletion, teams, error order.</li>
+<li><a href="https://github.com/CoeusCC/team-notes-polyglot/blob/main/docs/ACCEPTANCE.md"><b>Acceptance criteria index</b></a>Every card in one table, plus three examples of cards that got sharper.</li>
+<li><a href="https://github.com/CoeusCC/team-notes-polyglot"><b>Repository</b></a>Source, tests, evidence, ADRs and the build digest.</li>
+</ul>
+</body></html>
