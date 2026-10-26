@@ -140,7 +140,8 @@ async function runStep(step, vars) {
 
 function rawFetch(path, method, headers, pairs, body) {
   const u = new URL(BASE_URL);
-  const flat = [...Object.entries(headers).flat(), ...pairs.flat()];
+  // HTTP/1.1 requires Host (RFC 9112 §3.2). Its absence was a runner bug that backends had to work around.
+  const flat = ['Host', u.host, ...Object.entries(headers).flat(), ...pairs.flat()];
   return new Promise((resolve, reject) => {
     const req = httpRequest({ host: u.hostname, port: u.port, method, path, headers: flat }, (r) => {
       const chunks = []; r.on('data', (c) => chunks.push(c));
