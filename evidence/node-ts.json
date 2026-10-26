@@ -34,8 +34,10 @@
     {
       "id": "teams-carol-only-blue",
       "falsifies": "NOTES-FUNC-TEAM-1",
-      "passed": true,
-      "failures": []
+      "passed": false,
+      "failures": [
+        "step 1 (GET /teams): items: expected team-blue, got t-jbfhxn,team-blue"
+      ]
     },
     {
       "id": "teams-bob-member",
@@ -534,12 +536,48 @@
       "falsifies": "NOTES-TECH-ERR-5",
       "passed": true,
       "failures": []
+    },
+    {
+      "id": "redteam-lone-surrogate-rejected",
+      "falsifies": "NOTES-TECH-FMT-3",
+      "passed": false,
+      "failures": [
+        "step 1 (POST /teams/team-red/notes): status: expected 400, got 201 {\"id\":\"265a388f-a117-476f-a6df-0b3837d8f28e\",\"teamId\":\"team-red\",\"authorId\":\"alice\",\"title\":\"\\ud800\",\"body\":\"\",\"version\":1,\"createdAt\":\"2026-10-26T21:12:58.396Z\",\"updatedAt\":\"2026-10-26T21:12:58.396Z\""
+      ]
+    },
+    {
+      "id": "mutation-body-limit-inclusive",
+      "falsifies": "NOTES-TECH-FMT-3",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "redteam-double-slash-no-5xx",
+      "falsifies": "NOTES-SEC-AUTHN-3",
+      "passed": false,
+      "failures": [
+        "step 1 (GET //): status: expected 401, got 500 {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}"
+      ]
+    },
+    {
+      "id": "redteam-invalid-utf8-400",
+      "falsifies": "NOTES-TECH-FMT-3",
+      "passed": false,
+      "failures": [
+        "step 1 (POST /teams/team-red/notes): status: expected 400, got 201 {\"id\":\"1483a0a7-de47-486f-ae56-a6eb2448b4e8\",\"teamId\":\"team-red\",\"authorId\":\"alice\",\"title\":\"a��\",\"body\":\"\",\"version\":1,\"createdAt\":\"2026-10-26T21:12:58.414Z\",\"updatedAt\":\"2026-10-26T21:12:58.414Z\"}"
+      ]
+    },
+    {
+      "id": "redteam-nul-roundtrip",
+      "falsifies": "NOTES-TECH-FMT-3",
+      "passed": true,
+      "failures": []
     }
   ],
   "acVerdicts": {
     "NOTES-SEC-AUTHN-1": "passed",
     "NOTES-FUNC-ME-1": "passed",
-    "NOTES-FUNC-TEAM-1": "passed",
+    "NOTES-FUNC-TEAM-1": "refuted",
     "NOTES-FUNC-NOTE-1": "passed",
     "NOTES-FUNC-NOTE-2": "passed",
     "NOTES-SEC-AUTHZ-1": "passed",
@@ -573,10 +611,12 @@
     "NOTES-FUNC-TEAM-3": "passed",
     "NOTES-FUNC-TEAM-4": "passed",
     "NOTES-FUNC-TEAM-5": "passed",
-    "NOTES-TECH-ERR-5": "passed"
+    "NOTES-TECH-ERR-5": "passed",
+    "NOTES-TECH-FMT-3": "refuted",
+    "NOTES-SEC-AUTHN-3": "refuted"
   },
   "backend": "node-ts",
-  "commit": "de6fb2e",
-  "builddigest": "f42a2f62af0053da",
-  "at": "2026-10-26T21:06:31.473Z"
+  "commit": "f7fa111",
+  "builddigest": "ca08c9c77992ec26",
+  "at": "2026-10-26T21:12:58.519Z"
 }

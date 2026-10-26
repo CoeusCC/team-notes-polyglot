@@ -87,5 +87,10 @@ ok   team-owner-only-membership [NOTES-FUNC-TEAM-3]
 ok   team-access-follows-membership [NOTES-FUNC-TEAM-4]
 ok   team-get-and-roster [NOTES-FUNC-TEAM-5]
 ok   team-precedence-403-409 [NOTES-TECH-ERR-5]
+ok   redteam-lone-surrogate-rejected [NOTES-TECH-FMT-3]
+ok   mutation-body-limit-inclusive [NOTES-TECH-FMT-3]
+ok   redteam-double-slash-no-5xx [NOTES-SEC-AUTHN-3]
+ok   redteam-invalid-utf8-400 [NOTES-TECH-FMT-3]
+ok   redteam-nul-roundtrip [NOTES-TECH-FMT-3]
 
-89/89 cases passed · ACs: 37 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3106
+94/94 cases passed · ACs: 39 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3106
