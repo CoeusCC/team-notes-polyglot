@@ -174,3 +174,10 @@ I'll fill in the real repo URL, Discussion URLs and Project URL after the push.
 - Each `FAULT` toggle turns the suite red (from Tier 2 on).
 - A clean clone in the scratchpad, then the README quickstart plus `scripts/demo.sh`.
 - `scripts/digest.sh` appends an entry. `git push` succeeds, and `gh repo view CoeusCC/team-notes-polyglot` shows the commit history.
+
+## Addendum: dogfooding (added 15:20, at the user's request)
+- **Start:** after Gate 1, the Node reference runs locally as `DB_PATH=.dogfood/notes.db`. Claude and the Grok bots use it as their shared scratchpad.
+- **Users:** `claude` and `grok` are seed users on a `team-agents` team (dogfood seed only, not part of the spec fixtures).
+- **What goes in it:** gate notes, hand-off notes and review findings are written as notes there, and mirrored to the Bot bus.
+- **Tier 2:** concurrent edits by the two agents exercise `If-Match` for real.
+- **Evidence:** we export the notes to `docs/dogfood/notes.json`, and the friction we hit feeds "what I'd change."
