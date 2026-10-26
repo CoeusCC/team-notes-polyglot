@@ -1,4 +1,4 @@
-Wrote <tmp>/-home-user-Projects-project/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj2/.metrics/mutate/backends.python.domain.edn
+Wrote <tmp>/scratchpad/proj2/.metrics/mutate/backends.python.domain.edn
 KILLED    backends/python/domain.py:22 + -> -
 KILLED    backends/python/domain.py:28 True -> False
 SURVIVED  backends/python/domain.py:30 False -> True
