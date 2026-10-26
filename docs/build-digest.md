@@ -21,3 +21,10 @@ Clock: Patrick's TestGorilla timer is the authority. It started at **14:48 CDT**
 - commit `cb06256` · builddigest `50cdda7495ea9fdc` · uncommitted files: 7
 - cycle time: no closed issues yet
 - decision: Patrick at 15:35: skip Tier 3 and rebuild from the spec in Python, PHP, Deno and Rust (Sonnet agents in isolated worktrees, with no access to backends/node-ts). Each records FIRST_RUN (before any fixes) and FINAL_RUN conformance, iterations and elapsed time. Tier 2 on node-ts is running in parallel. Tier 3 moves to 'what I'd do next'.
+
+## 2026-10-26T15:38:11-05:00 · Gate 2: GO (Tier 2, node-ts)
+- commit `c0c2c17` · builddigest `e3ac473f3cf0ec81` · uncommitted files: 0
+- `evidence/node-ts.tier2.txt` sha256 `d25fc9df782fb226` · ok   archived-is-trash-view [NOTES-FUNC-DEL-3]  45/45 cases passed · ACs: 22 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3001 
+- `evidence/falsify.node-ts.txt` sha256 `56f5ff4e436a1486` · CAUGHT restore-keeps-version by NOTES-FUNC-DEL-2 CAUGHT leak-403 by NOTES-SEC-AUTHZ-1 NOTES-SEC-AUTHZ-3 CAUGHT no-trim by NOTES-TECH-FMT-1 
+- cycle time: no closed issues yet
+- decision: GO. 45/45 cases, 22/22 ACs, 33/33 unit, tsc clean. Falsification: all 5 deliberate faults are caught by the expected ACs, so the suite can fail. Next: merge the rebuilds and run the benchmark.
