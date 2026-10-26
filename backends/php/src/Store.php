@@ -91,6 +91,68 @@ final class Store
         return $this->note($id);
     }
 
+    public function team(string $teamId): ?array
+    {
+        $s = $this->db->prepare('SELECT id, name FROM teams WHERE id = ?');
+        $s->execute([$teamId]);
+        return $s->fetch() ?: null;
+    }
+
+    public function roleOf(string $teamId, string $userId): ?string
+    {
+        $s = $this->db->prepare('SELECT role FROM memberships WHERE team_id = ? AND user_id = ?');
+        $s->execute([$teamId, $userId]);
+        $r = $s->fetch();
+        return $r ? $r['role'] : null;
+    }
+
+    /** Creates the team with its owner; false if the id is taken. */
+    public function createTeam(string $id, string $name, string $ownerId): bool
+    {
+        $this->db->exec('BEGIN IMMEDIATE');
+        try {
+            if ($this->team($id)) {
+                $this->db->exec('ROLLBACK');
+                return false;
+            }
+            $this->db->prepare('INSERT INTO teams (id, name, owner_id) VALUES (?,?,?)')->execute([$id, $name, $ownerId]);
+            $this->db->prepare("INSERT INTO memberships (team_id, user_id, role) VALUES (?,?,'owner')")->execute([$id, $ownerId]);
+            $this->db->exec('COMMIT');
+            return true;
+        } catch (Throwable $e) {
+            $this->db->exec('ROLLBACK');
+            throw $e;
+        }
+    }
+
+    public function members(string $teamId): array
+    {
+        $s = $this->db->prepare("SELECT u.id, u.name, m.role FROM memberships m JOIN users u ON u.id = m.user_id WHERE m.team_id = ? ORDER BY (m.role = 'owner') DESC, u.id");
+        $s->execute([$teamId]);
+        return $s->fetchAll();
+    }
+
+    public function user(string $id): ?array
+    {
+        $s = $this->db->prepare('SELECT id, name FROM users WHERE id = ?');
+        $s->execute([$id]);
+        return $s->fetch() ?: null;
+    }
+
+    /** Idempotent add as plain member; an existing role (e.g. owner) is kept. */
+    public function addMember(string $teamId, string $userId): void
+    {
+        $this->db->prepare("INSERT OR IGNORE INTO memberships (team_id, user_id, role) VALUES (?,?,'member')")->execute([$teamId, $userId]);
+    }
+
+    /** Idempotent removal; false only when it would remove the last owner (atomic conditional DELETE). */
+    public function removeMember(string $teamId, string $userId): bool
+    {
+        $s = $this->db->prepare("DELETE FROM memberships WHERE team_id = ? AND user_id = ? AND (role <> 'owner' OR (SELECT COUNT(*) FROM memberships WHERE team_id = ? AND role = 'owner') > 1)");
+        $s->execute([$teamId, $userId, $teamId]);
+        return $s->rowCount() === 1 || $this->roleOf($teamId, $userId) !== 'owner';
+    }
+
     private static function uuid4(): string
     {
         $b = random_bytes(16);
