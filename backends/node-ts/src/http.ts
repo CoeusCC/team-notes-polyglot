@@ -98,6 +98,10 @@ async function readJson(req: IncomingMessage): Promise<{ value: unknown } | { re
 }
 
 function authenticate(req: IncomingMessage, store: Store): User | null {
+  // More than one Authorization header is ambiguous: node keeps only one, so count the raw headers (AUTHN-4).
+  let count = 0;
+  for (let i = 0; i < req.rawHeaders.length; i += 2) if (req.rawHeaders[i]!.toLowerCase() === 'authorization') count++;
+  if (count > 1) return null;
   const m = /^Bearer +(\S+)$/i.exec(req.headers.authorization ?? '');
   return m ? store.userByToken(m[1]!) : null;
 }
@@ -114,6 +118,8 @@ async function route(req: IncomingMessage, store: Store): Promise<Reply> {
   try {
     if (pathname.startsWith('/') && !pathname.includes('//') && (!pathname.endsWith('/') || pathname === '/')) {
       segs = pathname.split('/').filter(Boolean).map(decodeURIComponent);
+      // Never resolve dot segments: any "." or ".." is an unknown route (AUTHN-4).
+      if (segs.some((s) => s === '.' || s === '..')) segs = null;
     }
   } catch { /* unknown route */ }
   const [a, b, c] = segs ?? [];
@@ -232,7 +238,7 @@ function send(res: ServerResponse, reply: Reply): void {
 }
 
 export function createServer(store: Store): Server {
-  return createHttpServer((req, res) => {
+  return createHttpServer({ requireHostHeader: false }, (req, res) => {
     route(req, store).then(
       (reply) => send(res, reply),
       () => send(res, problem(500, 'internal', 'Internal Server Error')),
