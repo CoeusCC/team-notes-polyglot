@@ -74,6 +74,12 @@
       "failures": []
     },
     {
+      "id": "nonmember-404-before-validation",
+      "falsifies": "NOTES-SEC-AUTHZ-1",
+      "passed": true,
+      "failures": []
+    },
+    {
       "id": "nonmember-team-404",
       "falsifies": "NOTES-SEC-AUTHZ-2",
       "passed": true,
@@ -158,7 +164,19 @@
       "failures": []
     },
     {
+      "id": "validate-rejects-do-not-persist",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
       "id": "unknown-route-problem",
+      "falsifies": "NOTES-TECH-ERR-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "payload-too-large",
       "falsifies": "NOTES-TECH-ERR-1",
       "passed": true,
       "failures": []
