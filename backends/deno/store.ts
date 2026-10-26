@@ -8,11 +8,17 @@ export interface Note {
 export interface TeamRole { id: string; name: string; role: "owner" | "member" }
 export interface User { id: string; name: string }
 
-type Row = Record<string, string | number | null>;
+type Row = Record<string, string | number | null | Uint8Array>;
+// sqlite3_column_text is read as a C string, so a U+0000 truncates it on read (storage keeps it).
+// Read title/body as BLOBs and decode the UTF-8 bytes ourselves.
+const NOTE_COLS = `id, team_id, author_id, CAST(title AS BLOB) AS title, CAST(body AS BLOB) AS body,
+  version, created_at, updated_at, deleted_at`;
+const utf8 = new TextDecoder("utf-8", { ignoreBOM: true });
+const text = (v: unknown): string => typeof v === "string" ? v : utf8.decode(v as Uint8Array);
 const toNote = (r: Row): Note => {
   const n: Note = {
     id: r.id as string, teamId: r.team_id as string, authorId: r.author_id as string,
-    title: r.title as string, body: r.body as string, version: r.version as number,
+    title: text(r.title), body: text(r.body), version: r.version as number,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
   };
   if (r.deleted_at !== null) n.deletedAt = r.deleted_at as string;
@@ -45,12 +51,12 @@ export class Store {
 
   listNotes(teamId: string, archived: boolean): Note[] {
     const cond = archived ? "deleted_at IS NOT NULL" : "deleted_at IS NULL";
-    return (this.db.prepare(`SELECT * FROM notes WHERE team_id = ? AND ${cond} ORDER BY seq DESC`).all(teamId) as Row[]).map(toNote);
+    return (this.db.prepare(`SELECT ${NOTE_COLS} FROM notes WHERE team_id = ? AND ${cond} ORDER BY seq DESC`).all(teamId) as Row[]).map(toNote);
   }
 
   /** Note by id regardless of deletion state. */
   findNote(id: string): Note | null {
-    const r = this.db.prepare("SELECT * FROM notes WHERE id = ?").get(id) as Row | undefined;
+    const r = this.db.prepare(`SELECT ${NOTE_COLS} FROM notes WHERE id = ?`).get(id) as Row | undefined;
     return r ? toNote(r) : null;
   }
 
