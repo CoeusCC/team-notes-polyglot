@@ -14,5 +14,9 @@ while true; do
   while IFS=$'\t' read -r id msg; do
     grep -qx "$id" "$seen" || { echo "$id" >> "$seen"; [[ $msg == *"[claude]"* || $msg == *\"from\":\ \"claude\"* ]] || echo "$msg"; }
   done
+  # Grok's workspace branch: report each new commit on it.
+  git -C "$(dirname "$0")/../.." fetch -q origin grok/workspace 2>/dev/null &&
+    git -C "$(dirname "$0")/../.." log --format='%H%x09[grok/workspace] %s' -5 origin/grok/workspace 2>/dev/null |
+    while IFS=$'\t' read -r id msg; do grep -qx "$id" "$seen" || { echo "$id" >> "$seen"; echo "$msg"; }; done
   sleep 60
 done
