@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Team Notes API
-  version: 0.2.1-pins
+  version: 0.3.0-teams
   description: |
     Notes shared within small teams. Each note belongs to exactly one team, and every
     member of that team can read and edit it.
@@ -63,6 +63,96 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/Team' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+
+    post:
+      operationId: createTeam
+      description: Create a team; the caller becomes its owner (NOTES-FUNC-TEAM-2).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TeamCreate' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location: { schema: { type: string }, description: '/teams/{id}' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Team' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /teams/{teamId}:
+    parameters:
+      - $ref: '#/components/parameters/TeamId'
+    get:
+      operationId: getTeam
+      responses:
+        '200':
+          description: The team, with the caller's role
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Team' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /teams/{teamId}/members:
+    parameters:
+      - $ref: '#/components/parameters/TeamId'
+    get:
+      operationId: listMembers
+      responses:
+        '200':
+          description: Team roster
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Member' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /teams/{teamId}/members/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/TeamId'
+      - name: userId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 64 }
+    put:
+      operationId: addMember
+      description: Owner only. Idempotent.
+      responses:
+        '200':
+          description: The member
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Member' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+    delete:
+      operationId: removeMember
+      description: Owner only. Idempotent. Removing the last owner gets 409.
+      responses:
+        '204': { description: Removed }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
 
   /teams/{teamId}/notes:
     parameters:
@@ -206,6 +296,16 @@ components:
       schema: { type: string, pattern: '^"[0-9]+"$' }
 
   responses:
+    Forbidden:
+      description: A member, but not allowed (e.g. not the owner)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: Conflicts with current state (taken id, last owner)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
     PreconditionFailed:
       description: If-Match does not match the current version
       headers:
@@ -277,6 +377,23 @@ components:
                   message: { type: string }
 
     Team:
+      type: object
+      additionalProperties: false
+      required: [id, name, role]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        role: { enum: [owner, member] }
+
+    TeamCreate:
+      type: object
+      additionalProperties: false
+      required: [id, name]
+      properties:
+        id: { type: string, pattern: '^[a-z0-9-]{3,40}$' }
+        name: { type: string, minLength: 1, maxLength: 80 }
+
+    Member:
       type: object
       additionalProperties: false
       required: [id, name, role]
