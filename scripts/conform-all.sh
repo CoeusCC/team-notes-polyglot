@@ -8,7 +8,7 @@ cd "$(git rev-parse --show-toplevel)"
 
 allow_dirty=0
 [[ ${1:-} == --allow-dirty ]] && { allow_dirty=1; shift; }
-if (( !allow_dirty )) && [[ -n $(git status --porcelain) ]]; then
+if (( !allow_dirty )) && [[ -n $(git status --porcelain --untracked-files=no) ]]; then
   echo "refusing: uncommitted changes (verdicts must describe a committed build)" >&2; exit 2
 fi
 
