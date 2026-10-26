@@ -43,7 +43,8 @@ async function readBody(req: IncomingMessage): Promise<string> {
 async function readJson(req: IncomingMessage): Promise<{ value: unknown } | { reply: Reply }> {
   let text: string;
   try { text = await readBody(req); } catch (e) {
-    if (e instanceof BodyError) return { reply: problem(e.status, 'payload-too-large', 'Payload Too Large') };
+    // The rest of the body is unread, so the socket can't be reused: tell the client to close it.
+    if (e instanceof BodyError) return { reply: { ...problem(e.status, 'payload-too-large', 'Payload Too Large'), headers: { connection: 'close' } } };
     throw e;
   }
   try { return { value: JSON.parse(text) }; } catch {
