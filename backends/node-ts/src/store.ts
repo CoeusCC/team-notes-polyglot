@@ -53,7 +53,58 @@ export function openStore(path: string = ':memory:') {
   const qRestore = db.prepare(
     `UPDATE notes SET deleted_at = NULL, version = version + ?, updated_at = ? WHERE id = ? AND deleted_at IS NOT NULL`);
 
+  const qRole = db.prepare('SELECT role FROM memberships WHERE team_id = ? AND user_id = ?');
+  const qTeam = db.prepare('SELECT id, name FROM teams WHERE id = ?');
+  const qUserById = db.prepare('SELECT id, name FROM users WHERE id = ?');
+  const qInsertTeam = db.prepare('INSERT INTO teams (id, name, owner_id) VALUES (?, ?, ?)');
+  const qInsertMember = db.prepare('INSERT OR IGNORE INTO memberships (team_id, user_id, role) VALUES (?, ?, ?)');
+  const qRoster = db.prepare(
+    `SELECT u.id AS id, u.name AS name, m.role AS role FROM memberships m
+     JOIN users u ON u.id = m.user_id WHERE m.team_id = ? ORDER BY m.role = 'member', u.id`);
+  const qOwners = db.prepare("SELECT COUNT(*) AS n FROM memberships WHERE team_id = ? AND role = 'owner'");
+  const qRemove = db.prepare('DELETE FROM memberships WHERE team_id = ? AND user_id = ?');
+
   return {
+    /** The caller's role in the team, or null when they are not a member. */
+    roleOf(teamId: string, userId: string): 'owner' | 'member' | null {
+      const row = qRole.get(teamId, userId) as { role: 'owner' | 'member' } | undefined;
+      return row?.role ?? null;
+    },
+    /** The team as the member sees it. Null when absent or not a member (same thing to callers). */
+    teamFor(teamId: string, userId: string): TeamRole | null {
+      const role = this.roleOf(teamId, userId);
+      const t = qTeam.get(teamId) as { id: string; name: string } | undefined;
+      return role && t ? { ...t, role } : null;
+    },
+    members(teamId: string): TeamRole[] {
+      return qRoster.all(teamId) as TeamRole[];
+    },
+    userExists(userId: string): boolean {
+      return qUserById.get(userId) !== undefined;
+    },
+    /** Create the team and its owner membership atomically. False when the id is taken. */
+    createTeam(id: string, name: string, ownerId: string): boolean {
+      if (qTeam.get(id) !== undefined) return false;
+      db.exec('BEGIN IMMEDIATE');
+      try {
+        qInsertTeam.run(id, name, ownerId);
+        qInsertMember.run(id, ownerId, 'owner');
+        db.exec('COMMIT');
+      } catch (e) { db.exec('ROLLBACK'); throw e; }
+      return true;
+    },
+    /** Idempotent: an existing membership (including an owner's) is left as it is. */
+    addMember(teamId: string, userId: string): TeamRole {
+      qInsertMember.run(teamId, userId, 'member');
+      const u = qUserById.get(userId) as User;
+      return { ...u, role: this.roleOf(teamId, userId)! };
+    },
+    /** Idempotent. Refuses (false) to remove the last owner. */
+    removeMember(teamId: string, userId: string): boolean {
+      if (this.roleOf(teamId, userId) === 'owner' && (qOwners.get(teamId) as { n: number }).n <= 1) return false;
+      qRemove.run(teamId, userId);
+      return true;
+    },
     userByToken(token: string): User | null {
       return (qUser.get(hashToken(token)) as User | undefined) ?? null;
     },
