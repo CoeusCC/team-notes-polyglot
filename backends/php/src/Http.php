@@ -52,6 +52,15 @@ function notFound(): HttpError
 }
 
 /** Reads and parses the JSON body, applying 415 -> 413 -> 400 in order. */
+function rejectNonJsonBody(): void
+{
+    $len = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+    $raw = file_get_contents('php://input');
+    if (($len > 0 || ($raw !== false && $raw !== '')) && !isJsonMediaType($_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? null)) {
+        throw new HttpError(415, 'Content-Type must be application/json');
+    }
+}
+
 function readJsonBody(): mixed
 {
     $len = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
@@ -91,7 +100,7 @@ function handle(Store $store, string $method, string $path): void
         throw new HttpError(401, 'Missing or invalid bearer token');
     }
     $uid = $user['id'];
-    $seg = array_map('rawurldecode', explode('/', trim($path, '/')));
+    $seg = array_map('rawurldecode', explode('/', substr($path, 1)));
 
     if ($path === '/me' && $method === 'GET') {
         sendJson(200, ['id' => $uid, 'name' => $user['name'], 'teams' => $store->teamsOf($uid)]);
@@ -114,7 +123,11 @@ function teamNotes(Store $store, string $method, string $uid, string $teamId): v
         throw notFound();
     }
     if ($method === 'GET') {
-        $rows = $store->listNotes($teamId, ($_GET['archived'] ?? 'false') === 'true');
+        $archived = parseArchived($_GET['archived'] ?? null);
+        if ($archived === null) {
+            throw validationError([['field' => 'archived', 'message' => 'must be true or false']]);
+        }
+        $rows = $store->listNotes($teamId, $archived);
         sendJson(200, ['items' => array_map('noteJson', $rows)]);
         return;
     }
@@ -140,6 +153,7 @@ function noteRoute(Store $store, string $method, string $uid, string $id): void
 {
     if ($method === 'DELETE') {
         $n = visibleNote($store, $uid, $id, true);
+        rejectNonJsonBody();
         $store->softDelete($n['id'], nowIso());
         http_response_code(204);
         return;
@@ -168,6 +182,7 @@ function noteRoute(Store $store, string $method, string $uid, string $id): void
 function restoreRoute(Store $store, string $uid, string $id): void
 {
     $n = visibleNote($store, $uid, $id, true);
+    rejectNonJsonBody();
     if ($n['deleted_at'] !== null) {
         $n = $store->restore($id, nowIso());
     }
