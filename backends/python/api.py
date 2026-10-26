@@ -69,9 +69,27 @@ def parse_json_body(req):
     def reject(_):
         raise ValueError("non-finite number")
     try:
-        return json.loads(raw.decode("utf-8"), parse_constant=reject), None
+        data = json.loads(raw.decode("utf-8"), parse_constant=reject)
+        if _has_lone_surrogate(data):  # I-JSON (NOTES-TECH-FMT-3): same 400 as malformed JSON
+            return None, problem(400)
+        return data, None
     except (ValueError, RecursionError):
         return None, problem(400)
+
+
+def _has_lone_surrogate(root):
+    stack = [root]
+    while stack:
+        v = stack.pop()
+        if isinstance(v, str):
+            if any("\ud800" <= c <= "\udfff" for c in v):
+                return True
+        elif isinstance(v, dict):
+            stack.extend(v.keys())
+            stack.extend(v.values())
+        elif isinstance(v, list):
+            stack.extend(v)
+    return False
 
 
 def note_response(status, note, extra=None):
