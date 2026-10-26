@@ -51,6 +51,23 @@ public static class HostFix
                     var head = inb.GetRange(0, idx + 4); inb.RemoveRange(0, idx + 4);
                     var text = Encoding.Latin1.GetString(head.ToArray());
                     var lower = text.ToLowerInvariant();
+                    {
+                        // Kestrel rejects an encoded NUL in the path with an empty 400; escape the '%' so the app answers 401/404.
+                        int le = text.IndexOf("\r\n", StringComparison.Ordinal);
+                        if (le > 0)
+                        {
+                            var line = text[..le];
+                            int qm = line.IndexOf('?');
+                            int sp = line.IndexOf(' ');
+                            int end = qm >= 0 ? qm : line.LastIndexOf(' ');
+                            if (sp >= 0 && end > sp)
+                            {
+                                var path = line[(sp + 1)..end];
+                                var fixedPath = path.Replace("%00", "%2500");
+                                if (fixedPath != path) { text = line[..(sp + 1)] + fixedPath + line[end..] + text[le..]; lower = text.ToLowerInvariant(); }
+                            }
+                        }
+                    }
                     if (lower.Contains("transfer-encoding:")) pass = true;
                     int k = lower.IndexOf("\r\ncontent-length:", StringComparison.Ordinal);
                     if (k >= 0)
