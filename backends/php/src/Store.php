@@ -12,10 +12,15 @@ final class Store
         $this->db = new PDO('sqlite:' . $path);
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        $this->db->exec('PRAGMA busy_timeout = 5000');
+        $this->db->exec('PRAGMA busy_timeout = 10000');
         $has = $this->db->query("SELECT 1 FROM sqlite_master WHERE name='notes'")->fetch();
         if (!$has) {
-            $this->db->exec((string) file_get_contents($schemaFile));
+            // Several server workers may race to create the schema: serialize and re-check.
+            $this->db->exec('BEGIN IMMEDIATE');
+            if (!$this->db->query("SELECT 1 FROM sqlite_master WHERE name='notes'")->fetch()) {
+                $this->db->exec((string) file_get_contents($schemaFile));
+            }
+            $this->db->exec('COMMIT');
         }
         $this->db->exec('PRAGMA foreign_keys = ON');
     }
