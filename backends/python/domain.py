@@ -1,4 +1,5 @@
 """Pure domain rules: validation, ETag parsing, timestamps. No I/O besides the clock."""
+import re
 from datetime import datetime, timezone
 
 TITLE_MAX = 200
@@ -79,6 +80,39 @@ def validate_create(data):
     if "title" not in data:
         errors.append(("title", "is required"))
     out.setdefault("body", "")
+    return (None, errors) if errors else (out, [])
+
+
+SLUG_RE = re.compile(r"[a-z0-9-]{3,40}")
+TEAM_NAME_MAX = 80
+
+
+def validate_team(data):
+    """Returns (clean, errors) for POST /teams: slug id, trimmed name, no unknown fields."""
+    if not isinstance(data, dict):
+        return None, [("$", "must be a JSON object")]
+    errors, out = [], {}
+    for k in data:
+        if k not in ("id", "name"):
+            errors.append((k, "unknown field"))
+    v = data.get("id")
+    if "id" not in data:
+        errors.append(("id", "is required"))
+    elif not isinstance(v, str) or not SLUG_RE.fullmatch(v):
+        errors.append(("id", "must match ^[a-z0-9-]{3,40}$"))
+    else:
+        out["id"] = v
+    v = data.get("name")
+    if "name" not in data:
+        errors.append(("name", "is required"))
+    elif not isinstance(v, str):
+        errors.append(("name", "must be a string"))
+    else:
+        t = trim(v)
+        if not 1 <= len(t) <= TEAM_NAME_MAX or not _encodable(t):
+            errors.append(("name", f"must be 1-{TEAM_NAME_MAX} characters after trimming"))
+        else:
+            out["name"] = t
     return (None, errors) if errors else (out, [])
 
 
