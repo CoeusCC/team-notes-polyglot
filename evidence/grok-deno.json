@@ -1,0 +1,299 @@
+{
+  "baseUrl": "http://localhost:3203",
+  "results": [
+    {
+      "id": "health-open",
+      "falsifies": "NOTES-SEC-AUTHN-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "authn-missing-token",
+      "falsifies": "NOTES-SEC-AUTHN-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "authn-bad-token",
+      "falsifies": "NOTES-SEC-AUTHN-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "authn-malformed-scheme",
+      "falsifies": "NOTES-SEC-AUTHN-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "me-alice",
+      "falsifies": "NOTES-FUNC-ME-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "teams-carol-only-blue",
+      "falsifies": "NOTES-FUNC-TEAM-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "teams-bob-member",
+      "falsifies": "NOTES-FUNC-TEAM-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "create-note",
+      "falsifies": "NOTES-FUNC-NOTE-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "create-note-location",
+      "falsifies": "NOTES-FUNC-NOTE-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "create-note-location-header",
+      "falsifies": "NOTES-FUNC-NOTE-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "teammate-reads-and-lists",
+      "falsifies": "NOTES-FUNC-NOTE-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "nonmember-note-404",
+      "falsifies": "NOTES-SEC-AUTHZ-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "nonmember-404-before-validation",
+      "falsifies": "NOTES-SEC-AUTHZ-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "nonmember-team-404",
+      "falsifies": "NOTES-SEC-AUTHZ-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "team-isolation-in-lists",
+      "falsifies": "NOTES-SEC-AUTHZ-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "patch-title-only",
+      "falsifies": "NOTES-FUNC-NOTE-3",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "delete-note",
+      "falsifies": "NOTES-FUNC-NOTE-4",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-empty-title",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-missing-title",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-long-title",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-max-title-ok",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-title-type",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-long-body",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-unknown-field",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-malformed-json",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-non-object-json",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-patch-empty",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-rejects-do-not-persist",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "unknown-route-problem",
+      "falsifies": "NOTES-TECH-ERR-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "payload-too-large",
+      "falsifies": "NOTES-TECH-ERR-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "contract-core-shapes",
+      "falsifies": "NOTES-TECH-CONTRACT-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "identical-404-bodies",
+      "falsifies": "NOTES-SEC-AUTHZ-3",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "precedence-404-before-415",
+      "falsifies": "NOTES-TECH-ERR-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "precedence-415",
+      "falsifies": "NOTES-TECH-ERR-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "precedence-422-before-428",
+      "falsifies": "NOTES-TECH-ERR-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "formats-timestamps-location",
+      "falsifies": "NOTES-TECH-FMT-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "formats-newest-first",
+      "falsifies": "NOTES-TECH-FMT-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "formats-code-points",
+      "falsifies": "NOTES-TECH-FMT-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "readonly-and-null-bodies",
+      "falsifies": "NOTES-FUNC-VALID-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "etag-tracks-version",
+      "falsifies": "NOTES-FUNC-CONC-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "patch-requires-if-match",
+      "falsifies": "NOTES-FUNC-CONC-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "lost-update-prevented",
+      "falsifies": "NOTES-FUNC-CONC-3",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "delete-idempotent-soft",
+      "falsifies": "NOTES-FUNC-DEL-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "restore-brings-back",
+      "falsifies": "NOTES-FUNC-DEL-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "archived-is-trash-view",
+      "falsifies": "NOTES-FUNC-DEL-3",
+      "passed": true,
+      "failures": []
+    }
+  ],
+  "acVerdicts": {
+    "NOTES-SEC-AUTHN-1": "passed",
+    "NOTES-FUNC-ME-1": "passed",
+    "NOTES-FUNC-TEAM-1": "passed",
+    "NOTES-FUNC-NOTE-1": "passed",
+    "NOTES-FUNC-NOTE-2": "passed",
+    "NOTES-SEC-AUTHZ-1": "passed",
+    "NOTES-SEC-AUTHZ-2": "passed",
+    "NOTES-FUNC-NOTE-3": "passed",
+    "NOTES-FUNC-NOTE-4": "passed",
+    "NOTES-FUNC-VALID-1": "passed",
+    "NOTES-TECH-ERR-1": "passed",
+    "NOTES-TECH-CONTRACT-1": "passed",
+    "NOTES-SEC-AUTHZ-3": "passed",
+    "NOTES-TECH-ERR-2": "passed",
+    "NOTES-TECH-FMT-1": "passed",
+    "NOTES-FUNC-VALID-2": "passed",
+    "NOTES-FUNC-CONC-1": "passed",
+    "NOTES-FUNC-CONC-2": "passed",
+    "NOTES-FUNC-CONC-3": "passed",
+    "NOTES-FUNC-DEL-1": "passed",
+    "NOTES-FUNC-DEL-2": "passed",
+    "NOTES-FUNC-DEL-3": "passed"
+  }
+}

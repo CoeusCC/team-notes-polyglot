@@ -26,3 +26,14 @@ These are places where independent builders made different, equally conformant c
 Grok (Speck) is drafting adversarial cases for these in a separate file. Patrick decides each one, and then it becomes a ratified card.
 
 Per-backend detail: `backends/<b>/FIRST_RUN.txt`, `FINAL_RUN.txt`, `BUILD_NOTES.md`.
+
+## Cross-model replication (Grok)
+Grok (Speck) independently built Python, Deno and PHP backends from spec 0.2.0, starting at 15:35 CDT, on branches `origin/grok/backend-{python,deno,php}`. Claude, not Grok, ran the conformance suite against them. They're kept on their own branches, not merged, because they duplicate the merged languages.
+
+| Backend (Grok) | Branch head | Conformance (run by Claude) |
+|---|---|---|
+| grok-python | `94b14f9` | **45/45** cases · 22/22 ACs |
+| grok-deno | `9dc0514` | **45/45** cases · 22/22 ACs |
+| grok-php | `d8dae7b` | **45/45** cases · 22/22 ACs |
+
+**8 independent implementations from 2 model families, all 45/45** against one spec and suite. Evidence: `evidence/grok-*.txt` and `evidence/grok-*.json`.
