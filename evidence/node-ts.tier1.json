@@ -1,0 +1,180 @@
+{
+  "baseUrl": "http://localhost:3001",
+  "results": [
+    {
+      "id": "health-open",
+      "falsifies": "NOTES-SEC-AUTHN-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "authn-missing-token",
+      "falsifies": "NOTES-SEC-AUTHN-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "authn-bad-token",
+      "falsifies": "NOTES-SEC-AUTHN-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "authn-malformed-scheme",
+      "falsifies": "NOTES-SEC-AUTHN-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "me-alice",
+      "falsifies": "NOTES-FUNC-ME-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "teams-carol-only-blue",
+      "falsifies": "NOTES-FUNC-TEAM-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "teams-bob-member",
+      "falsifies": "NOTES-FUNC-TEAM-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "create-note",
+      "falsifies": "NOTES-FUNC-NOTE-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "create-note-location",
+      "falsifies": "NOTES-FUNC-NOTE-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "create-note-location-header",
+      "falsifies": "NOTES-FUNC-NOTE-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "teammate-reads-and-lists",
+      "falsifies": "NOTES-FUNC-NOTE-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "nonmember-note-404",
+      "falsifies": "NOTES-SEC-AUTHZ-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "nonmember-team-404",
+      "falsifies": "NOTES-SEC-AUTHZ-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "team-isolation-in-lists",
+      "falsifies": "NOTES-SEC-AUTHZ-2",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "patch-title-only",
+      "falsifies": "NOTES-FUNC-NOTE-3",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "delete-note",
+      "falsifies": "NOTES-FUNC-NOTE-4",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-empty-title",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-missing-title",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-long-title",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-max-title-ok",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-title-type",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-long-body",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-unknown-field",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-malformed-json",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-non-object-json",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "validate-patch-empty",
+      "falsifies": "NOTES-FUNC-VALID-1",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "unknown-route-problem",
+      "falsifies": "NOTES-TECH-ERR-1",
+      "passed": true,
+      "failures": []
+    }
+  ],
+  "acVerdicts": {
+    "NOTES-SEC-AUTHN-1": "passed",
+    "NOTES-FUNC-ME-1": "passed",
+    "NOTES-FUNC-TEAM-1": "passed",
+    "NOTES-FUNC-NOTE-1": "passed",
+    "NOTES-FUNC-NOTE-2": "passed",
+    "NOTES-SEC-AUTHZ-1": "passed",
+    "NOTES-SEC-AUTHZ-2": "passed",
+    "NOTES-FUNC-NOTE-3": "passed",
+    "NOTES-FUNC-NOTE-4": "passed",
+    "NOTES-FUNC-VALID-1": "passed",
+    "NOTES-TECH-ERR-1": "passed"
+  }
+}
