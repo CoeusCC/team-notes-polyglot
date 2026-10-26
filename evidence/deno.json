@@ -564,6 +564,24 @@
       "falsifies": "NOTES-TECH-FMT-3",
       "passed": true,
       "failures": []
+    },
+    {
+      "id": "authn4-duplicate-authorization-401",
+      "falsifies": "NOTES-SEC-AUTHN-4",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "authn4-unreserved-decoded",
+      "falsifies": "NOTES-SEC-AUTHN-4",
+      "passed": true,
+      "failures": []
+    },
+    {
+      "id": "authn4-dot-segments-404",
+      "falsifies": "NOTES-SEC-AUTHN-4",
+      "passed": true,
+      "failures": []
     }
   ],
   "acVerdicts": {
@@ -605,10 +623,11 @@
     "NOTES-FUNC-TEAM-5": "passed",
     "NOTES-TECH-ERR-5": "passed",
     "NOTES-TECH-FMT-3": "passed",
-    "NOTES-SEC-AUTHN-3": "passed"
+    "NOTES-SEC-AUTHN-3": "passed",
+    "NOTES-SEC-AUTHN-4": "passed"
   },
   "backend": "deno",
-  "commit": "f65f6a0",
-  "builddigest": "a5f3f72d0e3fdef3",
-  "at": "2026-10-26T21:14:48.564Z"
+  "commit": "951d0ce",
+  "builddigest": "2fb6435fa90c3f90",
+  "at": "2026-10-26T21:28:13.238Z"
 }

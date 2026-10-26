@@ -92,5 +92,8 @@ ok   mutation-body-limit-inclusive [NOTES-TECH-FMT-3]
 ok   redteam-double-slash-no-5xx [NOTES-SEC-AUTHN-3]
 ok   redteam-invalid-utf8-400 [NOTES-TECH-FMT-3]
 ok   redteam-nul-roundtrip [NOTES-TECH-FMT-3]
+ok   authn4-duplicate-authorization-401 [NOTES-SEC-AUTHN-4]
+ok   authn4-unreserved-decoded [NOTES-SEC-AUTHN-4]
+ok   authn4-dot-segments-404 [NOTES-SEC-AUTHN-4]
 
-94/94 cases passed · ACs: 39 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3103
+97/97 cases passed · ACs: 40 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3103
