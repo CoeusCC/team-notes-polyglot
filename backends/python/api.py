@@ -8,7 +8,7 @@ import domain
 PROBLEM = "application/problem+json"
 TYPES = {
     400: ("bad-request", "Bad Request"), 401: ("unauthorized", "Unauthorized"),
-    404: ("not-found", "Not Found"), 412: ("precondition-failed", "Precondition Failed"),
+    403: ("forbidden", "Forbidden"), 404: ("not-found", "Not Found"), 409: ("conflict", "Conflict"), 412: ("precondition-failed", "Precondition Failed"),
     413: ("payload-too-large", "Payload Too Large"), 415: ("unsupported-media-type", "Unsupported Media Type"),
     422: ("validation-failed", "Unprocessable Entity"), 428: ("precondition-required", "Precondition Required"),
     500: ("internal-error", "Internal Server Error"),
@@ -86,6 +86,56 @@ def list_teams(store, user, req):
     return Response(200, {"items": store.teams_of(user["id"])})
 
 
+def create_team(store, user, req):
+    data, err = parse_json_body(req)
+    if err:
+        return err
+    clean, errors = domain.validate_team(data)
+    if errors:
+        return problem(422, errors)
+    team = store.create_team(clean["id"], clean["name"], user["id"])
+    if team is None:
+        return problem(409)
+    return Response(201, team, {"Location": f"/teams/{team['id']}"})
+
+
+def get_team(store, user, req, team_id):
+    team = store.get_team(team_id, user["id"])
+    return Response(200, team) if team else NOT_FOUND
+
+
+def list_members(store, user, req, team_id):
+    if not store.is_member(team_id, user["id"]):
+        return NOT_FOUND
+    return Response(200, {"items": store.members(team_id)})
+
+
+def _owner_gate(store, user, team_id):
+    """404 for non-members, 403 for plain members; None for the owner."""
+    role = store.role_of(team_id, user["id"])
+    if role is None:
+        return NOT_FOUND
+    return None if role == "owner" else problem(403)
+
+
+def add_member(store, user, req, team_id, user_id):
+    denied = _owner_gate(store, user, team_id) or media_error(req)
+    if denied:
+        return denied
+    target = store.user(user_id)
+    if not target:
+        return problem(422, [("userId", "unknown user")])
+    store.add_member(team_id, user_id)
+    return Response(200, {**target, "role": store.role_of(team_id, user_id)})
+
+
+def remove_member(store, user, req, team_id, user_id):
+    denied = _owner_gate(store, user, team_id) or media_error(req)
+    if denied:
+        return denied
+    return Response(204) if store.remove_member(team_id, user_id) else problem(409)
+
+
 def list_notes(store, user, req, team_id):
     if not store.is_member(team_id, user["id"]):
         return NOT_FOUND
@@ -153,6 +203,10 @@ def restore_note(store, user, req, note_id):
 
 ROUTES = [
     ("GET", r"/me", get_me), ("GET", r"/teams", list_teams),
+    ("POST", r"/teams", create_team), ("GET", r"/teams/([^/]+)", get_team),
+    ("GET", r"/teams/([^/]+)/members", list_members),
+    ("PUT", r"/teams/([^/]+)/members/([^/]+)", add_member),
+    ("DELETE", r"/teams/([^/]+)/members/([^/]+)", remove_member),
     ("GET", r"/teams/([^/]+)/notes", list_notes), ("POST", r"/teams/([^/]+)/notes", create_note),
     ("GET", r"/notes/([^/]+)", get_note), ("PATCH", r"/notes/([^/]+)", patch_note),
     ("DELETE", r"/notes/([^/]+)", delete_note), ("POST", r"/notes/([^/]+)/restore", restore_note),
