@@ -1,0 +1,721 @@
+{
+ "$comment": "PROPOSED, NOT RATIFIED. Same format as cases.json plus: status=proposed, question=(a..g) in questions.md, step.noContract=true skips OpenAPI response validation (unknown routes have no spec operation). Run with adversarial-run.mjs; never merged into cases.json until Patrick decides.",
+ "tokens": {
+  "alice": "tok_alice",
+  "bob": "tok_bob",
+  "carol": "tok_carol"
+ },
+ "cases": [
+  {
+   "id": "adv-ifmatch-weak",
+   "falsifies": "NOTES-FUNC-CONC-3",
+   "status": "proposed",
+   "question": "a",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "W/\"1\""
+     },
+     "body": {
+      "title": "x ${run}"
+     },
+     "expect": {
+      "status": 412
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "version": 1
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-ifmatch-list-contains-current",
+   "falsifies": "NOTES-FUNC-CONC-3",
+   "status": "proposed",
+   "question": "a",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"9\", \"1\""
+     },
+     "body": {
+      "title": "x ${run}"
+     },
+     "expect": {
+      "status": 200
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-ifmatch-list-all-stale",
+   "falsifies": "NOTES-FUNC-CONC-3",
+   "status": "proposed",
+   "question": "a",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"8\", \"9\""
+     },
+     "body": {
+      "title": "x ${run}"
+     },
+     "expect": {
+      "status": 412
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-ifmatch-list-with-star",
+   "falsifies": "NOTES-FUNC-CONC-2",
+   "status": "proposed",
+   "question": "a",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\", *"
+     },
+     "body": {
+      "title": "x ${run}"
+     },
+     "expect": {
+      "status": 428
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-archived-yes",
+   "falsifies": "NOTES-FUNC-DEL-3",
+   "status": "proposed",
+   "question": "b",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=yes",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "archived"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-archived-1",
+   "falsifies": "NOTES-FUNC-DEL-3",
+   "status": "proposed",
+   "question": "b",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=1",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "archived"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-archived-empty",
+   "falsifies": "NOTES-FUNC-DEL-3",
+   "status": "proposed",
+   "question": "b",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "archived"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-archived-TRUE",
+   "falsifies": "NOTES-FUNC-DEL-3",
+   "status": "proposed",
+   "question": "b",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=TRUE",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "archived"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-empty-body-json-ct",
+   "falsifies": "NOTES-TECH-ERR-2",
+   "status": "proposed",
+   "question": "c",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "",
+     "expect": {
+      "status": 400
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-empty-body-no-ct",
+   "falsifies": "NOTES-TECH-ERR-2",
+   "status": "proposed",
+   "question": "c",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 400
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-empty-body-text-plain",
+   "falsifies": "NOTES-TECH-ERR-2",
+   "status": "proposed",
+   "question": "c",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "",
+     "headers": {
+      "content-type": "text/plain"
+     },
+     "expect": {
+      "status": 400
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-empty-patch-no-ct",
+   "falsifies": "NOTES-TECH-ERR-2",
+   "status": "proposed",
+   "question": "c",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "expect": {
+      "status": 400
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-unknown-route-no-token",
+   "falsifies": "NOTES-SEC-AUTHN-1",
+   "status": "proposed",
+   "question": "d",
+   "steps": [
+    {
+     "method": "GET",
+     "path": "/nope",
+     "noContract": true,
+     "expect": {
+      "status": 401,
+      "headers": {
+       "content-type": "application/problem+json"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-unknown-verb-no-token",
+   "falsifies": "NOTES-SEC-AUTHN-1",
+   "status": "proposed",
+   "question": "d",
+   "steps": [
+    {
+     "method": "PUT",
+     "path": "/me",
+     "noContract": true,
+     "expect": {
+      "status": 401
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-unknown-route-with-token",
+   "falsifies": "NOTES-TECH-ERR-2",
+   "status": "proposed",
+   "question": "d",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/nope",
+     "noContract": true,
+     "expect": {
+      "status": 404
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-delete-does-not-bump",
+   "falsifies": "NOTES-FUNC-DEL-2",
+   "status": "proposed",
+   "question": "e",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=true",
+     "expect": {
+      "status": 200,
+      "json": {
+       "items": [
+        {
+         "id": "${n.id}",
+         "version": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "expect": {
+      "status": 200,
+      "headers": {
+       "etag": "\"2\""
+      },
+      "json": {
+       "version": 2
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "expect": {
+      "status": 200,
+      "headers": {
+       "etag": "\"2\""
+      },
+      "json": {
+       "version": 2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-nonobject-field-array",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "status": "proposed",
+   "question": "f",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "[1]",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "$"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-nonobject-field-string",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "status": "proposed",
+   "question": "f",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "\"x\"",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "$"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-nonobject-field-number",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "status": "proposed",
+   "question": "f",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "42",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "$"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-nonobject-field-null",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "status": "proposed",
+   "question": "f",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "null",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "$"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-trim-nbsp",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": " hi "
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "hi"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-trim-emspace",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": " hi "
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "hi"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-trim-ideographic",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "　hi　"
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "hi"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-trim-tab-newline",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "\t\nhi\t\n"
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "hi"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-trim-only-nbsp-empty",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": " 　"
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-zwsp-not-whitespace",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "​"
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "​"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-combining-200cp-ok",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+     },
+     "expect": {
+      "status": 201
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-combining-202cp-rejected",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adv-zwj-family-counts-cp",
+   "falsifies": "NOTES-TECH-FMT-1",
+   "status": "proposed",
+   "question": "g",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧"
+     },
+     "expect": {
+      "status": 201
+     }
+    }
+   ]
+  }
+ ]
+}
