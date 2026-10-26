@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "jsr:@std/assert@1";
-import { cpLength, parseCreate, parseIfMatch, parsePatch } from "./domain.ts";
+import { cpLength, parseCreate, parseIfMatch, parsePatch, trimWs } from "./domain.ts";
 import { createStore } from "./main.ts";
 import { createHandler } from "./http.ts";
 
@@ -27,6 +27,30 @@ Deno.test("If-Match: missing and * are 'missing'; quoted version matches", () =>
   assertEquals(parseIfMatch("*").kind, "missing");
   const p = parseIfMatch('"3"');
   assert(p.kind === "version" && p.matches(3) && !p.matches(2));
+});
+
+Deno.test("If-Match: strong comparison, lists, trimming, weak and star", () => {
+  const m = (h: string, v: number) => {
+    const p = parseIfMatch(h);
+    return p.kind === "version" && p.matches(v);
+  };
+  assert(m('  "3"  ', 3));
+  assert(m('"9",   "1"\t', 1));
+  assert(m(' "9" , "1" ', 1));
+  assert(!m('"8", "9"', 1));
+  assert(!m('W/"1"', 1));
+  assert(!m('"01"', 1));
+  assert(!m("1", 1));
+  assertEquals(parseIfMatch('"1", *').kind, "missing");
+  assertEquals(parseIfMatch("   ").kind, "missing");
+});
+
+Deno.test("trim uses Unicode White_Space only", () => {
+  assertEquals(trimWs("\u00a0hi\u3000\u2003"), "hi");
+  assertEquals(trimWs("\u200b"), "\u200b");
+  assertEquals(trimWs("\ufeffx"), "\ufeffx");
+  assert(!parseCreate({ title: "\u00a0\u3000" }).ok);
+  assertEquals(cpLength("e\u0301"), 2);
 });
 
 // ---- HTTP through the handler, no socket ----
