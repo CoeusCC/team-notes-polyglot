@@ -8,6 +8,7 @@ cd "$(git rev-parse --show-toplevel)"
 label=${1:?label required}
 decision=${2:?decision required}
 shift 2
+for f in "$@"; do [[ -f $f ]] || { echo "missing evidence file: $f" >&2; exit 1; }; done
 
 sha=$(git rev-parse --short HEAD)
 builddigest=$(git ls-tree -r HEAD | sha256sum | cut -c1-16)
