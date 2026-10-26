@@ -42,10 +42,7 @@ public class Main {
         String schema = Optional.ofNullable(System.getenv("SCHEMA_PATH")).orElse("spec/schema.sql");
         int port = Integer.parseInt(Optional.ofNullable(System.getenv("PORT")).orElse("3000"));
         initDb(dbPath, schema);
-        HttpServer server = HttpServer.create(new InetSocketAddress(port), 256);
-        server.createContext("/", Main::handle);
-        server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
-        server.start();
+        new RawServer(port, Main::handle).start();
         System.out.println("listening on " + port);
     }
 
@@ -145,7 +142,7 @@ public class Main {
 
     static void route(HttpExchange ex) throws Exception {
         String method = ex.getRequestMethod();
-        String rawPath = ex.getRequestURI().getRawPath();
+        String rawPath = ((RawServer.RawExchange) ex).rawPath;
         if (rawPath == null) rawPath = "";
         if (rawPath.equals("/health") && method.equals("GET")) {
             sendJson(ex, 200, Map.of(), Map.of("status", "ok"));
@@ -512,7 +509,7 @@ public class Main {
         synchronized (Main.class) {
             if (roleOf(teamId, c.userId) == null) throw problem(404);
             checkNoBody(c);
-            String arch = queryParam(c.ex.getRequestURI().getRawQuery(), "archived");
+            String arch = queryParam(((RawServer.RawExchange) c.ex).rawQuery, "archived");
             boolean archived = false;
             if (arch != null) {
                 if (arch.equals("true")) archived = true;
