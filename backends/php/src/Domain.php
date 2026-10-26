@@ -121,3 +121,53 @@ function validateFields(mixed $data, bool $isCreate): array
     }
     return [$clean, $errors];
 }
+
+/**
+ * Validate a decoded POST /teams body: {id: slug, name}. Unknown fields are named.
+ * @return array{0: array<string,string>, 1: list<array{field:string,message:string}>}
+ */
+function validateTeam(mixed $data): array
+{
+    if (!($data instanceof stdClass)) {
+        return [[], [['field' => '$', 'message' => 'must be a JSON object']]];
+    }
+    $fields = get_object_vars($data);
+    $errors = [];
+    $clean = [];
+    foreach ($fields as $k => $v) {
+        $k = (string) $k;
+        if ($k === 'id') {
+            if (!is_string($v) || !isValidSlug($v)) {
+                $errors[] = ['field' => 'id', 'message' => 'must match ^[a-z0-9-]{3,40}$'];
+            } else {
+                $clean['id'] = $v;
+            }
+        } elseif ($k === 'name') {
+            if (!is_string($v)) {
+                $errors[] = ['field' => 'name', 'message' => 'must be a string'];
+                continue;
+            }
+            $t = trimTitle($v);
+            $n = cpLength($t);
+            if ($n < 1 || $n > 80) {
+                $errors[] = ['field' => 'name', 'message' => 'must be 1-80 characters after trimming'];
+            } else {
+                $clean['name'] = $t;
+            }
+        } else {
+            $errors[] = ['field' => $k, 'message' => 'unknown field'];
+        }
+    }
+    foreach (['id', 'name'] as $req) {
+        if (!array_key_exists($req, $fields)) {
+            $errors[] = ['field' => $req, 'message' => 'is required'];
+        }
+    }
+    return [$clean, $errors];
+}
+
+/** ^[a-z0-9-]{3,40}$ using \z so a trailing newline is not accepted. */
+function isValidSlug(string $s): bool
+{
+    return preg_match('/^[a-z0-9-]{3,40}\z/', $s) === 1;
+}

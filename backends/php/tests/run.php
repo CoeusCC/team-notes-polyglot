@@ -61,4 +61,18 @@ check('200 code points with combiners accepted', !$e);
 check('202 code points with combiners rejected', $errFields($e) === ['title']);
 check('timestamp format', preg_match('/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/', nowIso()) === 1);
 check('json media type', isJsonMediaType('application/json; charset=utf-8') && !isJsonMediaType('text/plain') && !isJsonMediaType(null));
+foreach (['abc' => true, 'ab' => false, 'AB' => false, 'a_b' => false, "abc\n" => false, 'a b' => false, 'team-red' => true,
+    str_repeat('a', 40) => true, str_repeat('a', 41) => false, 'é-é-é' => false] as $slug => $want) {
+    check('slug ' . json_encode((string) $slug), isValidSlug((string) $slug) === $want);
+}
+[$c, $e] = validateTeam($j('{"id":"abc","name":"  N  "}'));
+check('team valid, name trimmed', $c === ['id' => 'abc', 'name' => 'N'] && !$e);
+[, $e] = validateTeam($j('{"id":"AB","name":"x"}'));
+check('team bad slug names id', $errFields($e) === ['id']);
+[, $e] = validateTeam($j('{"id":5,"name":"   ","owner":"bob"}'));
+check('team id/name/owner named', $errFields($e) === ['id', 'name', 'owner']);
+[, $e] = validateTeam($j('{"id":"abc","name":"' . str_repeat('😀', 81) . '"}'));
+check('team name 81 code points rejected', $errFields($e) === ['name']);
+[, $e] = validateTeam($j('{}'));
+check('team requires id and name', $errFields($e) === ['id', 'name']);
 exit($fail ? 1 : 0);
