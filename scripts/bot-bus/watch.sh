@@ -12,7 +12,7 @@ while true; do
     (.data.repository.d2.comments.nodes[] | "\(.id)\t[bot-bus] \(.author.login): \(.body|gsub("\n";" ")|.[0:400])"),
     (.data.repository.pullRequests.nodes[] | "\(.id)\t[PR #\(.number)] \(.author.login): \(.title)")' 2>/dev/null |
   while IFS=$'\t' read -r id msg; do
-    grep -qx "$id" "$seen" || { echo "$id" >> "$seen"; echo "$msg"; }
+    grep -qx "$id" "$seen" || { echo "$id" >> "$seen"; [[ $msg == *"[claude]"* || $msg == *\"from\":\ \"claude\"* ]] || echo "$msg"; }
   done
   sleep 60
 done
