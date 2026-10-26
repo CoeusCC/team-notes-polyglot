@@ -12,6 +12,14 @@ export const BODY_MAX = 100000;
 /** Length in Unicode code points (ADR-0003). */
 const length = (s: string): number => [...s].length;
 
+/**
+ * Trim Unicode White_Space (FMT-2). Not String.trim: that also strips U+FEFF and misses U+0085.
+ * U+200B (ZWSP) is not White_Space either.
+ */
+const WS = '\\t\\n\\v\\f\\r \\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000';
+const TRIM = new RegExp(`^[${WS}]+|[${WS}]+$`, 'g');
+export const trimWhiteSpace = (s: string): string => s.replace(TRIM, '');
+
 /** Fields the server owns; a client may never send them. */
 export const READ_ONLY_FIELDS = ['id', 'teamId', 'authorId', 'version', 'createdAt', 'updatedAt', 'deletedAt'];
 
@@ -23,7 +31,7 @@ function checkTitle(v: unknown, errors: FieldError[]): string | undefined {
     errors.push({ field: 'title', message: 'must be a string' });
     return undefined;
   }
-  const t = v.trim();
+  const t = trimWhiteSpace(v);
   if (length(t) < 1 || length(t) > TITLE_MAX) {
     errors.push({ field: 'title', message: `must be 1-${TITLE_MAX} characters after trimming` });
     return undefined;

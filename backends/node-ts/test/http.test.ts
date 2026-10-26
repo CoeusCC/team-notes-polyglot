@@ -114,7 +114,7 @@ test('error precedence: 404 before 415 before 400 before 422', async () => {
   assert.equal((await call('PATCH', `/notes/${n.id}`, 'tok_alice', '{nope', text)).res.status, 415);
   assert.equal((await call('PATCH', `/notes/${n.id}`, 'tok_alice', '{nope', { 'content-type': 'Application/JSON; charset=utf-8' })).res.status, 400);
   assert.equal((await call('POST', '/teams/team-red/notes', 'tok_alice', '{"title":"t"}', text)).res.status, 415);
-  assert.equal((await call('POST', '/teams/team-red/notes', 'tok_alice', '', { 'content-type': '' })).res.status, 415);
+  assert.equal((await call('POST', '/teams/team-red/notes', 'tok_alice', '', { 'content-type': '' })).res.status, 400); // ERR-3: empty body is 400, whatever its type
 });
 
 test('delete is soft and idempotent; non-members get 404', async () => {
