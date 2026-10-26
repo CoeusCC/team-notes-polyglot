@@ -7,7 +7,7 @@
 //
 // --strict also fails when a ratified AC has no case ("unverified"). Draft ACs are reported but not required.
 //
-// Step extras: noContract (skip OpenAPI validation, e.g. unknown routes), parallel: N + expectCounts {status: n}.
+// Step extras: rawBodyBase64 (exact bytes, e.g. invalid UTF-8), noContract (skip OpenAPI validation, e.g. unknown routes), parallel: N + expectCounts {status: n}.
 // It exits 0 only if every case passes. Each case names the AC it falsifies. A failing case refutes that AC.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -148,7 +148,8 @@ async function runOne(step, vars) {
   const token = step.token ?? (step.as ? tokens[step.as] : null);
   if (token) headers.authorization = `Bearer ${token}`;
   let body;
-  if (step.rawBody !== undefined) { body = repeat(step.rawBody); headers['content-type'] ??= 'application/json'; }
+  if (step.rawBodyBase64 !== undefined) { body = Buffer.from(step.rawBodyBase64, 'base64'); headers['content-type'] ??= 'application/json'; }
+  else if (step.rawBody !== undefined) { body = repeat(step.rawBody); headers['content-type'] ??= 'application/json'; }
   else if (step.body !== undefined) {
     body = repeat(JSON.stringify(interpolate(step.body, vars)));
     headers['content-type'] ??= 'application/json';
