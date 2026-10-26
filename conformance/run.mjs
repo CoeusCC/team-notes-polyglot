@@ -149,7 +149,7 @@ async function runOne(step, vars) {
   if (token) headers.authorization = `Bearer ${token}`;
   let body;
   if (step.rawBodyBase64 !== undefined) { body = Buffer.from(step.rawBodyBase64, 'base64'); headers['content-type'] ??= 'application/json'; }
-  else if (step.rawBody !== undefined) { body = repeat(step.rawBody); headers['content-type'] ??= 'application/json'; }
+  else if (step.rawBody !== undefined) { body = repeat(interpolate(step.rawBody, vars)); headers['content-type'] ??= 'application/json'; }
   else if (step.body !== undefined) {
     body = repeat(JSON.stringify(interpolate(step.body, vars)));
     headers['content-type'] ??= 'application/json';
