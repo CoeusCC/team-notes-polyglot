@@ -1,0 +1,127 @@
+<title>Spec-First Proof Ledger</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a ledger. A timeline of gates runs down the left rail; each section is a ruled sheet of evidence with its source file named. */
+:root {
+  --paper: #f4f5f1; --ink: #1c211f; --muted: #5e6863; --rule: #d3d9d4; --sheet: #ffffff;
+  --accent: #2f6b55; --accent-soft: #dcebe3; --red: #a33a2c; --red-soft: #f6e1dd; --amber: #8a5a10;
+  --display: "Fraunces", Georgia, serif; --body: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #131816; --ink: #e2e8e4; --muted: #98a59e; --rule: #2b3430; --sheet: #1a211e; --accent: #7cc4a6; --accent-soft: #1f3a2f; --red: #ec8a7b; --red-soft: #3a2420; --amber: #e0a95a; color-scheme: dark } }
+:root[data-theme="dark"] { --paper: #131816; --ink: #e2e8e4; --muted: #98a59e; --rule: #2b3430; --sheet: #1a211e; --accent: #7cc4a6; --accent-soft: #1f3a2f; --red: #ec8a7b; --red-soft: #3a2420; --amber: #e0a95a; color-scheme: dark }
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 40px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1 { font: 600 clamp(32px, 5vw, 46px)/1.1 var(--display); margin: 0 0 10px; text-wrap: balance; }
+h2 { font: 600 24px/1.25 var(--display); margin: 52px 0 6px; text-wrap: balance; }
+.lede { font-size: 18px; color: var(--muted); max-width: 64ch; margin: 0 0 28px; }
+.src { font: 12px var(--mono); color: var(--muted); }
+p { max-width: 68ch; }
+.sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; margin: 14px 0; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { display: inline-block; font: 600 12px var(--mono); padding: 1px 7px; border-radius: 3px; }
+.pass { background: var(--accent-soft); color: var(--accent); } .fail { background: var(--red-soft); color: var(--red); }
+.headline { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 0; }
+.headline div { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; }
+.headline b { display: block; font: 600 28px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.headline span { font-size: 13px; color: var(--muted); }
+ol.time { list-style: none; padding: 0; margin: 0; border-left: 2px solid var(--rule); }
+ol.time li { position: relative; padding: 0 0 14px 18px; }
+ol.time li::before { content: ""; position: absolute; left: -6px; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+ol.time li.turn::before { background: var(--amber); }
+ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8px; }
+.bars { display: grid; gap: 8px; }
+.bar { display: grid; grid-template-columns: 70px minmax(0, 1fr) 48px; gap: 10px; align-items: center; font-size: 14px; }
+.bar .track { height: 14px; border-radius: 0 4px 4px 0; background: transparent; position: relative; }
+.bar .fill { height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
+.bar .fill:hover, .bar .fill:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.bar b { font: 600 13px var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.note { font-size: 13px; color: var(--muted); }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+
+<div class="wrap">
+<h1>Spec-First Proof Ledger</h1>
+<p class="lede">How Team Notes was shown to work: one contract, a growing set of ratified acceptance criteria (ACs), five independent implementations, and checks that are built to fail.</p>
+
+<div class="headline">
+  <div><b>5 / 5</b><span>backends at 89/89 cases (16:06 official run)</span></div>
+  <div><b>4 / 4</b><span>rebuilds green on their <i>first</i> run, from the spec alone</span></div>
+  <div><b>5 / 5</b><span>deliberate faults caught by the suite</span></div>
+  <div><b>0</b><span>lost updates under 32-way contention, on every backend</span></div>
+</div>
+
+<h2>Timeline of gates</h2>
+<p class="src">docs/build-digest.md · times are CDT; the assessment clock started 14:48</p>
+<div class="sheet"><ol class="time">
+  <li><time>15:11</time>Repo, plan, ADR-0001 and draft ACs pushed. Grok split the plan into 68 issues.</li>
+  <li><time>15:21</time><b>Gate 1</b>: Node/TS minimum version, 27/27 cases. Patrick ratifies Tier 1.</li>
+  <li><time>15:38</time><b>Gate 2</b>: ETag/If-Match, soft delete, restore. 45/45; 5/5 faults caught.</li>
+  <li class="turn"><time>15:35</time><b>Gate 3</b>, decided early: rebuild from the spec instead of adding features.</li>
+  <li><time>15:39</time>Deno, Python, PHP and Rust: <b>45/45 on first run</b>, 2.5–4 minutes each.</li>
+  <li class="turn"><time>15:50</time>The green rebuilds still <i>disagreed</i> in 7 places. They became 10 core cards plus 3 profiles. Patrick reversed one Claude recommendation (uniform 415).</li>
+  <li class="turn"><time>15:58</time>Tier 3 (teams) reinstated because the project was ahead of schedule. All 5 backends reach 88/88 in 3–4 minutes each.</li>
+  <li><time>16:06</time>403/409 order pinned. Official run: <b>5/5 at 89/89, 37/37 ACs</b>.</li>
+  <li><time>16:09</time>Red team (fuzzer, mutation, Grok probes) finds 500s, lone-surrogate corruption and NUL truncation. These became new cards, and fixes are under way.</li>
+</ol></div>
+
+<h2>From the spec alone, first try</h2>
+<p>Each rebuild agent could read only <code>spec/</code>, <code>conformance/</code> and the ADRs, and recorded a conformance run before fixing anything.</p>
+<p class="src">evidence/rebuilds.md · backends/*/FIRST_RUN.txt</p>
+<div class="sheet"><table>
+<tr><th>Implementation</th><th>Built by</th><th>First run</th><th>Fixes</th><th>Time to green</th></tr>
+<tr><td>deno</td><td>Claude Sonnet</td><td class="n"><span class="tag pass">45/45</span></td><td class="n">0</td><td class="n">≈2.5 min</td></tr>
+<tr><td>python</td><td>Claude Sonnet</td><td class="n"><span class="tag pass">45/45</span></td><td class="n">0</td><td class="n">≈3 min</td></tr>
+<tr><td>php</td><td>Claude Sonnet</td><td class="n"><span class="tag pass">45/45</span></td><td class="n">0</td><td class="n">≈3 min</td></tr>
+<tr><td>rust</td><td>Claude Sonnet</td><td class="n"><span class="tag pass">45/45</span></td><td class="n">0</td><td class="n">≈4 min</td></tr>
+<tr><td>grok-python · grok-deno · grok-php</td><td>Grok</td><td class="n"><span class="tag pass">45/45</span> ×3</td><td class="n">—</td><td class="n">verified by Claude</td></tr>
+</table></div>
+
+<h2>Where green implementations still disagreed</h2>
+<p>Passing the suite showed the suite was sufficient for what it pinned down. Differences between passing implementations showed what it didn't pin down yet. Each one became a ratified card.</p>
+<p class="src">ADR-0004 · ADR-0005 · spec/acceptance-criteria.md (Tier 2.1, FMT-3)</p>
+<div class="sheet"><table>
+<tr><th>Input</th><th>What the implementations did</th><th>Ratified rule</th></tr>
+<tr><td><code>If-Match: "9", "1"</code></td><td>Node and Rust 412; Deno, PHP and Python 200</td><td>RFC 9110 list: any strong match wins → 200</td></tr>
+<tr><td><code>?archived=TRUE</code></td><td>All silently showed live notes</td><td>422 naming <code>archived</code></td></tr>
+<tr><td>Restore with a <code>text/plain</code> body</td><td>Ignored</td><td>415 on every operation (Patrick's pushback)</td></tr>
+<tr><td>Title of <code>U+001F</code></td><td>Python trimmed it; the others kept it</td><td>Unicode White_Space only</td></tr>
+<tr><td>Lone surrogate <code>"\ud800"</code></td><td>Node stored it corrupted, Deno replaced it, PHP/Rust 400, Python 422</td><td>400, bodies must be I-JSON</td></tr>
+<tr><td>403 vs 415 order</td><td>Unspecified; Node and Rust converged on their own</td><td>401→404→403→415→413→400→422→409→428→412</td></tr>
+</table></div>
+
+<h2>Checks built to fail</h2>
+<p class="src">scripts/falsify.sh · evidence/falsify.node-ts.txt · evidence/redteam.mutation.md · evidence/*-red.txt</p>
+<div class="sheet"><table>
+<tr><th>Check</th><th>What it proves</th><th>Result</th></tr>
+<tr><td>Red first</td><td>Each tier's cases failed before the code existed (Node Tier 2: 37/45; pins: 68–78/83)</td><td><span class="tag pass">every tier</span></td></tr>
+<tr><td>Falsification</td><td>Five injected defects: lost update, hard delete, restore keeps version, 403 leak, no trim</td><td><span class="tag pass">5/5 caught</span></td></tr>
+<tr><td>Mutation (Uncle Bob <code>mutator</code>)</td><td>Node domain 42/43 killed; Python domain 17/19. Survivors became cases.</td><td class="n">97.7% · 89.5%</td></tr>
+<tr><td>Invariant fuzzer</td><td>2 seeds × 1,500 ops per backend: no 5xx, no leaks, monotonic versions, one winner per 16-way race</td><td><span class="tag fail">node: 500 on //</span> → new card</td></tr>
+<tr><td>Grok's red team</td><td>21 findings (3 blockers): NUL truncation in Deno, malformed escapes, transport-level gaps</td><td>blockers → cards</td></tr>
+</table></div>
+
+<h2>Benchmark: correctness first, then speed</h2>
+<p>A composite of throughput and p99 latency across read, list, write, mixed and contention scenarios, each normalized to the best backend (100). Any lost update, leak or error rate above 1% would set a score to zero. None did.</p>
+<p class="src">evidence/bench.docker.md · 1 CPU / 512 MB per container · 3 runs × 4 s · concurrency 32</p>
+<div class="sheet"><div class="bars" role="img" aria-label="Composite benchmark score in Docker: node-ts 100, deno 51.9, python 21.9, php 20.7">
+  <div class="bar"><span>node-ts</span><div class="track"><div class="fill" style="width:100%" tabindex="0" title="node-ts: 100.0 (0 lost updates, 0 leaks)"></div></div><b>100.0</b></div>
+  <div class="bar"><span>deno</span><div class="track"><div class="fill" style="width:51.9%" tabindex="0" title="deno: 51.9 (0 lost updates, 0 leaks)"></div></div><b>51.9</b></div>
+  <div class="bar"><span>python</span><div class="track"><div class="fill" style="width:21.9%" tabindex="0" title="python: 21.9 (0 lost updates, 0 leaks)"></div></div><b>21.9</b></div>
+  <div class="bar"><span>php</span><div class="track"><div class="fill" style="width:20.7%" tabindex="0" title="php: 20.7 (0 lost updates, 0 leaks)"></div></div><b>20.7</b></div>
+</div>
+<p class="note">Python and PHP use their standard-library or built-in development servers, which proves the contract but not production throughput. Rust was not yet in the Docker run.</p></div>
+
+<h2>Who decided what</h2>
+<div class="sheet"><table>
+<tr><th>Role</th><th>Did</th></tr>
+<tr><td>Patrick</td><td>Ratified every AC and made every architectural call through recorded question cards. Reversed Claude on stray bodies and proposed core/profile sets.</td></tr>
+<tr><td>Claude Code (Opus)</td><td>Orchestrated, wrote the spec and cases, verified every merge by re-running the suite itself.</td></tr>
+<tr><td>Claude Sonnet agents</td><td>Implemented each backend and harness in isolated worktrees. Never recorded verdicts.</td></tr>
+<tr><td>Grok (Speck)</td><td>Split the plan into issues, reviewed adversarially, drafted pin cases, built 3 replications, wrote the build log.</td></tr>
+</table></div>
+<p class="src">Source: github.com/CoeusCC/team-notes-polyglot</p>
+</div>
