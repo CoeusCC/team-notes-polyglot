@@ -1,0 +1,17 @@
+{
+  "name": "team-notes-node-ts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Team Notes reference backend (Tier 1): Node type stripping, node:http, node:sqlite",
+  "engines": { "node": ">=26" },
+  "scripts": {
+    "start": "node src/server.ts",
+    "test": "node --test test/",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "typescript": "^5.9.0"
+  }
+}
