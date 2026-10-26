@@ -117,6 +117,8 @@ async function runStep(step, vars) {
   const ids = Array.isArray(json?.items) ? json.items.map((n) => n.id) : [];
   for (const id of [].concat(exp.itemsContain ?? [])) if (!ids.includes(id)) failures.push(`items missing ${id}`);
   for (const id of [].concat(exp.itemsLack ?? [])) if (ids.includes(id)) failures.push(`items unexpectedly contain ${id}`);
+  if (exp.noItemMatches && (json?.items ?? []).some((n) => subsetMismatch(exp.noItemMatches, n) === null))
+    failures.push(`an item unexpectedly matches ${JSON.stringify(exp.noItemMatches)}`);
   if (exp.itemsExactly) {
     const want = [...exp.itemsExactly].sort(), got = [...ids].sort();
     if (JSON.stringify(want) !== JSON.stringify(got)) failures.push(`items: expected ${want}, got ${got}`);

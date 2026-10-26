@@ -1,127 +1,865 @@
 {
-  "$comment": "Data-only conformance cases. Each case falsifies one AC alias from spec/acceptance-criteria.md. Steps: as=<seed user> | token=<raw>, method, path, body | rawBody (<repeat:N:c> expands), expect {status, headers, json (deep subset), itemsContain, itemsLack, itemsExactly, errorFields}, save=<var>. ${var.path} interpolates; ${run} is a per-case random suffix.",
-  "tokens": { "alice": "tok_alice", "bob": "tok_bob", "carol": "tok_carol" },
-  "cases": [
-    { "id": "health-open", "falsifies": "NOTES-SEC-AUTHN-1",
-      "steps": [ { "method": "GET", "path": "/health", "expect": { "status": 200, "json": { "status": "ok" } } } ] },
-    { "id": "authn-missing-token", "falsifies": "NOTES-SEC-AUTHN-1",
-      "steps": [
-        { "method": "GET", "path": "/me", "expect": { "status": 401, "headers": { "content-type": "application/problem+json" } } },
-        { "method": "GET", "path": "/teams", "expect": { "status": 401 } },
-        { "method": "GET", "path": "/teams/team-red/notes", "expect": { "status": 401 } },
-        { "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "x" }, "expect": { "status": 401 } }
-      ] },
-    { "id": "authn-bad-token", "falsifies": "NOTES-SEC-AUTHN-1",
-      "steps": [
-        { "token": "nope", "method": "GET", "path": "/me", "expect": { "status": 401 } },
-        { "token": "nope", "method": "GET", "path": "/teams/team-red/notes", "expect": { "status": 401 } }
-      ] },
-    { "id": "authn-malformed-scheme", "falsifies": "NOTES-SEC-AUTHN-1",
-      "steps": [ { "method": "GET", "path": "/me", "headers": { "authorization": "Basic tok_alice" }, "expect": { "status": 401 } } ] },
-
-    { "id": "me-alice", "falsifies": "NOTES-FUNC-ME-1",
-      "steps": [ { "as": "alice", "method": "GET", "path": "/me",
-        "expect": { "status": 200, "json": { "id": "alice", "name": "Alice", "teams": [ { "id": "team-red", "name": "Red Team", "role": "owner" } ] } } } ] },
-
-    { "id": "teams-carol-only-blue", "falsifies": "NOTES-FUNC-TEAM-1",
-      "steps": [ { "as": "carol", "method": "GET", "path": "/teams", "expect": { "status": 200, "itemsExactly": [ "team-blue" ] } } ] },
-    { "id": "teams-bob-member", "falsifies": "NOTES-FUNC-TEAM-1",
-      "steps": [ { "as": "bob", "method": "GET", "path": "/teams",
-        "expect": { "status": 200, "json": { "items": [ { "id": "team-red", "role": "member" } ] } } } ] },
-
-    { "id": "create-note", "falsifies": "NOTES-FUNC-NOTE-1",
-      "steps": [
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "Standup ${run}", "body": "agenda" },
-          "expect": { "status": 201, "json": { "teamId": "team-red", "authorId": "alice", "title": "Standup ${run}", "body": "agenda", "version": 1 } },
-          "save": "n" },
-        { "as": "alice", "method": "GET", "path": "/notes/${n.id}", "expect": { "status": 200, "json": { "id": "${n.id}", "title": "Standup ${run}" } } }
-      ] },
-    { "id": "create-note-location", "falsifies": "NOTES-FUNC-NOTE-1",
-      "steps": [
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "loc ${run}" },
-          "expect": { "status": 201, "json": { "body": "" } }, "save": "n" },
-        { "as": "alice", "method": "GET", "path": "/notes/${n.id}", "expect": { "status": 200 } }
-      ] },
-    { "id": "create-note-location-header", "falsifies": "NOTES-FUNC-NOTE-1",
-      "steps": [
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "hdr ${run}" }, "expect": { "status": 201, "headers": { "location": true } }, "save": "n" },
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "hdr2 ${run}" }, "expect": { "status": 201 }, "saveHeaders": { "loc": "location" } },
-        { "as": "alice", "method": "GET", "path": "${loc}", "expect": { "status": 200, "json": { "title": "hdr2 ${run}" } } }
-      ] },
-
-    { "id": "teammate-reads-and-lists", "falsifies": "NOTES-FUNC-NOTE-2",
-      "steps": [
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "shared ${run}", "body": "for bob" }, "expect": { "status": 201 }, "save": "n" },
-        { "as": "bob", "method": "GET", "path": "/notes/${n.id}", "expect": { "status": 200, "json": { "title": "shared ${run}", "body": "for bob", "authorId": "alice" } } },
-        { "as": "bob", "method": "GET", "path": "/teams/team-red/notes", "expect": { "status": 200, "itemsContain": "${n.id}" } }
-      ] },
-
-    { "id": "nonmember-note-404", "falsifies": "NOTES-SEC-AUTHZ-1",
-      "steps": [
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "secret ${run}" }, "expect": { "status": 201 }, "save": "n" },
-        { "as": "carol", "method": "GET", "path": "/notes/${n.id}", "expect": { "status": 404 }, "save": "hidden" },
-        { "as": "carol", "method": "GET", "path": "/notes/00000000-0000-4000-8000-000000000000", "expect": { "status": 404, "json": { "type": "${hidden.type}", "title": "${hidden.title}" } } },
-        { "as": "carol", "method": "PATCH", "path": "/notes/${n.id}", "body": { "title": "pwned" }, "expect": { "status": 404 } },
-        { "as": "carol", "method": "DELETE", "path": "/notes/${n.id}", "expect": { "status": 404 } },
-        { "as": "alice", "method": "GET", "path": "/notes/${n.id}", "expect": { "status": 200, "json": { "title": "secret ${run}", "version": 1 } } }
-      ] },
-
-    { "id": "nonmember-team-404", "falsifies": "NOTES-SEC-AUTHZ-2",
-      "steps": [
-        { "as": "carol", "method": "GET", "path": "/teams/team-red/notes", "expect": { "status": 404 } },
-        { "as": "carol", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "intrude ${run}" }, "expect": { "status": 404 } },
-        { "as": "carol", "method": "GET", "path": "/teams/no-such-team/notes", "expect": { "status": 404 } },
-        { "as": "alice", "method": "GET", "path": "/teams/team-red/notes", "expect": { "status": 200 }, "save": "list" }
-      ] },
-    { "id": "team-isolation-in-lists", "falsifies": "NOTES-SEC-AUTHZ-2",
-      "steps": [
-        { "as": "carol", "method": "POST", "path": "/teams/team-blue/notes", "body": { "title": "blue only ${run}" }, "expect": { "status": 201 }, "save": "b" },
-        { "as": "alice", "method": "GET", "path": "/teams/team-red/notes", "expect": { "status": 200, "itemsLack": "${b.id}" } }
-      ] },
-
-    { "id": "patch-title-only", "falsifies": "NOTES-FUNC-NOTE-3",
-      "steps": [
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "draft ${run}", "body": "keep me" }, "expect": { "status": 201 }, "save": "n" },
-        { "as": "bob", "method": "PATCH", "path": "/notes/${n.id}", "body": { "title": "final ${run}" },
-          "expect": { "status": 200, "json": { "title": "final ${run}", "body": "keep me", "version": 2, "authorId": "alice" } } },
-        { "as": "alice", "method": "GET", "path": "/notes/${n.id}", "expect": { "status": 200, "json": { "title": "final ${run}", "body": "keep me", "version": 2 } } }
-      ] },
-
-    { "id": "delete-note", "falsifies": "NOTES-FUNC-NOTE-4",
-      "steps": [
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "doomed ${run}" }, "expect": { "status": 201 }, "save": "n" },
-        { "as": "bob", "method": "DELETE", "path": "/notes/${n.id}", "expect": { "status": 204 } },
-        { "as": "alice", "method": "GET", "path": "/notes/${n.id}", "expect": { "status": 404 } },
-        { "as": "alice", "method": "GET", "path": "/teams/team-red/notes", "expect": { "status": 200, "itemsLack": "${n.id}" } }
-      ] },
-
-    { "id": "validate-empty-title", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "   " }, "expect": { "status": 422, "errorFields": [ "title" ] } } ] },
-    { "id": "validate-missing-title", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "body": "no title" }, "expect": { "status": 422, "errorFields": [ "title" ] } } ] },
-    { "id": "validate-long-title", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "rawBody": "{\"title\":\"<repeat:201:x>\"}", "expect": { "status": 422, "errorFields": [ "title" ] } } ] },
-    { "id": "validate-max-title-ok", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "rawBody": "{\"title\":\"<repeat:200:x>\"}", "expect": { "status": 201 } } ] },
-    { "id": "validate-title-type", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": 42 }, "expect": { "status": 422, "errorFields": [ "title" ] } } ] },
-    { "id": "validate-long-body", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "rawBody": "{\"title\":\"t\",\"body\":\"<repeat:100001:b>\"}", "expect": { "status": 422, "errorFields": [ "body" ] } } ] },
-    { "id": "validate-unknown-field", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "t", "foo": 1 }, "expect": { "status": 422, "errorFields": [ "foo" ] } } ] },
-    { "id": "validate-malformed-json", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "rawBody": "{\"title\": ", "expect": { "status": 400 } } ] },
-    { "id": "validate-non-object-json", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [ { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "rawBody": "[1,2]", "expect": { "status": 422 } } ] },
-    { "id": "validate-patch-empty", "falsifies": "NOTES-FUNC-VALID-1",
-      "steps": [
-        { "as": "alice", "method": "POST", "path": "/teams/team-red/notes", "body": { "title": "p ${run}" }, "expect": { "status": 201 }, "save": "n" },
-        { "as": "alice", "method": "PATCH", "path": "/notes/${n.id}", "body": {}, "expect": { "status": 422 } },
-        { "as": "alice", "method": "PATCH", "path": "/notes/${n.id}", "body": { "title": "" }, "expect": { "status": 422, "errorFields": [ "title" ] } },
-        { "as": "alice", "method": "GET", "path": "/notes/${n.id}", "expect": { "status": 200, "json": { "title": "p ${run}", "version": 1 } } }
-      ] },
-
-    { "id": "unknown-route-problem", "falsifies": "NOTES-TECH-ERR-1",
-      "steps": [ { "as": "alice", "method": "GET", "path": "/notes/does-not-exist", "expect": { "status": 404, "headers": { "content-type": "application/problem+json" }, "json": { "status": 404 } } } ] }
-  ]
+ "$comment": "Data-only conformance cases. Each case falsifies one AC alias from spec/acceptance-criteria.md. Steps: as=<seed user> | token=<raw>, method, path, body | rawBody (<repeat:N:c> expands), expect {status, headers, json (deep subset), itemsContain, itemsLack, itemsExactly, errorFields}, save=<var>. ${var.path} interpolates; ${run} is a per-case random suffix.",
+ "tokens": {
+  "alice": "tok_alice",
+  "bob": "tok_bob",
+  "carol": "tok_carol"
+ },
+ "cases": [
+  {
+   "id": "health-open",
+   "falsifies": "NOTES-SEC-AUTHN-1",
+   "steps": [
+    {
+     "method": "GET",
+     "path": "/health",
+     "expect": {
+      "status": 200,
+      "json": {
+       "status": "ok"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "authn-missing-token",
+   "falsifies": "NOTES-SEC-AUTHN-1",
+   "steps": [
+    {
+     "method": "GET",
+     "path": "/me",
+     "expect": {
+      "status": 401,
+      "headers": {
+       "content-type": "application/problem+json"
+      }
+     }
+    },
+    {
+     "method": "GET",
+     "path": "/teams",
+     "expect": {
+      "status": 401
+     }
+    },
+    {
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 401
+     }
+    },
+    {
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "x"
+     },
+     "expect": {
+      "status": 401
+     }
+    }
+   ]
+  },
+  {
+   "id": "authn-bad-token",
+   "falsifies": "NOTES-SEC-AUTHN-1",
+   "steps": [
+    {
+     "token": "nope",
+     "method": "GET",
+     "path": "/me",
+     "expect": {
+      "status": 401
+     }
+    },
+    {
+     "token": "nope",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 401
+     }
+    }
+   ]
+  },
+  {
+   "id": "authn-malformed-scheme",
+   "falsifies": "NOTES-SEC-AUTHN-1",
+   "steps": [
+    {
+     "method": "GET",
+     "path": "/me",
+     "headers": {
+      "authorization": "Basic tok_alice"
+     },
+     "expect": {
+      "status": 401
+     }
+    }
+   ]
+  },
+  {
+   "id": "me-alice",
+   "falsifies": "NOTES-FUNC-ME-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/me",
+     "expect": {
+      "status": 200,
+      "json": {
+       "id": "alice",
+       "name": "Alice",
+       "teams": [
+        {
+         "id": "team-red",
+         "name": "Red Team",
+         "role": "owner"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "teams-carol-only-blue",
+   "falsifies": "NOTES-FUNC-TEAM-1",
+   "steps": [
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams",
+     "expect": {
+      "status": 200,
+      "itemsExactly": [
+       "team-blue"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "teams-bob-member",
+   "falsifies": "NOTES-FUNC-TEAM-1",
+   "steps": [
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/teams",
+     "expect": {
+      "status": 200,
+      "json": {
+       "items": [
+        {
+         "id": "team-red",
+         "role": "member"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "create-note",
+   "falsifies": "NOTES-FUNC-NOTE-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "Standup ${run}",
+      "body": "agenda"
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "teamId": "team-red",
+       "authorId": "alice",
+       "title": "Standup ${run}",
+       "body": "agenda",
+       "version": 1
+      }
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "id": "${n.id}",
+       "title": "Standup ${run}"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "create-note-location",
+   "falsifies": "NOTES-FUNC-NOTE-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "loc ${run}"
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "body": ""
+      }
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200
+     }
+    }
+   ]
+  },
+  {
+   "id": "create-note-location-header",
+   "falsifies": "NOTES-FUNC-NOTE-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "hdr ${run}"
+     },
+     "expect": {
+      "status": 201,
+      "headers": {
+       "location": true
+      }
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "hdr2 ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "saveHeaders": {
+      "loc": "location"
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "${loc}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "title": "hdr2 ${run}"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "teammate-reads-and-lists",
+   "falsifies": "NOTES-FUNC-NOTE-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "shared ${run}",
+      "body": "for bob"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "title": "shared ${run}",
+       "body": "for bob",
+       "authorId": "alice"
+      }
+     }
+    },
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 200,
+      "itemsContain": "${n.id}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "nonmember-note-404",
+   "falsifies": "NOTES-SEC-AUTHZ-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "secret ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 404
+     },
+     "save": "hidden"
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/notes/00000000-0000-4000-8000-000000000000",
+     "expect": {
+      "status": 404,
+      "json": {
+       "type": "${hidden.type}",
+       "title": "${hidden.title}"
+      }
+     }
+    },
+    {
+     "as": "carol",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "body": {
+      "title": "pwned"
+     },
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "carol",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "title": "secret ${run}",
+       "version": 1
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "nonmember-team-404",
+   "falsifies": "NOTES-SEC-AUTHZ-2",
+   "steps": [
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "carol",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "intrude ${run}"
+     },
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams/no-such-team/notes",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 200
+     },
+     "save": "list"
+    }
+   ]
+  },
+  {
+   "id": "team-isolation-in-lists",
+   "falsifies": "NOTES-SEC-AUTHZ-2",
+   "steps": [
+    {
+     "as": "carol",
+     "method": "POST",
+     "path": "/teams/team-blue/notes",
+     "body": {
+      "title": "blue only ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "b"
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 200,
+      "itemsLack": "${b.id}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "patch-title-only",
+   "falsifies": "NOTES-FUNC-NOTE-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "draft ${run}",
+      "body": "keep me"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "bob",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "body": {
+      "title": "final ${run}"
+     },
+     "expect": {
+      "status": 200,
+      "json": {
+       "title": "final ${run}",
+       "body": "keep me",
+       "version": 2,
+       "authorId": "alice"
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "title": "final ${run}",
+       "body": "keep me",
+       "version": 2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "delete-note",
+   "falsifies": "NOTES-FUNC-NOTE-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "doomed ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "bob",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 200,
+      "itemsLack": "${n.id}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-empty-title",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "   "
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-missing-title",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "body": "no title"
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-long-title",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"<repeat:201:x>\"}",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-max-title-ok",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"<repeat:200:x>\"}",
+     "expect": {
+      "status": 201
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-title-type",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": 42
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-long-body",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"t\",\"body\":\"<repeat:100001:b>\"}",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "body"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-unknown-field",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "t",
+      "foo": 1
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "foo"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-malformed-json",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\": ",
+     "expect": {
+      "status": 400
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-non-object-json",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "[1,2]",
+     "expect": {
+      "status": 422
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-patch-empty",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "p ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "body": {},
+     "expect": {
+      "status": 422
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "body": {
+      "title": ""
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "title": "p ${run}",
+       "version": 1
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "validate-rejects-do-not-persist",
+   "falsifies": "NOTES-FUNC-VALID-1",
+   "steps": [
+    {
+     "as": "bob",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "   ",
+      "body": "ghost ${run}"
+     },
+     "expect": {
+      "status": 422
+     }
+    },
+    {
+     "as": "bob",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "ghost ${run}",
+      "foo": 1
+     },
+     "expect": {
+      "status": 422
+     }
+    },
+    {
+     "as": "bob",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"ghost ${run}\",",
+     "expect": {
+      "status": 400
+     }
+    },
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 200
+     },
+     "save": "list"
+    },
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 200,
+      "noItemMatches": {
+       "title": "ghost ${run}"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "unknown-route-problem",
+   "falsifies": "NOTES-TECH-ERR-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/does-not-exist",
+     "expect": {
+      "status": 404,
+      "headers": {
+       "content-type": "application/problem+json"
+      },
+      "json": {
+       "status": 404
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "payload-too-large",
+   "falsifies": "NOTES-TECH-ERR-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"t\",\"body\":\"<repeat:2200000:z>\"}",
+     "expect": {
+      "status": 413,
+      "headers": {
+       "content-type": "application/problem+json"
+      }
+     }
+    }
+   ]
+  }
+ ]
 }
