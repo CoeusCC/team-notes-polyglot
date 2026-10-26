@@ -93,7 +93,12 @@ async function readJson(req: IncomingMessage): Promise<{ value: unknown } | { re
   try { value = JSON.parse(body.text); } catch {
     return { reply: badRequest('Request body is not valid JSON.') };
   }
-  if (!isWellFormed(value)) return { reply: badRequest('Request body is not valid JSON.') };
+  try {
+    if (!isWellFormed(value)) return { reply: badRequest('Request body is not valid JSON.') };
+  } catch (e) {
+    if (e instanceof RangeError) return { reply: badRequest('Request body is not valid JSON.') };
+    throw e;
+  }
   return { value };
 }
 
