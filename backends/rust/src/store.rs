@@ -84,6 +84,58 @@ pub fn teams_of(c: &Connection, user_id: &str) -> rusqlite::Result<Vec<Team>> {
     rows.collect()
 }
 
+pub fn team_for(c: &Connection, team_id: &str, user_id: &str) -> rusqlite::Result<Option<Team>> {
+    c.query_row(
+        "SELECT t.id, t.name, m.role FROM memberships m JOIN teams t ON t.id = m.team_id WHERE m.team_id = ? AND m.user_id = ?",
+        [team_id, user_id],
+        |r| Ok(Team { id: r.get(0)?, name: r.get(1)?, role: r.get(2)? }),
+    )
+    .optional()
+}
+
+/// Creates the team and its owner membership atomically. False when the id is taken.
+pub fn create_team(c: &Connection, id: &str, name: &str, owner: &str) -> rusqlite::Result<bool> {
+    let tx = c.unchecked_transaction()?;
+    let n = tx.execute("INSERT OR IGNORE INTO teams (id, name, owner_id) VALUES (?, ?, ?)", [id, name, owner])?;
+    if n == 0 {
+        return Ok(false);
+    }
+    tx.execute("INSERT INTO memberships (team_id, user_id, role) VALUES (?, ?, 'owner')", [id, owner])?;
+    tx.commit()?;
+    Ok(true)
+}
+
+pub fn user_by_id(c: &Connection, id: &str) -> rusqlite::Result<Option<User>> {
+    c.query_row("SELECT id, name FROM users WHERE id = ?", [id], |r| Ok(User { id: r.get(0)?, name: r.get(1)? })).optional()
+}
+
+/// Adds as plain member; an existing membership (any role) is left untouched. Returns the member.
+pub fn add_member(c: &Connection, team_id: &str, u: &User) -> rusqlite::Result<Team> {
+    c.execute("INSERT OR IGNORE INTO memberships (team_id, user_id, role) VALUES (?, ?, 'member')", [team_id, &u.id])?;
+    let role: String = c.query_row("SELECT role FROM memberships WHERE team_id = ? AND user_id = ?", [team_id, &u.id], |r| r.get(0))?;
+    Ok(Team { id: u.id.clone(), name: u.name.clone(), role })
+}
+
+/// Removes a non-owner membership (idempotent). False when the target is an owner (last-owner rule).
+pub fn remove_member(c: &Connection, team_id: &str, user_id: &str) -> rusqlite::Result<bool> {
+    let role: Option<String> =
+        c.query_row("SELECT role FROM memberships WHERE team_id = ? AND user_id = ?", [team_id, user_id], |r| r.get(0)).optional()?;
+    if role.as_deref() == Some("owner") {
+        return Ok(false);
+    }
+    c.execute("DELETE FROM memberships WHERE team_id = ? AND user_id = ?", [team_id, user_id])?;
+    Ok(true)
+}
+
+pub fn members(c: &Connection, team_id: &str) -> rusqlite::Result<Vec<Team>> {
+    let mut st = c.prepare(
+        "SELECT u.id, u.name, m.role FROM memberships m JOIN users u ON u.id = m.user_id \
+         WHERE m.team_id = ? ORDER BY (m.role = 'owner') DESC, u.id",
+    )?;
+    let rows = st.query_map([team_id], |r| Ok(Team { id: r.get(0)?, name: r.get(1)?, role: r.get(2)? }))?;
+    rows.collect()
+}
+
 pub fn is_member(c: &Connection, team_id: &str, user_id: &str) -> rusqlite::Result<bool> {
     c.query_row("SELECT 1 FROM memberships WHERE team_id = ? AND user_id = ?", [team_id, user_id], |_| Ok(()))
         .optional()
