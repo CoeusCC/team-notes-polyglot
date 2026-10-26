@@ -28,3 +28,12 @@ Clock: Patrick's TestGorilla timer is the authority. It started at **14:48 CDT**
 - `evidence/falsify.node-ts.txt` sha256 `56f5ff4e436a1486` · CAUGHT restore-keeps-version by NOTES-FUNC-DEL-2 CAUGHT leak-403 by NOTES-SEC-AUTHZ-1 NOTES-SEC-AUTHZ-3 CAUGHT no-trim by NOTES-TECH-FMT-1 
 - cycle time: no closed issues yet
 - decision: GO. 45/45 cases, 22/22 ACs, 33/33 unit, tsc clean. Falsification: all 5 deliberate faults are caught by the expected ACs, so the suite can fail. Next: merge the rebuilds and run the benchmark.
+
+## 2026-10-26T15:42:40-05:00 · Path B result: 4 rebuilds, all 45/45 on first run
+- commit `f748d76` · builddigest `79d56bb1b7b2eb34` · uncommitted files: 4
+- `backends/deno/FIRST_RUN.txt` sha256 `f92f6633c2f3205d` · ok   archived-is-trash-view [NOTES-FUNC-DEL-3]  45/45 cases passed · ACs: 22 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3002 
+- `backends/python/FIRST_RUN.txt` sha256 `9762944f08009f7b` · ok   archived-is-trash-view [NOTES-FUNC-DEL-3]  45/45 cases passed · ACs: 22 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3004 
+- `backends/php/FIRST_RUN.txt` sha256 `b18cf3c83f0cfec9` · ok   archived-is-trash-view [NOTES-FUNC-DEL-3]  45/45 cases passed · ACs: 22 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3003 
+- `backends/rust/FIRST_RUN.txt` sha256 `fdad805414bf1b09` · ok   archived-is-trash-view [NOTES-FUNC-DEL-3]  45/45 cases passed · ACs: 22 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3006 
+- cycle time: 24 closed issues · median 17 min
+- decision: Deno, Python, PHP and Rust each passed 45/45 cases (22/22 ACs, --strict) on their FIRST conformance run, built from the spec alone in 2.5-4 min each, and were re-verified by Claude after merge. 5 implementations green. Divergences the suite doesn't pin are logged in evidence/rebuilds.md and go to Grok's adversarial cases and then Patrick.
