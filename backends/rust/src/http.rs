@@ -170,6 +170,55 @@ fn route(
             json_response(StatusCode::OK, &json!({"id": user.id, "name": user.name, "teams": store::teams_of(c, &user.id)?}))
         }
         (&Method::GET, ["teams"]) => json_response(StatusCode::OK, &json!({"items": store::teams_of(c, &user.id)?})),
+        (&Method::POST, ["teams"]) => {
+            let value = match json_body(headers, raw) {
+                Ok(v) => v,
+                Err(r) => return Ok(r),
+            };
+            match domain::parse_team(&value) {
+                Err(errs) => invalid(&errs),
+                Ok(t) => {
+                    if !store::create_team(c, &t.id, &t.name, &user.id)? {
+                        return Ok(problem(StatusCode::CONFLICT, "Conflict", Some("A team with this id already exists"), None));
+                    }
+                    let mut r = json_response(StatusCode::CREATED, &json!({"id": t.id, "name": t.name, "role": "owner"}));
+                    r.headers_mut().insert(header::LOCATION, HeaderValue::from_str(&format!("/teams/{}", t.id)).unwrap());
+                    r
+                }
+            }
+        }
+        (&Method::GET, ["teams", team]) => match store::team_for(c, team, &user.id)? {
+            Some(t) => json_response(StatusCode::OK, &t),
+            None => not_found(),
+        },
+        (&Method::GET, ["teams", team, "members"]) => {
+            if !store::is_member(c, team, &user.id)? {
+                return Ok(not_found());
+            }
+            json_response(StatusCode::OK, &json!({"items": store::members(c, team)?}))
+        }
+        (&Method::PUT | &Method::DELETE, ["teams", team, "members", target]) => {
+            match store::team_for(c, team, &user.id)? {
+                None => return Ok(not_found()),
+                Some(t) if t.role != "owner" => {
+                    return Ok(problem(StatusCode::FORBIDDEN, "Forbidden", Some("Only the team owner manages membership"), None))
+                }
+                Some(_) => {}
+            }
+            if let Some(r) = ignored_body_check(headers, raw) {
+                return Ok(r);
+            }
+            if method == Method::PUT {
+                match store::user_by_id(c, target)? {
+                    None => invalid(&[FieldError { field: "userId".into(), message: "unknown user".into() }]),
+                    Some(u) => json_response(StatusCode::OK, &store::add_member(c, team, &u)?),
+                }
+            } else if store::remove_member(c, team, target)? {
+                respond(StatusCode::NO_CONTENT, "application/json", Vec::new())
+            } else {
+                problem(StatusCode::CONFLICT, "Conflict", Some("The last owner cannot be removed"), None)
+            }
+        }
         (&Method::GET, ["teams", team, "notes"]) => {
             if !store::is_member(c, team, &user.id)? {
                 return Ok(not_found());
