@@ -28,6 +28,16 @@ class DomainTests(unittest.TestCase):
         self.assertTrue(domain.validate_patch({})[1])
         self.assertTrue(domain.validate_patch(None)[1])
 
+    def test_team_slug_and_name_validation(self):
+        ok, errs = domain.validate_team({"id": "abc", "name": "  Crew  "})
+        self.assertEqual((ok, errs), ({"id": "abc", "name": "Crew"}, []))
+        self.assertEqual(domain.validate_team({"id": "a-" + "1" * 38, "name": "n"})[1], [])
+        for bad in ["AB", "ab", "a" * 41, "has_underscore", "UPPER", "sp ace", "abc\n", 5, None]:
+            self.assertEqual([f for f, _ in domain.validate_team({"id": bad, "name": "n"})[1]], ["id"], bad)
+        self.assertEqual([f for f, _ in domain.validate_team({"id": "abc", "name": " "})[1]], ["name"])
+        self.assertEqual([f for f, _ in domain.validate_team({"id": "abc", "name": "x" * 81})[1]], ["name"])
+        self.assertEqual([f for f, _ in domain.validate_team({"id": "abc", "name": "n", "owner": "b"})[1]], ["owner"])
+
     def test_preconditions(self):
         self.assertEqual(domain.check_precondition(None, 1), 428)
         self.assertEqual(domain.check_precondition("*", 1), 428)
