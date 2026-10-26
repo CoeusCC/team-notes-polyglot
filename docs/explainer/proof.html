@@ -105,15 +105,25 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
 </table></div>
 
 <h2>Benchmark: correctness first, then speed</h2>
-<p>A composite of throughput and p99 latency across read, list, write, mixed and contention scenarios, each normalized to the best backend (100). Any lost update, leak or error rate above 1% would set a score to zero. None did.</p>
+<p>The score is <b>relative, from 0 to 100</b>. It averages 10 numbers: 5 throughput figures (read, list, write and mixed requests per second, plus successful writes per second under contention), each scored as <code>100 × value ÷ best</code>, and the 5 matching p99 latencies, each scored as <code>100 × best ÷ value</code>. A 50 means about half the leader across those 10. Any lost update, leak or error rate above 1% would set a score to zero. None did.</p>
 <p class="src">evidence/bench.docker.md · 1 CPU / 512 MB per container · 3 runs × 4 s · concurrency 32</p>
-<div class="sheet"><div class="bars" role="img" aria-label="Composite benchmark score in Docker: node-ts 100, deno 51.9, python 21.9, php 20.7">
-  <div class="bar"><span>node-ts</span><div class="track"><div class="fill" style="width:100%" tabindex="0" title="node-ts: 100.0 (0 lost updates, 0 leaks)"></div></div><b>100.0</b></div>
-  <div class="bar"><span>deno</span><div class="track"><div class="fill" style="width:51.9%" tabindex="0" title="deno: 51.9 (0 lost updates, 0 leaks)"></div></div><b>51.9</b></div>
-  <div class="bar"><span>python</span><div class="track"><div class="fill" style="width:21.9%" tabindex="0" title="python: 21.9 (0 lost updates, 0 leaks)"></div></div><b>21.9</b></div>
-  <div class="bar"><span>php</span><div class="track"><div class="fill" style="width:20.7%" tabindex="0" title="php: 20.7 (0 lost updates, 0 leaks)"></div></div><b>20.7</b></div>
-</div>
-<p class="note">Python and PHP use their standard-library or built-in development servers, which proves the contract but not production throughput. Rust was not yet in the Docker run.</p></div>
+<div class="sheet"><div class="bars" role="img" aria-label="Composite benchmark score in Docker: rust 100, node-ts 57.5, deno 45.6, python 18.2, php 12.6">
+  <div class="bar"><span>rust</span><div class="track"><div class="fill" style="width:100%" tabindex="0" title="rust: 100.0 (0 lost updates, 0 leaks)"></div></div><b>100.0</b></div>
+  <div class="bar"><span>node-ts</span><div class="track"><div class="fill" style="width:57.5%" tabindex="0" title="node-ts: 57.5 (0 lost updates, 0 leaks)"></div></div><b>57.5</b></div>
+  <div class="bar"><span>deno</span><div class="track"><div class="fill" style="width:45.6%" tabindex="0" title="deno: 45.6 (0 lost updates, 0 leaks)"></div></div><b>45.6</b></div>
+  <div class="bar"><span>python</span><div class="track"><div class="fill" style="width:18.2%" tabindex="0" title="python: 18.2 (0 lost updates, 0 leaks)"></div></div><b>18.2</b></div>
+  <div class="bar"><span>php</span><div class="track"><div class="fill" style="width:12.6%" tabindex="0" title="php: 12.6 (0 lost updates, 0 leaks)"></div></div><b>12.6</b></div>
+</div></div>
+<p class="src">evidence/bench.docker.raw.md · raw means over 3 runs</p>
+<div class="sheet"><table>
+<tr><th>Backend</th><th>Read req/s</th><th>List req/s</th><th>Write req/s</th><th>Mixed req/s</th><th>Contention writes/s</th><th>Read p99 ms</th><th>Write p99 ms</th></tr>
+<tr><td>rust</td><td class="n">9,393</td><td class="n">3,985</td><td class="n">10,655</td><td class="n">7,108</td><td class="n">224</td><td class="n">12.4</td><td class="n">10.8</td></tr>
+<tr><td>node-ts</td><td class="n">6,785</td><td class="n">3,327</td><td class="n">2,876</td><td class="n">4,754</td><td class="n">103</td><td class="n">16.7</td><td class="n">44.4</td></tr>
+<tr><td>deno</td><td class="n">7,541</td><td class="n">2,161</td><td class="n">1,774</td><td class="n">4,278</td><td class="n">86</td><td class="n">15.1</td><td class="n">670.9</td></tr>
+<tr><td>python</td><td class="n">1,241</td><td class="n">424</td><td class="n">1,722</td><td class="n">940</td><td class="n">38</td><td class="n">68.5</td><td class="n">37.7</td></tr>
+<tr><td>php</td><td class="n">586</td><td class="n">639</td><td class="n">333</td><td class="n">1,107</td><td class="n">33</td><td class="n">240.7</td><td class="n">251.5</td></tr>
+</table>
+<p class="note">Contention: 32 workers race to edit one note, and only writes with a current If-Match succeed, so most requests correctly get 412. Python and PHP run on development servers, which proves the contract but not production throughput. Deno's write p99 shows long tail pauses.</p></div>
 
 <h2>Who decided what</h2>
 <div class="sheet"><table>
