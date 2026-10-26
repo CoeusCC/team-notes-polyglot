@@ -44,7 +44,7 @@ We favor iteration and cycle time over perfection, to leave time for review and 
   - `docs/PLAN.md`: this plan, with the tiers, gates and cut order.
   - `docs/adr/0001-architecture.md`: the Y-statement draft.
   - `spec/acceptance-criteria.md`: a Tier 1 AC outline (draft, not yet ratified).
-  - `CLAUDE.md` / `AGENTS.md`: shared repo rules for Claude and the Grok bots.
+  - `AGENTS.md`: shared repo rules for Claude and the Grok bots (no CLAUDE.md, by choice).
   - `docs/build-digest.md`: seeded with entry 0.
 - **GitHub setup through `gh`:**
   - Turn on Discussions: `gh repo edit --enable-discussions`.
@@ -73,7 +73,7 @@ We favor iteration and cycle time over perfection, to leave time for review and 
 - **Repo (done in Tier 0):** pushed.
 - **ub-mode:** fetch `SKILL.md` into `.claude/skills/ub-mode/` and read it first.
 - **pstack:** you run `/plugin marketplace add michael-denyer/pstack-claude` and `/plugin install pstack@pstack-claude`.
-- **Repo rules in `CLAUDE.md`:**
+- **Repo rules in `AGENTS.md`:**
   - The spec is the source of truth.
   - Every behavior starts as an AC plus a case.
   - Implementers never record their own verdicts.
