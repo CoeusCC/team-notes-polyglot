@@ -66,7 +66,10 @@ def make_handler(store):
                 self._send(resp, True)
                 return
             try:
-                req = api.Request(self.command, self.path, dict(self.headers), self._has_body(), self._read_body)
+                headers = dict(self.headers)
+                if len(self.headers.get_all("Authorization") or []) > 1:
+                    headers["Authorization"] = ""  # ambiguous credentials: never authenticate (AUTHN-4)
+                req = api.Request(self.command, self.path, headers, self._has_body(), self._read_body)
                 resp = api.handle(store, req)
             except Exception as e:  # last resort: never leak a stack trace
                 print("error:", repr(e), file=sys.stderr)

@@ -101,12 +101,16 @@ export function createHandler(store: Store): (req: Request) => Promise<Response>
 
 async function route(req: Request, store: Store): Promise<Response> {
   const url = new URL(req.url);
-  const path = url.pathname;
+  // URL.pathname resolves dot segments; take the path from the raw request URL instead (AUTHN-4).
+  const rest = req.url.slice(url.origin.length);
+  const path = rest.split(/[?#]/, 1)[0];
+  const hasDot = path.split("/").some((s) => { const d = safeDecode(s); return d === "." || d === ".."; });
   const method = req.method;
   if (path === "/health" && method === "GET") return json(200, { status: "ok" });
 
   const user = authenticate(req, store);
   if (!user) return problem(401, "Unauthorized", {}, { "www-authenticate": "Bearer" });
+  if (hasDot) return notFound();
 
   if (path === "/me" && method === "GET") {
     return json(200, { id: user.id, name: user.name, teams: store.teamsOf(user.id) });
