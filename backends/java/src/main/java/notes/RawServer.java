@@ -156,7 +156,7 @@ public class RawServer {
             try { out.flush(); } catch (IOException ignored) { }
         }
         public InputStream getRequestBody() { return body; }
-        public OutputStream getResponseBody() { return out; }
+        public OutputStream getResponseBody() { return "HEAD".equals(method) ? OutputStream.nullOutputStream() : out; }
         public void sendResponseHeaders(int rCode, long len) throws IOException {
             code = rCode; sent = true;
             StringBuilder sb = new StringBuilder("HTTP/1.1 ").append(rCode).append(' ').append(reason(rCode)).append("\r\n");

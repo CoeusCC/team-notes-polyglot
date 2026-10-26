@@ -75,6 +75,7 @@ func (c *hostConn) process() {
 		head := c.in[:i+4]
 		c.in = c.in[i+4:]
 		lower := strings.ToLower(string(head))
+		head = fixTarget(head)
 		hasHost := strings.Contains(lower, "\r\nhost:")
 		if strings.Contains(lower, "transfer-encoding:") {
 			c.passthrough = true
@@ -97,4 +98,36 @@ func (c *hostConn) process() {
 		}
 		c.out = append(c.out, head...)
 	}
+}
+
+// fixTarget escapes a '%' that does not start a valid %XX escape in the request target, so net/http does not
+// reject the request before routing; the app then sees a literal '%' and answers 401/404 as usual.
+func fixTarget(head []byte) []byte {
+	e := bytes.Index(head, []byte("\r\n"))
+	if e < 0 {
+		return head
+	}
+	line := head[:e]
+	sp1 := bytes.IndexByte(line, ' ')
+	if sp1 < 0 {
+		return head
+	}
+	sp2 := bytes.LastIndexByte(line, ' ')
+	if sp2 <= sp1 {
+		return head
+	}
+	hex := func(b byte) bool { return b >= '0' && b <= '9' || b >= 'a' && b <= 'f' || b >= 'A' && b <= 'F' }
+	t := line[sp1+1 : sp2]
+	var nt []byte
+	for i := 0; i < len(t); i++ {
+		if t[i] == '%' && !(i+2 < len(t) && hex(t[i+1]) && hex(t[i+2])) {
+			nt = append(nt, "%25"...)
+			continue
+		}
+		nt = append(nt, t[i])
+	}
+	out := append([]byte{}, line[:sp1+1]...)
+	out = append(out, nt...)
+	out = append(out, head[sp2:]...)
+	return out
 }
