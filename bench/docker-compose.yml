@@ -34,9 +34,9 @@ services:
     ports: ["4104:3000"]
     tmpfs: ["/data"]
 
-  # rust:   # multi-stage: FROM rust:1 AS build ... ; FROM debian:bookworm-slim
-  #   build: { context: .., dockerfile: backends/rust/Dockerfile }
-  #   <<: *limits
-  #   environment: { PORT: "3000", DB_PATH: /data/notes.db }
-  #   ports: ["4105:3000"]
-  #   tmpfs: ["/data"]
+  rust:
+    build: { context: .., dockerfile: backends/rust/Dockerfile }
+    <<: *limits
+    environment: { PORT: "3000", DB_PATH: /data/notes.db }
+    ports: ["4106:3000"]
+    tmpfs: ["/data"]
