@@ -37,3 +37,13 @@ Clock: Patrick's TestGorilla timer is the authority. It started at **14:48 CDT**
 - `backends/rust/FIRST_RUN.txt` sha256 `fdad805414bf1b09` · ok   archived-is-trash-view [NOTES-FUNC-DEL-3]  45/45 cases passed · ACs: 22 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3006 
 - cycle time: 24 closed issues · median 17 min
 - decision: Deno, Python, PHP and Rust each passed 45/45 cases (22/22 ACs, --strict) on their FIRST conformance run, built from the spec alone in 2.5-4 min each, and were re-verified by Claude after merge. 5 implementations green. Divergences the suite doesn't pin are logged in evidence/rebuilds.md and go to Grok's adversarial cases and then Patrick.
+
+## 2026-10-26T15:54:00-05:00 · Tier 2.1: cross-language pins (red first)
+- commit `da2f444` · builddigest `b4f4189a600620a8` · uncommitted files: 3
+- `evidence/node-ts.pins-red.txt` sha256 `e5101d782b0cce3e` · ok   pin-concurrent-patches-one-wins [NOTES-FUNC-CONC-5]  68/83 cases passed · ACs: 28 passed, 4 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3101 
+- `evidence/deno.pins-red.txt` sha256 `c944ea490d8bcbd3` · ok   pin-concurrent-patches-one-wins [NOTES-FUNC-CONC-5]  72/83 cases passed · ACs: 27 passed, 5 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3102 
+- `evidence/python.pins-red.txt` sha256 `de6b689ff0a3ab41` · ok   pin-concurrent-patches-one-wins [NOTES-FUNC-CONC-5]  78/83 cases passed · ACs: 30 passed, 2 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3104 
+- `evidence/php.pins-red.txt` sha256 `d8416a3d50ce98db` · ok   pin-concurrent-patches-one-wins [NOTES-FUNC-CONC-5]  72/83 cases passed · ACs: 27 passed, 5 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3103 
+- `evidence/rust.pins-red.txt` sha256 `920d90d39a50b930` · ok   pin-concurrent-patches-one-wins [NOTES-FUNC-CONC-5]  75/83 cases passed · ACs: 29 passed, 3 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3106 
+- cycle time: 49 closed issues · median 17 min
+- decision: Rebuild divergence became 10 core cards and 3 profiles (ADR-0004/0005). HUMAN PUSHBACK: Claude first recommended ignoring stray bodies on restore. Patrick challenged the tradeoff, Claude re-argued it, and the decision flipped to a uniform 415 for any non-JSON body on every operation, one rule that every language implements identically. Red baseline 68-78/83 across the 5 backends; fix agents next.
