@@ -389,6 +389,55 @@
    ]
   },
   {
+   "id": "nonmember-404-before-validation",
+   "falsifies": "NOTES-SEC-AUTHZ-1",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "vis ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "carol",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "rawBody": "{not json",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "carol",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "body": {
+      "title": ""
+     },
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "carol",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": ""
+     },
+     "expect": {
+      "status": 404
+     }
+    }
+   ]
+  },
+  {
    "id": "nonmember-team-404",
    "falsifies": "NOTES-SEC-AUTHZ-2",
    "steps": [
