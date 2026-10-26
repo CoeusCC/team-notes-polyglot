@@ -3,8 +3,7 @@ ok   authn-missing-token [NOTES-SEC-AUTHN-1]
 ok   authn-bad-token [NOTES-SEC-AUTHN-1]
 ok   authn-malformed-scheme [NOTES-SEC-AUTHN-1]
 ok   me-alice [NOTES-FUNC-ME-1]
-FAIL teams-carol-only-blue [NOTES-FUNC-TEAM-1]
-       step 1 (GET /teams): items: expected team-blue, got t-jbfhxn,team-blue
+ok   teams-carol-only-blue [NOTES-FUNC-TEAM-1]
 ok   teams-bob-member [NOTES-FUNC-TEAM-1]
 ok   create-note [NOTES-FUNC-NOTE-1]
 ok   create-note-location [NOTES-FUNC-NOTE-1]
@@ -88,13 +87,10 @@ ok   team-owner-only-membership [NOTES-FUNC-TEAM-3]
 ok   team-access-follows-membership [NOTES-FUNC-TEAM-4]
 ok   team-get-and-roster [NOTES-FUNC-TEAM-5]
 ok   team-precedence-403-409 [NOTES-TECH-ERR-5]
-FAIL redteam-lone-surrogate-rejected [NOTES-TECH-FMT-3]
-       step 1 (POST /teams/team-red/notes): status: expected 400, got 201 {"id":"265a388f-a117-476f-a6df-0b3837d8f28e","teamId":"team-red","authorId":"alice","title":"\ud800","body":"","version":1,"createdAt":"2026-10-26T21:12:58.396Z","updatedAt":"2026-10-26T21:12:58.396Z"
+ok   redteam-lone-surrogate-rejected [NOTES-TECH-FMT-3]
 ok   mutation-body-limit-inclusive [NOTES-TECH-FMT-3]
-FAIL redteam-double-slash-no-5xx [NOTES-SEC-AUTHN-3]
-       step 1 (GET //): status: expected 401, got 500 {"type":"https://teamnotes.example/problems/internal","title":"Internal Server Error","status":500}
-FAIL redteam-invalid-utf8-400 [NOTES-TECH-FMT-3]
-       step 1 (POST /teams/team-red/notes): status: expected 400, got 201 {"id":"1483a0a7-de47-486f-ae56-a6eb2448b4e8","teamId":"team-red","authorId":"alice","title":"a��","body":"","version":1,"createdAt":"2026-10-26T21:12:58.414Z","updatedAt":"2026-10-26T21:12:58.414Z"}
+ok   redteam-double-slash-no-5xx [NOTES-SEC-AUTHN-3]
+ok   redteam-invalid-utf8-400 [NOTES-TECH-FMT-3]
 ok   redteam-nul-roundtrip [NOTES-TECH-FMT-3]
 
-90/94 cases passed · ACs: 36 passed, 3 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3101
+94/94 cases passed · ACs: 39 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3101

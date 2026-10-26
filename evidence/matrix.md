@@ -1,6 +1,6 @@
 # Conformance matrix
 
-commit `f7fa111` · builddigest `ca08c9c77992ec26` · 2026-10-26T21:13:06.917Z
+commit `8dab64f` · builddigest `6451e3b6544fe1da` · 2026-10-26T21:13:38.896Z
 
 | AC | deno | node-ts | php | python | rust |
 |---|---|---|---|---|---|
@@ -19,7 +19,7 @@ commit `f7fa111` · builddigest `ca08c9c77992ec26` · 2026-10-26T21:13:06.917Z
 | NOTES-FUNC-NOTE-2 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-FUNC-NOTE-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-FUNC-NOTE-4 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| NOTES-FUNC-TEAM-1 | ✅ | ❌ | ✅ | ✅ | ✅ |
+| NOTES-FUNC-TEAM-1 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-FUNC-TEAM-2 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-FUNC-TEAM-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-FUNC-TEAM-4 | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -29,7 +29,7 @@ commit `f7fa111` · builddigest `ca08c9c77992ec26` · 2026-10-26T21:13:06.917Z
 | NOTES-FUNC-VALID-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHN-1 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHN-2 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| NOTES-SEC-AUTHN-3 | ✅ | ❌ | ✅ | ✅ | ✅ |
+| NOTES-SEC-AUTHN-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHZ-1 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHZ-2 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHZ-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -42,5 +42,5 @@ commit `f7fa111` · builddigest `ca08c9c77992ec26` · 2026-10-26T21:13:06.917Z
 | NOTES-TECH-ERR-5 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-TECH-FMT-1 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-TECH-FMT-2 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| NOTES-TECH-FMT-3 | ✅ | ❌ | ✅ | ✅ | ✅ |
-| **cases passed** | 94/94 | 90/94 | 94/94 | 94/94 | 94/94 |
+| NOTES-TECH-FMT-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **cases passed** | 94/94 | 94/94 | 94/94 | 94/94 | 94/94 |
