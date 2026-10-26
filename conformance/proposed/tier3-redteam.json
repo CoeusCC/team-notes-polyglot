@@ -1,0 +1,397 @@
+{
+  "$comment": "PROPOSED, NOT RATIFIED (Grok, 2026-10-26). Tier 3 red-team asks: re-adding a removed member, and removal vs. a write by that member. Same data-only format as cases.json; cases reuse the existing ratified aliases TEAM-3/TEAM-4 and encode only what spec/openapi.yaml, ADR-0006 and the TEAM cards already determine. Do not merge into cases.json until Patrick decides. See conformance/proposed/tier3-redteam.md.",
+  "tokens": {
+    "alice": "tok_alice",
+    "bob": "tok_bob",
+    "carol": "tok_carol"
+  },
+  "cases": [
+    {
+      "id": "proposed-team-readd-restores-access",
+      "falsifies": "NOTES-FUNC-TEAM-4",
+      "steps": [
+        {
+          "as": "alice",
+          "method": "POST",
+          "path": "/teams",
+          "body": {
+            "id": "t-${run}",
+            "name": "Readd"
+          },
+          "expect": {
+            "status": 201
+          }
+        },
+        {
+          "as": "alice",
+          "method": "PUT",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 200,
+            "json": {
+              "id": "carol",
+              "role": "member"
+            }
+          }
+        },
+        {
+          "as": "carol",
+          "method": "POST",
+          "path": "/teams/t-${run}/notes",
+          "body": {
+            "title": "carol before ${run}"
+          },
+          "expect": {
+            "status": 201
+          },
+          "save": "mine"
+        },
+        {
+          "as": "alice",
+          "method": "DELETE",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "as": "alice",
+          "method": "POST",
+          "path": "/teams/t-${run}/notes",
+          "body": {
+            "title": "while away ${run}"
+          },
+          "expect": {
+            "status": 201
+          },
+          "save": "away"
+        },
+        {
+          "as": "carol",
+          "method": "GET",
+          "path": "/notes/${mine.id}",
+          "expect": {
+            "status": 404
+          }
+        },
+        {
+          "as": "alice",
+          "method": "PUT",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 200,
+            "json": {
+              "id": "carol",
+              "role": "member"
+            }
+          }
+        },
+        {
+          "as": "carol",
+          "method": "GET",
+          "path": "/notes/${mine.id}",
+          "expect": {
+            "status": 200,
+            "json": {
+              "authorId": "carol",
+              "title": "carol before ${run}"
+            }
+          }
+        },
+        {
+          "as": "carol",
+          "method": "GET",
+          "path": "/notes/${away.id}",
+          "expect": {
+            "status": 200
+          }
+        },
+        {
+          "as": "carol",
+          "method": "GET",
+          "path": "/teams/t-${run}",
+          "expect": {
+            "status": 200,
+            "json": {
+              "role": "member"
+            }
+          }
+        },
+        {
+          "as": "alice",
+          "method": "GET",
+          "path": "/teams/t-${run}/members",
+          "expect": {
+            "status": 200,
+            "itemsExactly": [
+              "alice",
+              "carol"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "proposed-team-remove-and-readd-idempotent",
+      "falsifies": "NOTES-FUNC-TEAM-3",
+      "steps": [
+        {
+          "as": "alice",
+          "method": "POST",
+          "path": "/teams",
+          "body": {
+            "id": "t-${run}",
+            "name": "Idem"
+          },
+          "expect": {
+            "status": 201
+          }
+        },
+        {
+          "as": "alice",
+          "method": "PUT",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 200
+          }
+        },
+        {
+          "as": "alice",
+          "method": "DELETE",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "as": "alice",
+          "method": "DELETE",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "as": "alice",
+          "method": "PUT",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 200
+          }
+        },
+        {
+          "as": "alice",
+          "method": "PUT",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 200,
+            "json": {
+              "id": "carol",
+              "role": "member"
+            }
+          }
+        },
+        {
+          "as": "alice",
+          "method": "GET",
+          "path": "/teams/t-${run}/members",
+          "expect": {
+            "status": 200,
+            "itemsExactly": [
+              "alice",
+              "carol"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "proposed-team-removed-member-cannot-write",
+      "falsifies": "NOTES-FUNC-TEAM-4",
+      "steps": [
+        {
+          "as": "alice",
+          "method": "POST",
+          "path": "/teams",
+          "body": {
+            "id": "t-${run}",
+            "name": "Writes"
+          },
+          "expect": {
+            "status": 201
+          }
+        },
+        {
+          "as": "alice",
+          "method": "PUT",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 200
+          }
+        },
+        {
+          "as": "carol",
+          "method": "POST",
+          "path": "/teams/t-${run}/notes",
+          "body": {
+            "title": "carol ${run}"
+          },
+          "expect": {
+            "status": 201
+          },
+          "save": "mine"
+        },
+        {
+          "as": "carol",
+          "method": "GET",
+          "path": "/notes/no-such-note-zz",
+          "expect": {
+            "status": 404
+          },
+          "saveText": "h"
+        },
+        {
+          "as": "alice",
+          "method": "DELETE",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "as": "carol",
+          "method": "PATCH",
+          "path": "/notes/${mine.id}",
+          "headers": {
+            "if-match": "\"1\""
+          },
+          "body": {
+            "title": "after removal"
+          },
+          "expect": {
+            "status": 404
+          }
+        },
+        {
+          "as": "carol",
+          "method": "POST",
+          "path": "/teams/t-${run}/notes",
+          "body": {
+            "title": "after removal"
+          },
+          "expect": {
+            "status": 404
+          }
+        },
+        {
+          "as": "carol",
+          "method": "DELETE",
+          "path": "/notes/${mine.id}",
+          "headers": {
+            "if-match": "\"1\""
+          },
+          "expect": {
+            "status": 404
+          }
+        },
+        {
+          "as": "alice",
+          "method": "GET",
+          "path": "/notes/${mine.id}",
+          "expect": {
+            "status": 200,
+            "json": {
+              "title": "carol ${run}",
+              "version": 1,
+              "authorId": "carol"
+            }
+          }
+        },
+        {
+          "as": "alice",
+          "method": "GET",
+          "path": "/teams/t-${run}/notes",
+          "expect": {
+            "status": 200,
+            "noItemMatches": {
+              "title": "after removal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "proposed-team-remove-races-writes",
+      "falsifies": "NOTES-FUNC-TEAM-4",
+      "steps": [
+        {
+          "as": "alice",
+          "method": "POST",
+          "path": "/teams",
+          "body": {
+            "id": "t-${run}",
+            "name": "Race"
+          },
+          "expect": {
+            "status": 201
+          }
+        },
+        {
+          "as": "alice",
+          "method": "PUT",
+          "path": "/teams/t-${run}/members/carol",
+          "expect": {
+            "status": 200
+          }
+        },
+        {
+          "as": "carol",
+          "method": "POST",
+          "path": "/teams/t-${run}/notes",
+          "body": {
+            "title": "racer ${run}"
+          },
+          "expect": {
+            "status": 201
+          },
+          "save": "mine"
+        },
+        {
+          "as": "alice",
+          "method": "DELETE",
+          "path": "/teams/t-${run}/members/carol",
+          "parallel": 4,
+          "expectCounts": {
+            "204": 4
+          }
+        },
+        {
+          "as": "carol",
+          "method": "PATCH",
+          "path": "/notes/${mine.id}",
+          "headers": {
+            "if-match": "\"1\""
+          },
+          "body": {
+            "body": "late"
+          },
+          "parallel": 8,
+          "expectCounts": {
+            "404": 8
+          }
+        },
+        {
+          "as": "alice",
+          "method": "GET",
+          "path": "/notes/${mine.id}",
+          "expect": {
+            "status": 200,
+            "json": {
+              "version": 1
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
