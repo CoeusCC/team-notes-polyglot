@@ -139,8 +139,21 @@ pub async fn handle(State(db): State<Db>, req: Request) -> Response {
     result.unwrap_or_else(internal)
 }
 
-fn archived_flag(query: Option<&str>) -> bool {
-    query.is_some_and(|q| q.split('&').any(|p| p == "archived=true"))
+/// `archived` accepts exactly `true` or `false`; anything else is a 422 on `archived`.
+fn archived_flag(query: Option<&str>) -> Result<bool, Response> {
+    let Some(q) = query else { return Ok(false) };
+    match q.split('&').find_map(|p| p.strip_prefix("archived=").or((p == "archived").then_some(""))) {
+        None | Some("false") => Ok(false),
+        Some("true") => Ok(true),
+        Some(_) => Err(invalid(&[FieldError { field: "archived".into(), message: "must be true or false".into() }])),
+    }
+}
+
+/// Non-empty body that is not JSON: 415 (for operations that otherwise ignore the body).
+fn ignored_body_check(headers: &HeaderMap, raw: &RawBody) -> Option<Response> {
+    let sent = !raw.bytes.is_empty() || raw.overflow;
+    (sent && !domain::is_json_content_type(header_str(headers, header::CONTENT_TYPE)))
+        .then(|| problem(StatusCode::UNSUPPORTED_MEDIA_TYPE, "Unsupported Media Type", Some("Content-Type must be application/json"), None))
 }
 
 fn route(
@@ -161,7 +174,10 @@ fn route(
             if !store::is_member(c, team, &user.id)? {
                 return Ok(not_found());
             }
-            json_response(StatusCode::OK, &json!({"items": store::list_notes(c, team, archived_flag(query))?}))
+            match archived_flag(query) {
+                Ok(a) => json_response(StatusCode::OK, &json!({"items": store::list_notes(c, team, a)?})),
+                Err(r) => r,
+            }
         }
         (&Method::POST, ["teams", team, "notes"]) => {
             if !store::is_member(c, team, &user.id)? {
@@ -191,12 +207,16 @@ fn route(
         },
         (&Method::DELETE, ["notes", id]) => match store::note_for_member(c, id, &user.id)? {
             Some(n) => {
+                if let Some(r) = ignored_body_check(headers, raw) {
+                    return Ok(r);
+                }
                 store::soft_delete(c, &n.id)?;
                 respond(StatusCode::NO_CONTENT, "application/json", Vec::new())
             }
             None => not_found(),
         },
         (&Method::POST, ["notes", id, "restore"]) => match store::note_for_member(c, id, &user.id)? {
+            Some(_) if ignored_body_check(headers, raw).is_some() => ignored_body_check(headers, raw).unwrap(),
             Some(n) => match store::restore(c, &n.id)? {
                 Some(n) => note_response(StatusCode::OK, &n),
                 None => not_found(),
@@ -216,13 +236,13 @@ fn patch_note(c: &Connection, note: &Note, headers: &HeaderMap, raw: &RawBody) -
         Ok(p) => p,
         Err(errs) => return Ok(invalid(&errs)),
     };
-    let expected = match domain::parse_if_match(header_str(headers, header::IF_MATCH)) {
-        Precondition::Required => {
-            return Ok(problem(StatusCode::PRECONDITION_REQUIRED, "Precondition Required", Some("A specific If-Match ETag is required"), None))
-        }
-        Precondition::Version(v) => v,
-        Precondition::Unmatchable => -1,
-    };
+    let pre = domain::parse_if_match(header_str(headers, header::IF_MATCH));
+    if pre == Precondition::Required {
+        return Ok(problem(StatusCode::PRECONDITION_REQUIRED, "Precondition Required", Some("A specific If-Match ETag is required"), None));
+    }
+    // The check and the increment stay one conditional UPDATE; `expected` is the version
+    // the list names that equals the current one (or -1, which matches nothing).
+    let expected = if pre.matches(note.version) { note.version } else { -1 };
     Ok(match store::update_note(c, &note.id, expected, &patch)? {
         UpdateOutcome::Updated(n) => note_response(StatusCode::OK, &n),
         UpdateOutcome::Stale(n) => with_etag(

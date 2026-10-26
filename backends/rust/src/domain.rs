@@ -126,23 +126,34 @@ pub fn parse_patch(v: &Value) -> Result<NotePatch, Vec<FieldError>> {
 
 #[derive(Debug, PartialEq)]
 pub enum Precondition {
-    /// Missing header or `*`: 428.
+    /// Missing header, empty, or a list containing `*`: 428.
     Required,
-    /// A syntactically valid strong ETag.
-    Version(i64),
-    /// Anything else can never match: 412.
-    Unmatchable,
+    /// Versions named by the strong, canonically formatted entity tags in the list.
+    /// Anything else (weak, unquoted, `"01"`) can never match, so it contributes nothing.
+    Versions(Vec<i64>),
+}
+
+impl Precondition {
+    /// Strong comparison (RFC 9110 8.8.3.2): some entry must be byte-equal to the current ETag.
+    pub fn matches(&self, current: i64) -> bool {
+        matches!(self, Precondition::Versions(v) if v.contains(&current))
+    }
 }
 
 pub fn parse_if_match(h: Option<&str>) -> Precondition {
-    match h.map(str::trim) {
-        None | Some("") | Some("*") => Precondition::Required,
-        Some(s) => s
-            .strip_prefix('"')
-            .and_then(|r| r.strip_suffix('"'))
-            .and_then(|n| n.parse::<i64>().ok())
-            .map_or(Precondition::Unmatchable, Precondition::Version),
+    let Some(h) = h else { return Precondition::Required };
+    let entries: Vec<&str> = h.split(',').map(str::trim).filter(|e| !e.is_empty()).collect();
+    if entries.is_empty() || entries.contains(&"*") {
+        return Precondition::Required;
     }
+    let versions = entries
+        .iter()
+        .filter_map(|e| {
+            let n: i64 = e.strip_prefix('"')?.strip_suffix('"')?.parse().ok()?;
+            (etag(n) == *e).then_some(n)
+        })
+        .collect();
+    Precondition::Versions(versions)
 }
 
 pub fn etag(version: i64) -> String {
@@ -203,11 +214,38 @@ mod tests {
 
     #[test]
     fn if_match_parsing() {
+        let v = |x: &[i64]| Precondition::Versions(x.to_vec());
         assert_eq!(parse_if_match(None), Precondition::Required);
+        assert_eq!(parse_if_match(Some("")), Precondition::Required);
         assert_eq!(parse_if_match(Some("*")), Precondition::Required);
-        assert_eq!(parse_if_match(Some("\"3\"")), Precondition::Version(3));
-        assert_eq!(parse_if_match(Some("3")), Precondition::Unmatchable);
-        assert_eq!(parse_if_match(Some("W/\"3\"")), Precondition::Unmatchable);
+        assert_eq!(parse_if_match(Some("\"1\", *")), Precondition::Required);
+        assert_eq!(parse_if_match(Some("\"3\"")), v(&[3]));
+        assert_eq!(parse_if_match(Some("\"9\", \"1\"")), v(&[9, 1]));
+        assert_eq!(parse_if_match(Some("3")), v(&[]));
+        assert_eq!(parse_if_match(Some("\"01\"")), v(&[]));
+        assert_eq!(parse_if_match(Some("W/\"3\"")), v(&[]));
+        assert_eq!(parse_if_match(Some("W/\"1\", \"2\"")), v(&[2]));
+        assert!(parse_if_match(Some("\"9\", \"1\"")).matches(1));
+        assert!(!parse_if_match(Some("\"8\", \"9\"")).matches(1));
+    }
+
+    #[test]
+    fn trim_uses_unicode_white_space_only() {
+        let t = |s: &str| parse_create(&json!({"title": s})).map(|n| n.title.as_str().to_string());
+        assert_eq!(t("\u{a0}hi\u{3000}").unwrap(), "hi");
+        assert!(t("\u{a0}\u{2003}").is_err());
+        assert!(t("\u{200b}").is_ok());
+        assert!(t("\u{feff}").is_ok());
+        assert!(t(&format!("{}", "e\u{301}".repeat(100))).is_ok());
+        assert!(t(&format!("{}", "e\u{301}".repeat(101))).is_err());
+    }
+
+    #[test]
+    fn non_object_bodies_name_root() {
+        for v in [json!([]), json!("x"), json!(1), Value::Null] {
+            assert_eq!(fields(parse_create(&v)), ["$"]);
+        }
+        assert_eq!(fields(parse_create(&json!({"title":"t","__proto__":{}}))), ["__proto__"]);
     }
 
     #[test]
