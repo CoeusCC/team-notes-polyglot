@@ -1,8 +1,9 @@
 ---
 title: "Team Notes - acceptance criteria"
-status: draft
-ratified_by: ""
-ratified_on: ""
+status: "tier 1 ratified; tier 2 draft"
+ratified_by: "Patrick"
+ratified_on: "2026-10-26"
+ratified_tiers: "1"
 format: "SpecDLC card (Claim / Binds / Interface / Forbids / Permits / Falsifier)"
 ---
 
@@ -24,7 +25,7 @@ Shared fixtures (seeded by `spec/schema.sql`):
 
 ---
 
-## Tier 1: MVP, authenticated team notes
+## Tier 1: MVP, authenticated team notes (ratified by Patrick, 2026-10-26)
 
 #### NOTES-SEC-AUTHN-1: Every endpoint except health requires a valid bearer token
 - **Claim.** Requests without `Authorization: Bearer <token>`, or with an unknown token, get `401` and a `application/problem+json` body.
@@ -53,6 +54,7 @@ Shared fixtures (seeded by `spec/schema.sql`):
 #### NOTES-SEC-AUTHZ-1: Non-members cannot see that a note exists
 - **Claim.** For a note in a team the caller is not a member of, read, update and delete return `404`, the same as for a note ID that does not exist.
 - **Forbids.** `403`, and any body that differs between "exists but hidden" and "does not exist".
+- **Interface.** Visibility is checked before the body is parsed or validated, so a non-member gets 404 even when the body is malformed or invalid.
 - **Falsifier.** Carol sends GET, PATCH and DELETE to alice's team-red note and gets 404 each time. The problem `type`/`title` matches a request for a random UUID.
 
 #### NOTES-SEC-AUTHZ-2: Non-members cannot list or create in a team
@@ -69,8 +71,8 @@ Shared fixtures (seeded by `spec/schema.sql`):
 - *Tier 2 refines this into soft delete with restore (NOTES-FUNC-DEL-\*).*
 
 #### NOTES-FUNC-VALID-1: Input is validated at the boundary
-- **Claim.** `title` MUST be a string of 1–200 characters after trimming. `body` MUST be a string of at most 100,000 characters (it defaults to `""`). Unknown fields are rejected. Violations return `422` with a problem body whose `errors[]` names each failing field.
-- **Forbids.** Persisting an invalid note, and a `500` for any malformed JSON (which gets `400`).
+- **Claim.** `title` MUST be a string of 1–200 characters after trimming. `body` MUST be a string of at most 100,000 characters (it defaults to `""`). Unknown fields are rejected. A JSON body that is not an object, and a PATCH with no fields, are also rejected. Violations return `422` with a problem body whose `errors[]` names each failing field.
+- **Forbids.** Persisting an invalid note, and a `500` for any malformed JSON (which gets `400`). A body over 2 MiB gets `413`.
 - **Falsifier.** An empty title, a 201-character title, a title given as a number, an unknown field `foo`, and a malformed JSON body. Each must get 422, or 400 for the bad JSON, and the list must stay unchanged.
 
 #### NOTES-TECH-ERR-1: Errors are RFC 9457 problem details
@@ -83,16 +85,16 @@ Shared fixtures (seeded by `spec/schema.sql`):
 
 ---
 
-## Tier 2: concurrency and soft delete (draft cards, awaiting ratification)
+## Tier 2: concurrency and soft delete (draft; decisions folded in 2026-10-26, awaiting ratification)
 
 #### NOTES-FUNC-CONC-1: Reads expose the version as a strong ETag
 - **Claim.** `GET /notes/{id}`, `POST` (201), `PATCH` (200) and `POST …/restore` (200) return `ETag: "<version>"`, which always equals the body's `version`.
 - **Falsifier.** Create a note: `ETag` is `"1"`. Patch it: `ETag` is `"2"`. GET then returns `ETag` `"2"`.
 
 #### NOTES-FUNC-CONC-2: Updates require a precondition
-- **Claim.** A `PATCH` without `If-Match` gets `428 Precondition Required` and changes nothing.
+- **Claim.** A `PATCH` without `If-Match`, or with `If-Match: *`, gets `428 Precondition Required` and changes nothing. A wildcard would skip lost-update protection (ADR-0002).
 - **Forbids.** Unconditional updates, which would let lost updates through.
-- **Falsifier.** PATCH with no `If-Match` → 428. GET afterwards still shows `version=1` and the old title.
+- **Falsifier.** PATCH with no `If-Match` → 428. PATCH with `If-Match: *` → 428. GET afterwards still shows `version=1` and the old title.
 - *Supersedes Tier 1:* once ratified, the PATCH steps in the NOTES-FUNC-NOTE-3 and NOTES-SEC-AUTHZ-1 cases send `If-Match`.
 
 #### NOTES-FUNC-CONC-3: A stale writer cannot overwrite a newer version (lost update)
@@ -105,12 +107,12 @@ Shared fixtures (seeded by `spec/schema.sql`):
 - **Falsifier.** DELETE → 204, DELETE again → 204, then GET → 404.
 
 #### NOTES-FUNC-DEL-2: Deleted notes can be restored
-- **Claim.** `POST /notes/{id}/restore` by a team member returns 200 with the note and increments `version`. GET works again afterwards. Restoring a live note is a no-op 200 that leaves the version unchanged.
+- **Claim.** `POST /notes/{id}/restore` by a team member returns 200 with the note and increments `version`, so a writer still holding a pre-delete ETag gets 412 (ADR-0002). GET works again afterwards. Restoring a live note is a no-op 200 that leaves the version unchanged.
 - **Forbids.** Non-members restoring (404). Losing content through delete followed by restore.
 - **Falsifier.** Create, DELETE, restore → 200 with the same title and body and `version=2`. Carol restoring → 404.
 
 #### NOTES-FUNC-DEL-3: Lists hide deleted notes unless asked
-- **Claim.** `GET /teams/{teamId}/notes` excludes deleted notes. With `?archived=true` it lists **only** deleted notes, each with a `deletedAt` value.
+- **Claim.** `GET /teams/{teamId}/notes` excludes deleted notes. With `?archived=true` it lists **only** deleted notes, as a trash view, each with a `deletedAt` value. `deletedAt` is an optional field on `Note`, present only on deleted notes (ADR-0002).
 - **Falsifier.** A deleted note is absent from the default list and present in `?archived=true`. A live note is the reverse.
 
 ## Tier 3: team management and search (outline)

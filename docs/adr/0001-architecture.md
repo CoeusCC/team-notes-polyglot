@@ -1,6 +1,6 @@
 # ADR-0001: State-based storage with optimistic concurrency, organized as ports and adapters
 
-- **Status:** Proposed (to be accepted at Gate 1)
+- **Status:** Accepted (Gate 1, 2026-10-26)
 - **Date:** 2026-10-26
 - **Deciders:** Patrick (human), Claude Code, Grok bots (review)
 
