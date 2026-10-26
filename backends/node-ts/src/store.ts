@@ -47,7 +47,7 @@ export function openStore(path: string = ':memory:') {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
   const qUpdate = db.prepare(
     `UPDATE notes SET title = COALESCE(?, title), body = COALESCE(?, body),
-       version = version + 1, updated_at = ? WHERE id = ? AND version = ? AND deleted_at IS NULL`);
+       version = version + 1, updated_at = ? WHERE id = ? AND version IN (SELECT value FROM json_each(?)) AND deleted_at IS NULL`);
   const qDelete = db.prepare('UPDATE notes SET deleted_at = ? WHERE id = ? AND deleted_at IS NULL');
   const qHardDelete = db.prepare('DELETE FROM notes WHERE id = ?');
   const qRestore = db.prepare(
@@ -83,8 +83,8 @@ export function openStore(path: string = ':memory:') {
      * Check-and-increment in one statement. When nothing changed, re-read to tell
      * "gone" (404) from "stale" (412, carries the current version).
      */
-    patchNote(noteId: string, patch: NotePatch, expectedVersion: number, now: Date): PatchOutcome {
-      const res = qUpdate.run(patch.title ?? null, patch.body ?? null, now.toISOString(), noteId, expectedVersion);
+    patchNote(noteId: string, patch: NotePatch, expectedVersions: number[], now: Date): PatchOutcome {
+      const res = qUpdate.run(patch.title ?? null, patch.body ?? null, now.toISOString(), noteId, JSON.stringify(expectedVersions));
       const row = qById.get(noteId) as NoteRow | undefined;
       if (Number(res.changes) > 0) return { kind: 'updated', note: toNote(row!) };
       return row && row.deleted_at === null ? { kind: 'stale', version: row.version } : { kind: 'gone' };

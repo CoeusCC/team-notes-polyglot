@@ -1,16 +1,22 @@
-// Pure If-Match parsing (ADR-0002). No I/O.
+// Pure If-Match parsing (ADR-0002, ADR-0005). No I/O.
 
 /**
- * The version a PATCH expects, from its If-Match header.
- * null  -> precondition required (header missing or `*`): 428.
- * n >= 1 -> the strong ETag `"n"`.
- * 0     -> present but can never match (weak, malformed, a list): compares stale, 412. Versions start at 1.
+ * RFC 9110 strong comparison on the opaque ETag string, for a comma-separated list.
+ * null -> precondition required (header missing, empty, or any entry is `*`): 428.
+ * number[] -> the versions whose strong tag `"n"` appears byte-for-byte in the list.
+ *   Weak tags, `"01"`, unquoted `1` and junk contribute nothing; an empty array can never match (412).
  */
-export function parseIfMatch(header: string | undefined): number | null {
+export function parseIfMatch(header: string | undefined): number[] | null {
   const h = header?.trim();
-  if (h === undefined || h === '' || h === '*') return null;
-  const m = /^"(\d+)"$/.exec(h);
-  return m ? Number(m[1]) : 0;
+  if (h === undefined || h === '') return null;
+  const entries = h.split(',').map((e) => e.trim());
+  if (entries.includes('*')) return null;
+  const versions: number[] = [];
+  for (const e of entries) {
+    const m = /^"([1-9]\d{0,14})"$/.exec(e);
+    if (m) versions.push(Number(m[1]));
+  }
+  return versions;
 }
 
 export const etag = (version: number): string => `"${version}"`;
