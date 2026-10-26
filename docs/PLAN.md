@@ -1,7 +1,7 @@
 # Plan: Shared Team Notes, spec-first and delivered in gated tiers
 
 ## Context
-This is the Bluestaq take-home. The task is a backend for a note-taking service shared among small teams, delivered as a runnable REST service with a README and reviewed for clarity, correctness and tradeoffs. We have 180 minutes and submit a public repo on GitHub user **CoeusCC**.
+This is a take-home assessment. The task is a backend for a note-taking service shared among small teams, delivered as a runnable REST service with a README and reviewed for clarity, correctness and tradeoffs. We have 180 minutes and submit a public repo on GitHub user **CoeusCC**.
 
 Our angle is spec and acceptance criteria (ACs) as a way to deliver working software quickly and reliably:
 - **Spec:** an OpenAPI contract.

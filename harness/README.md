@@ -30,7 +30,7 @@ Notes: bench scores are relative within one run (best backend = 100), so compare
 ## Prompt template for one iteration
 
 ```
-You are improving the bluestaq repo (the repo root) by one scoreboard iteration.
+You are improving the repo (the repo root) by one scoreboard iteration.
 1. Read evidence/scoreboard.md. Pick the TOP item of the Improvement queue (if you were assigned a
    backend, the top item that names it). Do not touch other backends or unrelated files.
 2. Reproduce it from the evidence line (conformance case ids, red-team repro command, fault name).
