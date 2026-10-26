@@ -55,15 +55,28 @@ async function readBody(req: IncomingMessage): Promise<string> {
   return Buffer.concat(chunks).toString('utf8');
 }
 
-/** Parse the JSON body. Returns a 400 reply on malformed JSON. */
-async function readJson(req: IncomingMessage): Promise<{ value: unknown } | { reply: Reply }> {
+/**
+ * Read the body for any operation (ERR-3). A non-empty body must be application/json, else 415 (before 413).
+ * Returns the text; '' means no body.
+ */
+async function takeBody(req: IncomingMessage): Promise<{ text: string } | { reply: Reply }> {
+  const close = { connection: 'close' }; // unread bytes may remain, so the socket can't be reused
   let text: string;
   try { text = await readBody(req); } catch (e) {
-    // The rest of the body is unread, so the socket can't be reused: tell the client to close it.
-    if (e instanceof BodyError) return { reply: { ...problem(e.status, 'payload-too-large', 'Payload Too Large'), headers: { connection: 'close' } } };
-    throw e;
+    if (!(e instanceof BodyError)) throw e;
+    if (!isJson(req)) return { reply: { ...unsupportedMediaType(), headers: close } };
+    return { reply: { ...problem(e.status, 'payload-too-large', 'Payload Too Large'), headers: close } };
   }
-  try { return { value: JSON.parse(text) }; } catch {
+  if (text !== '' && !isJson(req)) return { reply: unsupportedMediaType() };
+  return { text };
+}
+
+/** Parse a required JSON body: empty is 400 whatever its Content-Type, malformed is 400. */
+async function readJson(req: IncomingMessage): Promise<{ value: unknown } | { reply: Reply }> {
+  const body = await takeBody(req);
+  if ('reply' in body) return body;
+  if (body.text === '') return { reply: badRequest('Request body is required.') };
+  try { return { value: JSON.parse(body.text) }; } catch {
     return { reply: badRequest('Request body is not valid JSON.') };
   }
 }
@@ -75,32 +88,36 @@ function authenticate(req: IncomingMessage, store: Store): User | null {
 
 async function route(req: IncomingMessage, store: Store): Promise<Reply> {
   const method = req.method ?? 'GET';
-  const segs = new URL(req.url ?? '/', 'http://x').pathname.split('/').filter(Boolean).map(decodeURIComponent);
-  const [a, b, c] = segs;
+  const url = new URL(req.url ?? '/', 'http://x');
+  // A trailing slash or a malformed percent-escape is simply an unknown route.
+  let segs: string[] | null = null;
+  try { if (!url.pathname.endsWith('/') || url.pathname === '/') segs = url.pathname.split('/').filter(Boolean).map(decodeURIComponent); } catch { /* unknown route */ }
+  const [a, b, c] = segs ?? [];
 
-  if (method === 'GET' && segs.length === 1 && a === 'health') return ok({ status: 'ok' });
+  if (method === 'GET' && segs?.length === 1 && a === 'health') return ok({ status: 'ok' });
 
-  const known =
-    (segs.length === 1 && (a === 'me' || a === 'teams') && method === 'GET') ||
-    (segs.length === 3 && a === 'teams' && c === 'notes' && (method === 'GET' || method === 'POST')) ||
-    (segs.length === 2 && a === 'notes' && (method === 'GET' || method === 'PATCH' || method === 'DELETE')) ||
-    (segs.length === 3 && a === 'notes' && c === 'restore' && method === 'POST');
-  if (!known) return notFound();
-
+  // Auth before routing: no token, no hints about which routes exist (AUTHN-2).
   const user = authenticate(req, store);
   if (!user) return unauthorized();
 
+  const known = segs !== null && (
+    (segs.length === 1 && (a === 'me' || a === 'teams') && method === 'GET') ||
+    (segs.length === 3 && a === 'teams' && c === 'notes' && (method === 'GET' || method === 'POST')) ||
+    (segs.length === 2 && a === 'notes' && (method === 'GET' || method === 'PATCH' || method === 'DELETE')) ||
+    (segs.length === 3 && a === 'notes' && c === 'restore' && method === 'POST'));
+  if (!known) return notFound();
+
   if (a === 'me') return ok({ id: user.id, name: user.name, teams: store.teamsOf(user.id) });
-  if (a === 'teams' && segs.length === 1) return ok({ items: store.teamsOf(user.id) });
+  if (a === 'teams' && segs!.length === 1) return ok({ items: store.teamsOf(user.id) });
 
   if (a === 'teams') {
     const teamId = b!;
     if (!store.isMember(teamId, user.id)) return notFound();
     if (method === 'GET') {
-      const archived = new URL(req.url ?? '/', 'http://x').searchParams.get('archived') === 'true';
-      return ok({ items: store.listNotes(teamId, archived) });
+      const raw = url.searchParams.get('archived');
+      if (raw !== null && raw !== 'true' && raw !== 'false') return invalid([{ field: 'archived', message: 'must be true or false' }]);
+      return ok({ items: store.listNotes(teamId, raw === 'true') });
     }
-    if (!isJson(req)) return unsupportedMediaType();
     const parsed = await readJson(req);
     if ('reply' in parsed) return parsed.reply;
     const v = validateCreate(parsed.value);
@@ -119,8 +136,11 @@ async function route(req: IncomingMessage, store: Store): Promise<Reply> {
     if (fault('leak-403') && method === 'GET' && store.noteExists(noteId)) return problem(403, 'forbidden', 'Forbidden');
     return notFound();
   }
-  if (c === 'restore') return noteReply(200, store.restoreNote(noteId, new Date())!);
-  if (method === 'DELETE') {
+  if (c === 'restore' || method === 'DELETE') {
+    // Any non-empty non-JSON body is 415 (ERR-3); a JSON body is ignored. DELETE ignores If-Match (DEL-5).
+    const body = await takeBody(req);
+    if ('reply' in body) return body.reply;
+    if (c === 'restore') return noteReply(200, store.restoreNote(noteId, new Date())!);
     store.softDeleteNote(noteId, new Date());
     return { status: 204 };
   }
@@ -130,16 +150,15 @@ async function route(req: IncomingMessage, store: Store): Promise<Reply> {
   return patch(req, store, note, user);
 }
 
-/** PATCH, in precedence order: 415, 413, 400, 422, 428, 412. Visibility (401, 404) is already decided. */
+/** PATCH, in precedence order: 413, 400, 422, 428, 412 (415 for a non-JSON body). Visibility (401, 404) is already decided. */
 async function patch(req: IncomingMessage, store: Store, note: Note, user: User): Promise<Reply> {
-  if (!isJson(req)) return unsupportedMediaType();
   const parsed = await readJson(req);
   if ('reply' in parsed) return parsed.reply;
   const v = validatePatch(parsed.value);
   if (!v.ok) return invalid(v.errors);
   let expected = parseIfMatch(req.headers['if-match']);
   // FAULT ignore-if-match: accept whatever If-Match says (or omits), allowing lost updates.
-  if (fault('ignore-if-match')) expected = store.visibleNote(note.id, user.id)?.version ?? expected;
+  if (fault('ignore-if-match')) expected = [store.visibleNote(note.id, user.id)?.version ?? 0];
   if (expected === null) return preconditionRequired();
   const out = store.patchNote(note.id, v.value, expected, new Date());
   if (out.kind === 'updated') return noteReply(200, out.note);
