@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Team Notes API
-  version: 0.2.0-tier2
+  version: 0.2.1-pins
   description: |
     Notes shared within small teams. Each note belongs to exactly one team, and every
     member of that team can read and edit it.
@@ -83,6 +83,7 @@ paths:
               schema: { $ref: '#/components/schemas/NoteList' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
     post:
       operationId: createNote
       requestBody:
@@ -123,6 +124,7 @@ paths:
               schema: { $ref: '#/components/schemas/Note' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
     patch:
       operationId: updateNote
       description: A partial update. Only the fields present change, and `version` increments by one.
@@ -160,6 +162,7 @@ paths:
         '204': { description: Deleted }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
 
   /notes/{noteId}/restore:
     parameters:
@@ -177,6 +180,7 @@ paths:
               schema: { $ref: '#/components/schemas/Note' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
 
 components:
   securitySchemes:

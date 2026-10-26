@@ -1716,6 +1716,1195 @@
      }
     }
    ]
+  },
+  {
+   "id": "pin-ifmatch-weak",
+   "falsifies": "NOTES-FUNC-CONC-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "W/\"1\""
+     },
+     "body": {
+      "title": "x ${run}"
+     },
+     "expect": {
+      "status": 412
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "version": 1
+      }
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-ifmatch-list-contains-current",
+   "falsifies": "NOTES-FUNC-CONC-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"9\", \"1\""
+     },
+     "body": {
+      "title": "x ${run}"
+     },
+     "expect": {
+      "status": 200
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-ifmatch-list-all-stale",
+   "falsifies": "NOTES-FUNC-CONC-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"8\", \"9\""
+     },
+     "body": {
+      "title": "x ${run}"
+     },
+     "expect": {
+      "status": 412
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-ifmatch-list-with-star",
+   "falsifies": "NOTES-FUNC-CONC-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\", *"
+     },
+     "body": {
+      "title": "x ${run}"
+     },
+     "expect": {
+      "status": 428
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-archived-yes",
+   "falsifies": "NOTES-FUNC-DEL-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=yes",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "archived"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-archived-1",
+   "falsifies": "NOTES-FUNC-DEL-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=1",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "archived"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-archived-empty",
+   "falsifies": "NOTES-FUNC-DEL-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "archived"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-archived-TRUE",
+   "falsifies": "NOTES-FUNC-DEL-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=TRUE",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "archived"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-empty-body-json-ct",
+   "falsifies": "NOTES-TECH-ERR-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "",
+     "expect": {
+      "status": 400
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-empty-body-no-ct",
+   "falsifies": "NOTES-TECH-ERR-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 400
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-empty-body-text-plain",
+   "falsifies": "NOTES-TECH-ERR-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "",
+     "headers": {
+      "content-type": "text/plain"
+     },
+     "expect": {
+      "status": 400
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-empty-patch-no-ct",
+   "falsifies": "NOTES-TECH-ERR-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "expect": {
+      "status": 400
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-unknown-route-no-token",
+   "falsifies": "NOTES-SEC-AUTHN-2",
+   "steps": [
+    {
+     "method": "GET",
+     "path": "/nope",
+     "noContract": true,
+     "expect": {
+      "status": 401,
+      "headers": {
+       "content-type": "application/problem+json"
+      }
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-unknown-verb-no-token",
+   "falsifies": "NOTES-SEC-AUTHN-2",
+   "steps": [
+    {
+     "method": "PUT",
+     "path": "/me",
+     "noContract": true,
+     "expect": {
+      "status": 401
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-unknown-route-with-token",
+   "falsifies": "NOTES-SEC-AUTHN-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/nope",
+     "noContract": true,
+     "expect": {
+      "status": 404
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-delete-does-not-bump",
+   "falsifies": "NOTES-FUNC-DEL-5",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "adv ${run}"
+     },
+     "save": "n",
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/team-red/notes?archived=true",
+     "expect": {
+      "status": 200,
+      "json": {
+       "items": [
+        {
+         "id": "${n.id}",
+         "version": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "expect": {
+      "status": 200,
+      "headers": {
+       "etag": "\"2\""
+      },
+      "json": {
+       "version": 2
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "expect": {
+      "status": 200,
+      "headers": {
+       "etag": "\"2\""
+      },
+      "json": {
+       "version": 2
+      }
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-nonobject-field-array",
+   "falsifies": "NOTES-FUNC-VALID-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "[1]",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-nonobject-field-string",
+   "falsifies": "NOTES-FUNC-VALID-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "\"x\"",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-nonobject-field-number",
+   "falsifies": "NOTES-FUNC-VALID-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "42",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-nonobject-field-null",
+   "falsifies": "NOTES-FUNC-VALID-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "null",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-trim-nbsp",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": " hi "
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "hi"
+      }
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-trim-emspace",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": " hi "
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "hi"
+      }
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-trim-ideographic",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "　hi　"
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "hi"
+      }
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-trim-tab-newline",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "\t\nhi\t\n"
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "hi"
+      }
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-trim-only-nbsp-empty",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": " 　"
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-zwsp-not-whitespace",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "​"
+     },
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "​"
+      }
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-combining-200cp-ok",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+     },
+     "expect": {
+      "status": 201
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-combining-202cp-rejected",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "title"
+      ]
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-zwj-family-counts-cp",
+   "falsifies": "NOTES-TECH-FMT-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧"
+     },
+     "expect": {
+      "status": 201
+     }
+    }
+   ],
+   "source": "Grok PR #72 (draft), ratified by Patrick 2026-10-26"
+  },
+  {
+   "id": "pin-malformed-escape-404",
+   "falsifies": "NOTES-SEC-AUTHN-2",
+   "steps": [
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/notes/00000000-0000-4000-8000-000000000000",
+     "expect": {
+      "status": 404
+     },
+     "saveText": "h"
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/notes/%E0",
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "method": "GET",
+     "path": "/notes/%E0",
+     "expect": {
+      "status": 401
+     }
+    }
+   ]
+  },
+  {
+   "id": "pin-trailing-slash-404",
+   "falsifies": "NOTES-SEC-AUTHN-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "slash ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/00000000-0000-4000-8000-000000000000",
+     "expect": {
+      "status": 404
+     },
+     "saveText": "h"
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}/",
+     "noContract": true,
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "pin-415-any-nonjson-body",
+   "falsifies": "NOTES-TECH-ERR-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "rb ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "carol",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "headers": {
+      "content-type": "text/plain"
+     },
+     "rawBody": "garbage",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "headers": {
+      "content-type": "text/plain"
+     },
+     "rawBody": "garbage",
+     "noContract": true,
+     "expect": {
+      "status": 415,
+      "headers": {
+       "content-type": "application/problem+json"
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "expect": {
+      "status": 200,
+      "json": {
+       "version": 2
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "content-type": "text/plain"
+     },
+     "rawBody": "x",
+     "noContract": true,
+     "expect": {
+      "status": 415
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "body": {
+      "ignored": true
+     },
+     "expect": {
+      "status": 200
+     }
+    }
+   ]
+  },
+  {
+   "id": "pin-delete-ignores-if-match",
+   "falsifies": "NOTES-FUNC-DEL-5",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "dim ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "body": {
+      "body": "v2"
+     },
+     "expect": {
+      "status": 200
+     }
+    },
+    {
+     "as": "bob",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "expect": {
+      "status": 200,
+      "json": {
+       "version": 3
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "pin-ifmatch-opaque-string",
+   "falsifies": "NOTES-FUNC-CONC-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "opq ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"01\""
+     },
+     "body": {
+      "title": "x"
+     },
+     "expect": {
+      "status": 412
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "1"
+     },
+     "body": {
+      "title": "x"
+     },
+     "expect": {
+      "status": 412
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "version": 1
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "pin-identical-404-all-verbs",
+   "falsifies": "NOTES-SEC-AUTHZ-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "v404 ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/notes/00000000-0000-4000-8000-000000000000",
+     "expect": {
+      "status": 404
+     },
+     "saveText": "h"
+    },
+    {
+     "as": "carol",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "body": {
+      "title": "x"
+     },
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "carol",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "carol",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "body": {
+      "title": "x"
+     },
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "pin-precedence-pairs",
+   "falsifies": "NOTES-TECH-ERR-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "pp ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "token": "nope",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 401
+     }
+    },
+    {
+     "as": "carol",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "rawBody": "{\"title\":\"<repeat:2200000:z>\"}",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":<repeat:2200000:z>",
+     "expect": {
+      "status": 413
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "rawBody": "{\"title\": ",
+     "expect": {
+      "status": 400
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "body": {
+      "body": "v2"
+     },
+     "expect": {
+      "status": 200
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "body": {
+      "body": "no precondition on stale data"
+     },
+     "expect": {
+      "status": 428
+     }
+    }
+   ]
+  },
+  {
+   "id": "pin-proto-field-rejected",
+   "falsifies": "NOTES-FUNC-VALID-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"t\",\"__proto__\":{\"x\":1}}",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "__proto__"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "pin-concurrent-patches-one-wins",
+   "falsifies": "NOTES-FUNC-CONC-5",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "conc ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "bob",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "headers": {
+      "if-match": "\"1\""
+     },
+     "body": {
+      "body": "racer"
+     },
+     "parallel": 16,
+     "expectCounts": {
+      "200": 1,
+      "412": 15
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "version": 2
+      },
+      "headers": {
+       "etag": "\"2\""
+      }
+     }
+    }
+   ]
   }
  ]
 }
