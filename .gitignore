@@ -8,3 +8,4 @@ evidence/tmp/
 .claude/worktrees/
 evidence/*.server.log
 .dogfood/
+bench/results/
