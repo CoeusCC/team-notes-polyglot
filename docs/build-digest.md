@@ -61,3 +61,9 @@ Clock: Patrick's TestGorilla timer is the authority. It started at **14:48 CDT**
 - `evidence/matrix.md` sha256 `1f79089027d98230` · | NOTES-TECH-FMT-2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | | NOTES-TECH-FMT-3 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | | **cases passed** | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 
 - cycle time: 62 closed issues · median 17 min
 - decision: All 9 backends (node-ts, deno, bun, python, php, rust, go, java, dotnet) 97/97 cases, 40/40 ACs on one official run. Since Gate 3: Tier 2.1 pins, Tier 3 teams, red-team cards FMT-3/AUTHN-3, AUTHN-4 (Patrick: 'do the ACs still hold?' answered by probe), ERR-5. New rebuilds .NET/Go/Java/Bun: 94/94 on first run (Java 93/94). Runner defects found and fixed along the way: rawBody interpolation, a missing Host header in raw mode, stale-server guard, Docker cleanup. Feature freeze; polish only from here.
+
+## 2026-10-26T17:15:47-05:00 · SUBMISSION (17:18)
+- commit `e05387b` · builddigest `e968e78944c9cb11` · uncommitted files: 1
+- `evidence/matrix.md` sha256 `8de779a9a2f1a4e5` · | NOTES-TECH-FMT-2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | | NOTES-TECH-FMT-3 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | | **cases passed** | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 | 
+- cycle time: 62 closed issues · median 17 min
+- decision: Final official run: all 9 backends (node-ts, deno, bun, python, php, rust, go, java, dotnet) 97/97 cases, 40/40 ACs after the red-team fixes and the history rewrite. A fresh clone of the public repo passes the quickstart, the demo and the suite, with no broken links and 0 privacy matches. CI green for node-ts/deno/python/php/rust. Final red team: no authz, isolation, lost-update or injection defects; 4 protocol findings fixed. History rewritten at Patrick's request to remove employer/personal identifiers; grok/* branches deleted.
