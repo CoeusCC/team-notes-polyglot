@@ -1,17 +1,17 @@
-# Team Notes, one spec and five implementations
+# Team Notes, one spec and nine implementations
 
 This is a REST backend for a note-taking service shared among small teams:
 - Every note belongs to one team, and every member of that team can read and edit it.
 - Teams manage their own membership. Outsiders can't tell that a note or team exists.
 - Concurrent edits can't silently overwrite each other.
 
-The project is built **spec-first**, so the same service exists as **five independent implementations** (Node/TS, Deno, Python, PHP, Rust). All five pass one language-neutral conformance suite:
+The project is built **spec-first**, so the same service exists as **nine independent implementations**: Node/TS, Deno, Bun, Python, PHP, Rust, Go, Java and C#/.NET. All are checked by one language-neutral conformance suite:
 
 | Artifact | What it is |
 |---|---|
 | [`spec/openapi.yaml`](spec/openapi.yaml) | The OpenAPI 3.1 contract |
-| [`spec/acceptance-criteria.md`](spec/acceptance-criteria.md) | 36 ratified acceptance criteria (ACs), each with a **Falsifier** |
-| [`conformance/cases.json`](conformance/cases.json) | 88 data-only HTTP cases, each tagged with the AC it would refute |
+| [`spec/acceptance-criteria.md`](spec/acceptance-criteria.md) | 40 ratified acceptance criteria (ACs), each with a **Falsifier**, plus 3 runtime profiles |
+| [`conformance/cases.json`](conformance/cases.json) | 97 data-only HTTP cases, each tagged with the AC it would refute |
 | [`docs/adr/`](docs/adr/) | Six architecture decision records with Y-statements |
 | [`docs/build-digest.md`](docs/build-digest.md) | Append-only log of every gate: commit, builddigest, evidence hashes, decisions |
 | [`evidence/`](evidence/) | Conformance runs, falsification, rebuild results, benchmarks, red team, scoreboard |
@@ -30,7 +30,7 @@ scripts/demo.sh                                          # guided curl walkthrou
 node conformance/run.mjs --strict                        # 88 cases against BASE_URL (default :3001)
 ```
 
-To run any other backend: `PORT=3002 DB_PATH=/tmp/n.db backends/<deno|python|php|rust>/run.sh`. For all of them in Docker with identical limits (1 CPU / 512 MB each): `bench/run-docker.sh`.
+To run any other backend: `PORT=3002 DB_PATH=:memory: backends/<deno|python|php|rust>/run.sh` (local toolchains), or `backends/<go|java|dotnet|bun>/run.sh` (builds and runs a Docker image). To verify every backend: `scripts/conform-all.sh`. For all of them in Docker with identical limits (1 CPU / 512 MB each): `bench/run-docker.sh`.
 
 The seed users have dev tokens only: `tok_alice` (owner of team-red), `tok_bob` (member of team-red) and `tok_carol` (owner of team-blue).
 
@@ -72,7 +72,7 @@ Event sourcing with CQRS on CloudEvents would give history and integrations. But
 ## Proof, not just tests
 | Check | What it shows | Where |
 |---|---|---|
-| Conformance (88 cases, 36 ACs) | Every backend meets every ratified card. `--strict` fails on any AC without a case | `conformance/`, `evidence/matrix.md` |
+| Conformance (97 cases, 40 ACs) | Every backend meets every ratified card. `--strict` fails on any AC without a case | `conformance/`, `evidence/matrix.md` |
 | Red first | Each tier's cases were committed failing before the code existed | `evidence/*-red.txt` |
 | Falsification | 5 deliberate faults (lost update, hard delete, 403 leak, …) all **caught** by the expected ACs | `scripts/falsify.sh`, `evidence/falsify.node-ts.txt` |
 | Cross-model replication | 4 Claude and 3 Grok rebuilds, all green, built only from the spec | `evidence/rebuilds.md` |
@@ -80,6 +80,20 @@ Event sourcing with CQRS on CloudEvents would give history and integrations. But
 | Benchmarks | Throughput and p50/p95/p99 per scenario, mean ± stddev over runs, with correctness gates that zero a score | `bench/`, `evidence/bench.*` |
 | Scoreboard loop | One command appends a history row, shows trends, and ranks the next improvements | `harness/`, `evidence/scoreboard.md` |
 | Separation of duties | Implementers never recorded verdicts. The runner's output is the verdict, and Patrick ratified every AC | `AGENTS.md`, `docs/build-digest.md` |
+
+## Top 3, head to head
+Selection rule: 97/97 conformance and 0 red-team violations first, then the Docker benchmark score (1 CPU / 512 MB per container). Full table: [`evidence/top3.md`](evidence/top3.md).
+
+| | rust (axum + rusqlite) | node-ts (zero deps) | deno (zero deps) |
+|---|---|---|---|
+| Conformance · red-team violations | 97/97 · 0 | 97/97 · 0 | 97/97 · 0 |
+| Mutation score (domain) | 100% (23/23) | 97.7% (42/43)\* | 100% (62/62) |
+| Benchmark score | **100** | 57.5 | 45.6 |
+| Write req/s · p99 | 10,655 · 10.8 ms | 2,876 · 44.4 ms | 1,774 · 670.9 ms |
+| Contention: successful writes/s · lost updates | 224 · 0 | 103 · 0 | 86 · 0 |
+| Source lines · image size | 785 · 120 MB | 584 · 382 MB | 493 · 268 MB |
+
+\*From an earlier run on the node-ts domain; the domain has changed since. Python (18.2) and PHP (12.6) pass every check too, but run on development servers. Go, Java, .NET and Bun were built in the last hour and haven't been benchmarked yet.
 
 ## How it was built
 - **Patrick:** set the goals, ratified every AC, and made every architectural call through recorded question cards. He also pushed back where it mattered, for example the uniform 415.
