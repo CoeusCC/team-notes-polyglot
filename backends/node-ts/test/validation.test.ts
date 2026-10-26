@@ -50,3 +50,22 @@ test('patch: validates supplied fields and rejects unknown ones', () => {
   assert.deepEqual(fields(validatePatch({ title: '' })), ['title']);
   assert.deepEqual(fields(validatePatch({ foo: 1 })), ['foo']);
 });
+
+test('lengths count Unicode code points, not UTF-16 units', () => {
+  assert.equal(validateCreate({ title: '😀'.repeat(200) }).ok, true);
+  assert.deepEqual(fields(validateCreate({ title: '😀'.repeat(201) })), ['title']);
+  assert.equal(validateCreate({ title: 't', body: '😀'.repeat(100000) }).ok, true);
+  assert.deepEqual(fields(validateCreate({ title: 't', body: '😀'.repeat(100001) })), ['body']);
+});
+
+test('server-owned fields are rejected by name in create and patch', () => {
+  for (const f of ['id', 'teamId', 'authorId', 'version', 'createdAt', 'updatedAt', 'deletedAt']) {
+    assert.deepEqual(fields(validateCreate({ title: 't', [f]: 'x' })), [f]);
+    assert.deepEqual(fields(validatePatch({ title: 't', [f]: 'x' })), [f]);
+  }
+});
+
+test('null is not an object', () => {
+  assert.equal(validatePatch(null).ok, false);
+  assert.equal(validateCreate(null).ok, false);
+});
