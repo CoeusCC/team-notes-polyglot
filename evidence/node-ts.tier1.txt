@@ -10,6 +10,7 @@ ok   create-note-location [NOTES-FUNC-NOTE-1]
 ok   create-note-location-header [NOTES-FUNC-NOTE-1]
 ok   teammate-reads-and-lists [NOTES-FUNC-NOTE-2]
 ok   nonmember-note-404 [NOTES-SEC-AUTHZ-1]
+ok   nonmember-404-before-validation [NOTES-SEC-AUTHZ-1]
 ok   nonmember-team-404 [NOTES-SEC-AUTHZ-2]
 ok   team-isolation-in-lists [NOTES-SEC-AUTHZ-2]
 ok   patch-title-only [NOTES-FUNC-NOTE-3]
@@ -24,6 +25,8 @@ ok   validate-unknown-field [NOTES-FUNC-VALID-1]
 ok   validate-malformed-json [NOTES-FUNC-VALID-1]
 ok   validate-non-object-json [NOTES-FUNC-VALID-1]
 ok   validate-patch-empty [NOTES-FUNC-VALID-1]
+ok   validate-rejects-do-not-persist [NOTES-FUNC-VALID-1]
 ok   unknown-route-problem [NOTES-TECH-ERR-1]
+ok   payload-too-large [NOTES-TECH-ERR-1]
 
-27/27 cases passed · ACs: 11/11 passed · BASE_URL=http://localhost:3001
+30/30 cases passed · ACs: 11/11 passed · BASE_URL=http://localhost:3001
