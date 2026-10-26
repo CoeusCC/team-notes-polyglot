@@ -1,5 +1,9 @@
 # Team Notes, one spec and nine implementations
 
+[![conformance](https://github.com/CoeusCC/team-notes-polyglot/actions/workflows/conformance.yml/badge.svg)](https://github.com/CoeusCC/team-notes-polyglot/actions/workflows/conformance.yml)
+
+**Start here:** [`START-HERE.md`](START-HERE.md) · How it works: [`docs/SERVICE.md`](docs/SERVICE.md) · Every acceptance criterion at a glance: [`docs/ACCEPTANCE.md`](docs/ACCEPTANCE.md) · API reference: [`docs/api.html`](docs/api.html)
+
 This is a REST backend for a note-taking service shared among small teams:
 - Every note belongs to one team, and every member of that team can read and edit it.
 - Teams manage their own membership. Outsiders can't tell that a note or team exists.
@@ -52,7 +56,7 @@ curl -H 'Authorization: Bearer tok_alice' -H 'content-type: application/json' \
 | GET / PATCH / DELETE | `/notes/{noteId}` | `ETag: "<version>"`; PATCH **requires** `If-Match`; DELETE is a soft delete |
 | POST | `/notes/{noteId}/restore` | undo a delete (the version goes up by one) |
 
-**Errors** are RFC 9457 `application/problem+json`. When a request has several problems, this order decides which one is reported: **401 → 404 → 415 → 413 → 400 → 422 → 428 → 412**.
+**Errors** are RFC 9457 `application/problem+json`. When a request has several problems, this order decides which one is reported: **401 → 404 → 403 → 415 → 413 → 400 → 422 → 409 → 428 → 412**.
 
 ## Design choices I spent the most time on
 
@@ -103,9 +107,25 @@ Selection rule: 97/97 conformance and 0 red-team violations first, then the Dock
 
 Coordination happened in GitHub Discussions (#1 "Plan & gates" and #2 "Bot bus") and on the Project board. Transcripts are in [`docs/transcripts/`](docs/transcripts/).
 
+## Security posture and known gaps
+- **CORS:** none, on purpose. This is a server-to-server API. A browser client would sit behind a same-origin gateway or get an explicit allow-list.
+- **Authentication:** static seeded bearer tokens (dev only), stored as SHA-256 hashes. There is no expiry, rotation or signup. Production would use OIDC or JWT.
+- **Tenant isolation:** enforced in SQL (membership joins). It is tested by byte-identical 404s and by a fuzzer that checks for cross-team leaks under load.
+- **SQL injection:** every backend uses parameterized statements. An audit of string-built SQL found only constant fragments (column lists, `deleted_at IS [NOT] NULL`). Python's PATCH builds `SET` from field names that the validator has already restricted to `title` and `body`; an allowlist in the store layer would add defense in depth.
+- **Input limits:** 2 MiB bodies (413), I-JSON only, 200 and 100,000 code-point limits.
+- **Not yet done:**
+  - pagination on lists (the `seq` column is already in place for keyset paging)
+  - rate limiting
+  - `X-Content-Type-Options: nosniff` and other security headers
+  - dependency audits (`npm audit`, `cargo audit`)
+  - non-root Docker users
+- **Dev servers:** the Python and PHP backends run on development HTTP servers. Grok's red team found request-framing weaknesses there (conflicting Content-Length and Transfer-Encoding) and a ~30 µs timing difference for hidden notes on Deno and PHP ([`grok/redteam-findings.md`](https://github.com/CoeusCC/team-notes-polyglot/blob/grok/workspace/grok/redteam-findings.md)).
+
 ## What I'd change, add, or stop doing with more time
 - **Add:**
-  - Tags, full-text search and keyset pagination. These were cut at Gate 3 in favor of proving the spec approach.
+  - Tags, full-text search and keyset pagination on `seq`. These were cut at Gate 3 in favor of proving the spec approach.
+  - Rate limiting and security headers (`nosniff`).
+  - Benchmarks for the Go, Java, .NET and Bun backends.
   - Ownership transfer and multiple owners.
   - A CloudEvents outbox for history and integrations.
   - Real auth (OIDC/JWT) instead of seeded tokens.
@@ -114,6 +134,7 @@ Coordination happened in GitHub Discussions (#1 "Plan & gates" and #2 "Bot bus")
   - Add **held-out cases** that agents never see, to measure overfitting to the visible suite.
   - Keep growing the divergence → card loop automatically from the scoreboard queue.
 - **Stop:** running the PHP built-in server and Python's `http.server` for anything beyond demos. They're great for proving the contract, but a production deployment needs a real server (FrankenPHP or RoadRunner; uvicorn or gunicorn).
+- **License:** MIT ([`LICENSE`](LICENSE)).
 - **Caveats:**
   - SQLite serializes writes, which is fine for small teams but not for a fleet.
   - Benchmarks run on a single machine.

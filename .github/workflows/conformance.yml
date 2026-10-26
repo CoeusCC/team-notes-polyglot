@@ -1,0 +1,54 @@
+name: conformance
+# On every push and PR: run each locally-toolchained backend's unit tests,
+# then the language-neutral conformance suite against it (--strict: every ratified AC needs a passing case).
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check-cases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '26' }
+      - run: cd conformance && npm ci
+      - run: node conformance/run.mjs --check
+  backend:
+    needs: check-cases
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [node-ts, deno, python, php, rust]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '26' }
+      - if: matrix.backend == 'deno'
+        uses: denoland/setup-deno@v2
+        with: { deno-version: v2.x }
+      - if: matrix.backend == 'python'
+        uses: actions/setup-python@v5
+        with: { python-version: '3.14' }
+      - if: matrix.backend == 'php'
+        uses: shivammathur/setup-php@v2
+        with: { php-version: '8.4', extensions: pdo_sqlite, mbstring }
+      - if: matrix.backend == 'rust'
+        uses: dtolnay/rust-toolchain@stable
+      - run: cd conformance && npm ci
+      - name: unit tests
+        run: |
+          case ${{ matrix.backend }} in
+            node-ts) cd backends/node-ts && npm ci && npm test && npm run typecheck ;;
+            deno)    cd backends/deno && deno task test ;;
+            python)  python3 -m unittest discover -s backends/python/tests ;;
+            php)     php backends/php/tests/run.php ;;
+            rust)    cd backends/rust && cargo test --release ;;
+          esac
+      - name: conformance (--strict)
+        run: |
+          if [ ${{ matrix.backend }} = node-ts ]; then (cd backends/node-ts && PORT=3001 node src/server.ts &) ;
+          elif [ ${{ matrix.backend }} = php ]; then PORT=3001 DB_PATH=$RUNNER_TEMP/notes.db backends/php/run.sh & 
+          else PORT=3001 DB_PATH=:memory: backends/${{ matrix.backend }}/run.sh & fi
+          for i in $(seq 300); do curl -sf localhost:3001/health && break; sleep 1; done
+          BASE_URL=http://localhost:3001 node conformance/run.mjs --strict
