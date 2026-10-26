@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 SID=${1:?session id}
-SRC=~/.claude/projects/-home-pszeinert-Projects-bluestaq
+SRC=${SRC:-$HOME/.claude/projects/$(git rev-parse --show-toplevel | tr / -)}
 OUT=docs/transcripts; mkdir -p "$OUT/subagents"
 redact() {
   # Order matters: specific secrets first, then generic token shapes. The dev tokens tok_alice/bob/carol are public by design.
