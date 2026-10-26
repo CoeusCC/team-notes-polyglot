@@ -11,6 +11,7 @@ def make_handler(store):
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
         server_version = "TeamNotesPy"
+        disable_nagle_algorithm = True
 
         def _read_chunked(self, limit):
             out, over = bytearray(), False
@@ -53,8 +54,17 @@ def make_handler(store):
             except Exception:
                 pass
 
+        def _bad_length(self):
+            cl = self.headers.get("Content-Length")
+            return cl is not None and not (cl.strip().isascii() and cl.strip().isdigit())
+
         def _serve(self):
             self._consumed = False
+            if self._bad_length():
+                resp = api.problem(400, close=True)
+                self.close_connection = True
+                self._send(resp, True)
+                return
             try:
                 req = api.Request(self.command, self.path, dict(self.headers), self._has_body(), self._read_body)
                 resp = api.handle(store, req)
@@ -73,6 +83,9 @@ def make_handler(store):
                         close = True
                 except Exception:
                     close = True
+            self._send(resp, close)
+
+        def _send(self, resp, close):
             self.send_response(resp.status)
             for k, v in resp.headers.items():
                 self.send_header(k, v)
@@ -81,9 +94,10 @@ def make_handler(store):
             if close:
                 self.send_header("Connection", "close")
                 self.close_connection = True
-            self.end_headers()
+            self.end_headers()  # buffered in _headers_buffer; flushed with the body below
             if self.command != "HEAD":
-                self.wfile.write(resp.body)
+                self._headers_buffer.append(resp.body)
+            self.flush_headers()
 
         do_GET = do_POST = do_PATCH = do_DELETE = do_PUT = do_HEAD = do_OPTIONS = _serve
 
