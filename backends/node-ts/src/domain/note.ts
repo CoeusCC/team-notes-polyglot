@@ -9,6 +9,8 @@ export type Note = {
   version: number;
   createdAt: string;
   updatedAt: string;
+  /** Present only on deleted notes. */
+  deletedAt?: string;
 };
 
 export type NoteRow = {
@@ -37,6 +39,7 @@ export function toNote(row: NoteRow): Note {
     version: row.version,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    ...(row.deleted_at === null ? {} : { deletedAt: row.deleted_at }),
   };
 }
 

@@ -13,3 +13,9 @@ test('newNoteFields starts at version 1 with equal timestamps', () => {
   assert.equal(n.createdAt, '2026-01-02T03:04:05.678Z');
   assert.equal(n.updatedAt, n.createdAt);
 });
+
+test('toNote includes deletedAt only for deleted rows', () => {
+  const row = { seq: 3, id: 'i', team_id: 't', author_id: 'a', title: 'T', body: 'B', version: 2, created_at: 'c', updated_at: 'u', deleted_at: null as string | null };
+  assert.ok(!('deletedAt' in toNote(row)));
+  assert.equal(toNote({ ...row, deleted_at: 'd' }).deletedAt, 'd');
+});

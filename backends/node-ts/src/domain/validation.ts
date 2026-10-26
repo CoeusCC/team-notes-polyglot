@@ -9,6 +9,12 @@ export type NotePatch = { title?: string; body?: string };
 export const TITLE_MAX = 200;
 export const BODY_MAX = 100000;
 
+/** Length in Unicode code points (ADR-0003). */
+const length = (s: string): number => [...s].length;
+
+/** Fields the server owns; a client may never send them. */
+export const READ_ONLY_FIELDS = ['id', 'teamId', 'authorId', 'version', 'createdAt', 'updatedAt', 'deletedAt'];
+
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
@@ -18,7 +24,7 @@ function checkTitle(v: unknown, errors: FieldError[]): string | undefined {
     return undefined;
   }
   const t = v.trim();
-  if (t.length < 1 || t.length > TITLE_MAX) {
+  if (length(t) < 1 || length(t) > TITLE_MAX) {
     errors.push({ field: 'title', message: `must be 1-${TITLE_MAX} characters after trimming` });
     return undefined;
   }
@@ -30,7 +36,7 @@ function checkBody(v: unknown, errors: FieldError[]): string | undefined {
     errors.push({ field: 'body', message: 'must be a string' });
     return undefined;
   }
-  if (v.length > BODY_MAX) {
+  if (length(v) > BODY_MAX) {
     errors.push({ field: 'body', message: `must be at most ${BODY_MAX} characters` });
     return undefined;
   }
@@ -39,7 +45,8 @@ function checkBody(v: unknown, errors: FieldError[]): string | undefined {
 
 function unknownFields(input: Record<string, unknown>, allowed: string[], errors: FieldError[]): void {
   for (const k of Object.keys(input)) {
-    if (!allowed.includes(k)) errors.push({ field: k, message: 'unknown field' });
+    if (READ_ONLY_FIELDS.includes(k)) errors.push({ field: k, message: 'read-only field' });
+    else if (!allowed.includes(k)) errors.push({ field: k, message: 'unknown field' });
   }
 }
 
