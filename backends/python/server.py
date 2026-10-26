@@ -13,16 +13,20 @@ def make_handler(store):
         server_version = "TeamNotesPy"
 
         def _read_chunked(self, limit):
-            out = bytearray()
+            out, over = bytearray(), False
             while True:
                 size = int(self.rfile.readline(1024).split(b";")[0].strip() or b"0", 16)
                 if size == 0:
                     while self.rfile.readline(1024).strip():
                         pass
+                    if over:
+                        raise api.TooLarge()
                     return bytes(out)
                 if len(out) + size > limit:
-                    raise api.TooLarge()
-                out += self.rfile.read(size)
+                    over = True  # keep reading (and dropping) so the 413 is not lost to a reset
+                chunk = self.rfile.read(size)
+                if not over:
+                    out += chunk
                 self.rfile.readline(8)
 
         def _read_body(self, limit):
@@ -31,12 +35,23 @@ def make_handler(store):
                 return self._read_chunked(limit)
             length = int(self.headers.get("Content-Length") or 0)
             if length > limit:
+                self._consumed = False  # leave the bytes for _discard
                 raise api.TooLarge()
             return self.rfile.read(length)
 
         def _has_body(self):
             return bool(int(self.headers.get("Content-Length") or 0)) or \
                 "chunked" in self.headers.get("Transfer-Encoding", "").lower()
+
+        def _discard(self):
+            """Swallow an oversized body so the client can read our 413 instead of a reset."""
+            try:
+                left = int(self.headers.get("Content-Length") or 0)
+                if "chunked" not in self.headers.get("Transfer-Encoding", "").lower():
+                    while 0 < left <= 64 * 1024 * 1024:
+                        left -= len(self.rfile.read(min(left, 65536)) or b"") or left
+            except Exception:
+                pass
 
         def _serve(self):
             self._consumed = False
@@ -47,6 +62,8 @@ def make_handler(store):
                 print("error:", repr(e), file=sys.stderr)
                 resp = api.problem(500, close=True)
             close = resp.close
+            if close and not self._consumed:
+                self._discard()
             if not self._consumed and self._has_body():
                 try:  # drain a small unread body so the keep-alive connection stays usable
                     if int(self.headers.get("Content-Length") or 0) <= 2 * 1024 * 1024 and \

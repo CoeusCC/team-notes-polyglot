@@ -8,6 +8,15 @@ READ_ONLY = ("id", "teamId", "authorId", "version", "createdAt", "updatedAt", "d
 SETTABLE = ("title", "body")
 
 
+# Unicode White_Space property (not U+200B, U+FEFF, nor U+001C-001F which str.strip() would remove)
+WHITE_SPACE = "\t\n\x0b\x0c\r \x85\xa0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007" \
+              "\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000"
+
+
+def trim(s):
+    return s.strip(WHITE_SPACE)
+
+
 def now_iso():
     t = datetime.now(timezone.utc)
     return t.strftime("%Y-%m-%dT%H:%M:%S.") + f"{t.microsecond // 1000:03d}Z"
@@ -25,7 +34,7 @@ def _check_title(v, errors):
     if not isinstance(v, str):
         errors.append(("title", "must be a string"))
         return None
-    t = v.strip()
+    t = trim(v)
     if not 1 <= len(t) <= TITLE_MAX or not _encodable(t):
         errors.append(("title", f"must be 1-{TITLE_MAX} characters after trimming"))
         return None
