@@ -7,6 +7,11 @@ export const MAX_REQUEST_BYTES = 2 * 1024 * 1024;
 export interface FieldError { field: string; message: string }
 export type Parsed<T> = { ok: true; value: T } | { ok: false; errors: FieldError[] };
 
+// Unicode White_Space (not U+200B, not U+FEFF; JS trim() would strip FEFF but miss NEL).
+const WS = "[\\t-\\r \\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]";
+const TRIM_RE = new RegExp(`^${WS}+|${WS}+$`, "gu");
+export const trimWs = (s: string): string => s.replace(TRIM_RE, "");
+
 export const cpLength = (s: string): number => [...s].length;
 
 const READ_ONLY = ["id", "teamId", "authorId", "version", "createdAt", "updatedAt", "deletedAt"];
@@ -17,7 +22,7 @@ function validate(
   requireTitle: boolean,
 ): Parsed<{ title?: string; body?: string }> {
   if (input === null || typeof input !== "object" || Array.isArray(input)) {
-    return { ok: false, errors: [{ field: "(body)", message: "must be a JSON object" }] };
+    return { ok: false, errors: [{ field: "$", message: "must be a JSON object" }] };
   }
   const obj = input as Record<string, unknown>;
   const errors: FieldError[] = [];
@@ -29,7 +34,7 @@ function validate(
   if ("title" in obj) {
     if (typeof obj.title !== "string") errors.push({ field: "title", message: "must be a string" });
     else {
-      const t = obj.title.trim();
+      const t = trimWs(obj.title);
       const n = cpLength(t);
       if (n < 1 || n > MAX_TITLE) errors.push({ field: "title", message: `must be 1-${MAX_TITLE} characters after trimming` });
       else out.title = t;
@@ -41,7 +46,7 @@ function validate(
     else out.body = obj.body;
   }
   if (!requireTitle && errors.length === 0 && Object.keys(obj).length === 0) {
-    errors.push({ field: "(body)", message: "must contain at least one field" });
+    errors.push({ field: "$", message: "must contain at least one field" });
   }
   return errors.length ? { ok: false, errors } : { ok: true, value: out };
 }
@@ -66,6 +71,8 @@ export function parseIfMatch(header: string | null): Precondition {
   const h = header.trim();
   if (h === "" || h === "*") return { kind: "missing" };
   const tags = h.split(",").map((s) => s.trim());
+  if (tags.includes("*")) return { kind: "missing" };
+  // RFC 9110 strong comparison on the opaque string: weak tags never equal.
   return { kind: "version", matches: (v) => tags.includes(etagFor(v)) };
 }
 
@@ -73,3 +80,10 @@ export const isJsonContentType = (ct: string | null): boolean =>
   (ct ?? "").split(";")[0].trim().toLowerCase() === "application/json";
 
 export const isoNow = (): string => new Date().toISOString();
+
+/** `?archived=`: only exact "true" / "false"; null when absent means false. */
+export function parseArchived(raw: string | null): Parsed<boolean> {
+  if (raw === null || raw === "false") return { ok: true, value: false };
+  if (raw === "true") return { ok: true, value: true };
+  return { ok: false, errors: [{ field: "archived", message: "must be true or false" }] };
+}
