@@ -94,6 +94,7 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
         '422': { $ref: '#/components/responses/Unprocessable' }
 
   /notes/{noteId}:
@@ -126,6 +127,7 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
         '422': { $ref: '#/components/responses/Unprocessable' }
     delete:
       operationId: deleteNote
@@ -165,6 +167,11 @@ components:
           schema: { $ref: '#/components/schemas/Problem' }
     NotFound:
       description: Not found, or not visible to the caller
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    PayloadTooLarge:
+      description: Request body exceeds 2 MiB
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
