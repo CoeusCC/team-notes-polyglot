@@ -1,6 +1,6 @@
 # Conformance matrix
 
-commit `951d0ce` · builddigest `2fb6435fa90c3f90` · 2026-10-26T21:28:20.939Z
+commit `b5ddf45` · builddigest `fa27120ffcd7d34a` · 2026-10-26T21:28:45.853Z
 
 | AC | node-ts | deno | php | python | rust |
 |---|---|---|---|---|---|
@@ -30,7 +30,7 @@ commit `951d0ce` · builddigest `2fb6435fa90c3f90` · 2026-10-26T21:28:20.939Z
 | NOTES-SEC-AUTHN-1 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHN-2 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHN-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| NOTES-SEC-AUTHN-4 | — | ✅ | ✅ | ✅ | ✅ |
+| NOTES-SEC-AUTHN-4 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHZ-1 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHZ-2 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-SEC-AUTHZ-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -44,4 +44,4 @@ commit `951d0ce` · builddigest `2fb6435fa90c3f90` · 2026-10-26T21:28:20.939Z
 | NOTES-TECH-FMT-1 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-TECH-FMT-2 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NOTES-TECH-FMT-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **cases passed** | 94/94 | 97/97 | 97/97 | 97/97 | 97/97 |
+| **cases passed** | 97/97 | 97/97 | 97/97 | 97/97 | 97/97 |
