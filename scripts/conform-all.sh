@@ -38,7 +38,9 @@ for b in "${backends[@]}"; do
   for _ in $(seq 1 600); do curl -sf "http://localhost:$p/health" >/dev/null && break; sleep 0.5; done
   BASE_URL=http://localhost:$p node conformance/run.mjs --strict --json "evidence/$b.json" >"evidence/$b.txt" 2>&1
   rc=$?
-  kill "$pid" 2>/dev/null; pkill -P "$pid" 2>/dev/null; wait "$pid" 2>/dev/null
+  kill "$pid" 2>/dev/null; pkill -P "$pid" 2>/dev/null
+  docker ps -q --filter "ancestor=notes-$b" | xargs -r docker stop >/dev/null 2>&1  # Docker-based run.sh leaves the container running
+  wait "$pid" 2>/dev/null
   node -e '
     const f = process.argv[1], e = JSON.parse(require("fs").readFileSync(f));
     Object.assign(e, { backend: process.argv[2], commit: process.argv[3], builddigest: process.argv[4], at: new Date().toISOString() });
