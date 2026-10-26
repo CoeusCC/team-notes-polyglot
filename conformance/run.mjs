@@ -7,7 +7,7 @@
 //
 // --strict also fails when a ratified AC has no case ("unverified"). Draft ACs are reported but not required.
 //
-// Step extras: rawBodyBase64 (exact bytes, e.g. invalid UTF-8), noContract (skip OpenAPI validation, e.g. unknown routes), parallel: N + expectCounts {status: n}.
+// Step extras: raw (verbatim path, headerPairs for repeated headers), rawBodyBase64 (exact bytes, e.g. invalid UTF-8), noContract (skip OpenAPI validation, e.g. unknown routes), parallel: N + expectCounts {status: n}.
 // It exits 0 only if every case passes. Each case names the AC it falsifies. A failing case refutes that AC.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import YAML from 'yaml';
+import { request as httpRequest } from 'node:http';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const BASE_URL = (process.env.BASE_URL ?? 'http://localhost:3001').replace(/\/$/, '');
@@ -137,6 +138,23 @@ async function runStep(step, vars) {
   return runOne(step, vars);
 }
 
+function rawFetch(path, method, headers, pairs, body) {
+  const u = new URL(BASE_URL);
+  const flat = [...Object.entries(headers).flat(), ...pairs.flat()];
+  return new Promise((resolve, reject) => {
+    const req = httpRequest({ host: u.hostname, port: u.port, method, path, headers: flat }, (r) => {
+      const chunks = []; r.on('data', (c) => chunks.push(c));
+      r.on('end', () => {
+        const text = Buffer.concat(chunks).toString('utf8');
+        resolve({ status: r.statusCode, headers: { get: (h) => r.headers[h.toLowerCase()] ?? null }, text: async () => text });
+      });
+    });
+    req.on('error', reject);
+    if (body) req.write(body);
+    req.end();
+  });
+}
+
 async function runStepStatus(step, vars) {
   const box = {};
   await runOne({ ...step, _status: box }, vars);
@@ -155,7 +173,8 @@ async function runOne(step, vars) {
     headers['content-type'] ??= 'application/json';
   }
   const path = interpolate(step.path, vars);
-  const res = await fetch(BASE_URL + path, { method: step.method, headers, body });
+  // raw: send the path verbatim (fetch would resolve dot segments) and allow repeated headers (headerPairs).
+  const res = step.raw ? await rawFetch(path, step.method, headers, step.headerPairs ?? [], body) : await fetch(BASE_URL + path, { method: step.method, headers, body });
   if (step._status) step._status.status = res.status;
   const text = await res.text();
   let json = null;

@@ -215,6 +215,11 @@ Shared fixtures (seeded by `spec/schema.sql`):
 - **Origin.** The red-team fuzzer (invariant I1) found `GET //` and `POST //` returning 500 on node-ts.
 - **Falsifier.** `GET //` with no token → 401. `GET //` and `POST //` as alice → 404, byte-identical to a random-UUID 404.
 
+#### NOTES-SEC-AUTHN-4: Ambiguous credentials and path tricks are rejected consistently (ratified by Patrick 2026-10-26)
+- **Claim.** A request with more than one `Authorization` header gets 401, so a proxy and the app can't pick different tokens. Percent-encoded *unreserved* characters are decoded before routing (RFC 3986 §6.2.2.2), so `/teams/team%2Dred/notes` is the same route as `/teams/team-red/notes`. Dot segments (`.` or `..`) are never resolved: a path that contains one gets the identical 404 when authenticated.
+- **Origin.** The question "do the ACs still hold?" was answered with a probe across 5 backends. These three behaviors diverged (3/2, 3/2 and 4/1 splits).
+- **Falsifier.** Two Authorization headers (carol, then alice) → 401. `GET /teams/team%2Dred/notes` as alice → 200. `GET /x/../me` as alice → 404, byte-identical to a random UUID.
+
 ## Profiles (Set: profile:<name>; ADR-0004)
 Smaller technical constraints that apply only to some environments. They're not part of the core suite.
 
