@@ -1,0 +1,42 @@
+# Each backend gets identical limits: 1 CPU, 512 MB. Build context = repo root.
+# Host ports 4101+. Backends whose Dockerfile does not exist yet are commented out;
+# enable each once that backend merges.
+x-limits: &limits
+  cpus: "1.0"
+  mem_limit: 512m
+
+services:
+  node-ts:
+    build: { context: .., dockerfile: backends/node-ts/Dockerfile }
+    <<: *limits
+    environment: { PORT: "3000", DB_PATH: /data/notes.db }
+    ports: ["4101:3000"]
+    tmpfs: ["/data"]
+
+  # deno:   # enable once backends/deno merges (needs backends/deno/Dockerfile based on denoland/deno)
+  #   build: { context: .., dockerfile: backends/deno/Dockerfile }   # FROM denoland/deno:latest
+  #   <<: *limits
+  #   environment: { PORT: "3000", DB_PATH: /data/notes.db }
+  #   ports: ["4102:3000"]
+  #   tmpfs: ["/data"]
+
+  # python: # FROM python:3.14-slim
+  #   build: { context: .., dockerfile: backends/python/Dockerfile }
+  #   <<: *limits
+  #   environment: { PORT: "3000", DB_PATH: /data/notes.db }
+  #   ports: ["4103:3000"]
+  #   tmpfs: ["/data"]
+
+  # php:    # FROM php:8.5-cli ; must enable pdo_sqlite (docker-php-ext-install pdo_sqlite)
+  #   build: { context: .., dockerfile: backends/php/Dockerfile }
+  #   <<: *limits
+  #   environment: { PORT: "3000", DB_PATH: /data/notes.db }
+  #   ports: ["4104:3000"]
+  #   tmpfs: ["/data"]
+
+  # rust:   # multi-stage: FROM rust:1 AS build ... ; FROM debian:bookworm-slim
+  #   build: { context: .., dockerfile: backends/rust/Dockerfile }
+  #   <<: *limits
+  #   environment: { PORT: "3000", DB_PATH: /data/notes.db }
+  #   ports: ["4105:3000"]
+  #   tmpfs: ["/data"]
