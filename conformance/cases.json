@@ -3555,6 +3555,82 @@
      }
     }
    ]
+  },
+  {
+   "id": "authn4-duplicate-authorization-401",
+   "falsifies": "NOTES-SEC-AUTHN-4",
+   "steps": [
+    {
+     "raw": true,
+     "method": "GET",
+     "path": "/me",
+     "headerPairs": [
+      [
+       "Authorization",
+       "Bearer tok_carol"
+      ],
+      [
+       "Authorization",
+       "Bearer tok_alice"
+      ]
+     ],
+     "expect": {
+      "status": 401
+     }
+    }
+   ]
+  },
+  {
+   "id": "authn4-unreserved-decoded",
+   "falsifies": "NOTES-SEC-AUTHN-4",
+   "steps": [
+    {
+     "as": "alice",
+     "raw": true,
+     "method": "GET",
+     "path": "/teams/team%2Dred/notes",
+     "expect": {
+      "status": 200
+     }
+    }
+   ]
+  },
+  {
+   "id": "authn4-dot-segments-404",
+   "falsifies": "NOTES-SEC-AUTHN-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/00000000-0000-4000-8000-000000000000",
+     "expect": {
+      "status": 404
+     },
+     "saveText": "h"
+    },
+    {
+     "as": "alice",
+     "raw": true,
+     "method": "GET",
+     "path": "/x/../me",
+     "noContract": true,
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "alice",
+     "raw": true,
+     "method": "GET",
+     "path": "/teams/./team-red/notes",
+     "noContract": true,
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    }
+   ]
   }
  ]
 }
