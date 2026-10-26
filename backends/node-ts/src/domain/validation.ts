@@ -80,3 +80,23 @@ export function validatePatch(input: unknown): Result<NotePatch> {
   if (Object.keys(input).length === 0) errors.push({ field: '$', message: 'at least one field is required' });
   return errors.length > 0 ? { ok: false, errors } : { ok: true, value };
 }
+
+export type TeamCreate = { id: string; name: string };
+
+export const TEAM_NAME_MAX = 80;
+const SLUG = /^[a-z0-9-]{3,40}$/;
+
+/** `id` is client-chosen here, so unlike notes it is not a read-only field. */
+export function validateTeamCreate(input: unknown): Result<TeamCreate> {
+  if (!isPlainObject(input)) return { ok: false, errors: [notAnObject] };
+  const errors: FieldError[] = [];
+  for (const k of Object.keys(input)) if (k !== 'id' && k !== 'name') errors.push({ field: k, message: 'unknown field' });
+  const id = input.id;
+  if (typeof id !== 'string' || !SLUG.test(id)) errors.push({ field: 'id', message: 'must match ^[a-z0-9-]{3,40}$' });
+  const name = typeof input.name === 'string' ? trimWhiteSpace(input.name) : undefined;
+  if (name === undefined || length(name) < 1 || length(name) > TEAM_NAME_MAX) {
+    errors.push({ field: 'name', message: `must be 1-${TEAM_NAME_MAX} characters after trimming` });
+  }
+  if (errors.length > 0) return { ok: false, errors };
+  return { ok: true, value: { id: id as string, name: name as string } };
+}
