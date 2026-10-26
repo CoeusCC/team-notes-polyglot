@@ -25,7 +25,8 @@ const jsonOut = args.includes('--json') ? args[args.indexOf('--json') + 1] : nul
 
 const strict = args.includes('--strict');
 const spec = YAML.parse(readFileSync(join(here, '../spec/openapi.yaml'), 'utf8'));
-const { cases, tokens } = JSON.parse(readFileSync(join(here, 'cases.json'), 'utf8'));
+// CASES=<file> runs another case file (e.g. conformance/proposed/*.json) with the same runner.
+const { cases, tokens } = JSON.parse(readFileSync(process.env.CASES ?? join(here, 'cases.json'), 'utf8'));
 
 // ---- AC catalogue: every card heading, and whether its tier is ratified ------------------------
 const acText = readFileSync(join(here, '../spec/acceptance-criteria.md'), 'utf8');

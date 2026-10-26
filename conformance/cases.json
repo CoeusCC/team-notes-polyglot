@@ -135,12 +135,20 @@
      "path": "/teams",
      "expect": {
       "status": 200,
-      "itemsExactly": [
-       "team-blue"
-      ]
+      "itemsContain": "team-blue",
+      "itemsLack": "team-red",
+      "json": {
+       "items": [
+        {
+         "id": "team-blue",
+         "role": "owner"
+        }
+       ]
+      }
      }
     }
-   ]
+   ],
+   "$comment": "Re-run safe: other cases make carol create teams, so 'exactly [team-blue]' only held on a fresh DB (found by .NET/Java agents and Grok red team 2)."
   },
   {
    "id": "teams-bob-member",

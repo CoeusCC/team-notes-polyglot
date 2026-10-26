@@ -1,0 +1,59 @@
+{
+ "$comment": "PROPOSED (not ratified): concurrent restore must bump version exactly once (NOTES-FUNC-DEL-2: restoring a live note is a no-op). Found by Grok red team 2: php, python, rust, dotnet, go end at v5-v8.",
+ "tokens": {
+  "alice": "tok_alice",
+  "bob": "tok_bob",
+  "carol": "tok_carol"
+ },
+ "cases": [
+  {
+   "id": "race-restore-once",
+   "falsifies": "NOTES-FUNC-DEL-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "rr ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "bob",
+     "method": "POST",
+     "path": "/notes/${n.id}/restore",
+     "parallel": 16,
+     "expectCounts": {
+      "200": 16
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "version": 2
+      },
+      "headers": {
+       "etag": "\"2\""
+      }
+     }
+    }
+   ]
+  }
+ ]
+}
