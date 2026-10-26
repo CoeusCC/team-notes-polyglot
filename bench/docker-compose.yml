@@ -40,3 +40,27 @@ services:
     environment: { PORT: "3000", DB_PATH: /data/notes.db }
     ports: ["4106:3000"]
     tmpfs: ["/data"]
+
+  dotnet:
+    build: { context: .., dockerfile: backends/dotnet/Dockerfile }
+    <<: *limits
+    environment: { PORT: "3000", DB_PATH: ":memory:" }
+    ports: ["4107:3000"]
+
+  go:
+    build: { context: .., dockerfile: backends/go/Dockerfile }
+    <<: *limits
+    environment: { PORT: "3000", DB_PATH: ":memory:" }
+    ports: ["4108:3000"]
+
+  java:
+    build: { context: .., dockerfile: backends/java/Dockerfile }
+    <<: *limits
+    environment: { PORT: "3000", DB_PATH: ":memory:" }
+    ports: ["4109:3000"]
+
+  bun:
+    build: { context: .., dockerfile: backends/bun/Dockerfile }
+    <<: *limits
+    environment: { PORT: "3000", DB_PATH: ":memory:" }
+    ports: ["4110:3000"]
