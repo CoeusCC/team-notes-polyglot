@@ -23,7 +23,7 @@ function sendJson(int $status, mixed $payload, array $headers = [], string $cont
 
 function sendProblem(HttpError $e): void
 {
-    $titles = [400 => 'Bad Request', 401 => 'Unauthorized', 404 => 'Not Found', 412 => 'Precondition Failed',
+    $titles = [400 => 'Bad Request', 401 => 'Unauthorized', 403 => 'Forbidden', 404 => 'Not Found', 409 => 'Conflict', 412 => 'Precondition Failed',
         413 => 'Payload Too Large', 415 => 'Unsupported Media Type', 422 => 'Unprocessable Content',
         428 => 'Precondition Required', 500 => 'Internal Server Error'];
     $title = $titles[$e->status] ?? 'Error';
@@ -106,6 +106,17 @@ function handle(Store $store, string $method, string $path): void
         sendJson(200, ['id' => $uid, 'name' => $user['name'], 'teams' => $store->teamsOf($uid)]);
     } elseif ($path === '/teams' && $method === 'GET') {
         sendJson(200, ['items' => $store->teamsOf($uid)]);
+    } elseif ($path === '/teams' && $method === 'POST') {
+        createTeamRoute($store, $uid);
+    } elseif (count($seg) === 2 && $seg[0] === 'teams' && $seg[1] !== '' && $method === 'GET') {
+        $role = $store->roleOf($seg[1], $uid) ?? throw notFound();
+        $t = $store->team($seg[1]);
+        sendJson(200, ['id' => $t['id'], 'name' => $t['name'], 'role' => $role]);
+    } elseif (count($seg) === 3 && $seg[0] === 'teams' && $seg[2] === 'members' && $method === 'GET') {
+        $store->isMember($seg[1], $uid) || throw notFound();
+        sendJson(200, ['items' => $store->members($seg[1])]);
+    } elseif (count($seg) === 4 && $seg[0] === 'teams' && $seg[2] === 'members' && $seg[3] !== '' && in_array($method, ['PUT', 'DELETE'], true)) {
+        memberRoute($store, $method, $uid, $seg[1], $seg[3]);
     } elseif (count($seg) === 3 && $seg[0] === 'teams' && $seg[2] === 'notes' && in_array($method, ['GET', 'POST'], true)) {
         teamNotes($store, $method, $uid, $seg[1]);
     } elseif ($seg[0] === 'notes' && count($seg) === 2 && $seg[1] !== '' && in_array($method, ['GET', 'PATCH', 'DELETE'], true)) {
@@ -115,6 +126,41 @@ function handle(Store $store, string $method, string $path): void
     } else {
         throw notFound();
     }
+}
+
+function createTeamRoute(Store $store, string $uid): void
+{
+    [$clean, $errors] = validateTeam(readJsonBody());
+    if ($errors) {
+        throw validationError($errors);
+    }
+    if (!$store->createTeam($clean['id'], $clean['name'], $uid)) {
+        throw new HttpError(409, 'A team with this id already exists');
+    }
+    sendJson(201, ['id' => $clean['id'], 'name' => $clean['name'], 'role' => 'owner'], ['Location' => '/teams/' . $clean['id']]);
+}
+
+/** Precedence: 404 (non-member) -> 403 (not owner) -> 415 -> 422 (unknown user) -> 409 (last owner). */
+function memberRoute(Store $store, string $method, string $uid, string $teamId, string $userId): void
+{
+    $role = $store->roleOf($teamId, $uid) ?? throw notFound();
+    if ($role !== 'owner') {
+        throw new HttpError(403, 'Only the team owner can manage members');
+    }
+    rejectNonJsonBody();
+    if ($method === 'PUT') {
+        $u = $store->user($userId);
+        if (!$u) {
+            throw validationError([['field' => 'userId', 'message' => 'unknown user']]);
+        }
+        $store->addMember($teamId, $userId);
+        sendJson(200, ['id' => $u['id'], 'name' => $u['name'], 'role' => $store->roleOf($teamId, $userId)]);
+        return;
+    }
+    if (!$store->removeMember($teamId, $userId)) {
+        throw new HttpError(409, 'Cannot remove the last owner');
+    }
+    http_response_code(204);
 }
 
 function teamNotes(Store $store, string $method, string $uid, string $teamId): void
