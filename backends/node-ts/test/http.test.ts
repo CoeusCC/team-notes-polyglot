@@ -167,3 +167,31 @@ test('null body is 422', async () => {
   const n = await create();
   assert.equal((await patch(n.id, null, '"1"')).res.status, 422);
 });
+
+test('double-slash paths: 401 without token, identical 404 with one, never 5xx', async () => {
+  for (const m of ['GET', 'POST']) {
+    assert.equal((await call(m, '//')).res.status, 401);
+    const a = await call(m, '//', 'tok_alice', m === 'GET' ? undefined : '{}');
+    const b = await call(m, '/notes/00000000-0000-4000-8000-000000000000', 'tok_alice');
+    assert.equal(a.res.status, 404);
+    if (m === 'GET') assert.deepEqual(a.json, b.json);
+  }
+  assert.equal((await call('GET', '///notes', 'tok_alice')).res.status, 404);
+});
+
+test('I-JSON: lone surrogates are 400', async () => {
+  const post = (raw: string) => call('POST', '/teams/team-red/notes', 'tok_alice', raw);
+  assert.equal((await post('{"title":"\\ud800"}')).res.status, 400);
+  assert.equal((await post('{"title":"ok","body":"x\\udfff"}')).res.status, 400);
+  assert.equal((await post('{"title":"ok","body":["a",{"k":"\\ud83d"}]}')).res.status, 400);
+  assert.equal((await post('{"title":"ok\\ud83d\\ude00"}')).res.status, 201);
+});
+
+test('invalid UTF-8 bytes are 400', async () => {
+  const res = await fetch(`${base}/teams/team-red/notes`, {
+    method: 'POST',
+    headers: { authorization: 'Bearer tok_alice', 'content-type': 'application/json' },
+    body: Buffer.from('{"title":"a\xff\xfe"}', 'latin1'),
+  });
+  assert.equal(res.status, 400);
+});
