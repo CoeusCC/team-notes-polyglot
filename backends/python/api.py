@@ -1,7 +1,7 @@
 """Routing and the error-precedence pipeline. Transport-agnostic: see server.py for the socket side."""
 import json
 import re
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 import domain
 
@@ -238,8 +238,11 @@ def handle(store, req):
     user = store.user_for_token(token) if token else None
     if not user:
         return problem(401, headers={"WWW-Authenticate": "Bearer"})
+    # Never resolve dot segments: any "." or ".." (even percent-encoded) is an unknown route (AUTHN-4).
+    if any(unquote(seg) in (".", "..") for seg in req.path.split("/")):
+        return NOT_FOUND
     for method, pattern, fn in ROUTES:
         m = re.fullmatch(pattern, req.path)
         if m and method == req.method:
-            return fn(store, user, req, *m.groups())
+            return fn(store, user, req, *[unquote(g) for g in m.groups()])
     return NOT_FOUND
