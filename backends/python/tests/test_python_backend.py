@@ -34,6 +34,25 @@ class DomainTests(unittest.TestCase):
         self.assertEqual(domain.check_precondition('"1"', 2), 412)
         self.assertIsNone(domain.check_precondition('"2"', 2))
 
+    def test_if_match_strong_comparison(self):
+        cp = domain.check_precondition
+        self.assertEqual(cp('W/"1"', 1), 412)
+        self.assertIsNone(cp('"9", "1"', 1))
+        self.assertEqual(cp('"8", "9"', 1), 412)
+        self.assertEqual(cp('"1", *', 1), 428)
+        self.assertEqual(cp('"01"', 1), 412)
+        self.assertEqual(cp("1", 1), 412)
+        self.assertEqual(cp("", 1), 428)
+
+    def test_trim_uses_unicode_white_space(self):
+        self.assertEqual(domain.validate_create({"title": "\u00a0hi\u3000"})[0]["title"], "hi")
+        self.assertEqual(domain.validate_create({"title": "\u2003\u0085hi\u2028"})[0]["title"], "hi")
+        self.assertEqual(domain.validate_create({"title": "\u00a0\u00a0"})[1][0][0], "title")
+        for keep in ("\u200b", "\ufeff", "\x1c", "\x1f"):  # not White_Space
+            self.assertEqual(domain.validate_create({"title": keep})[0]["title"], keep)
+        self.assertEqual(domain.validate_create({"title": "e\u0301" * 100})[1], [])
+        self.assertEqual(domain.validate_create({"title": "e\u0301" * 101})[1][0][0], "title")
+
     def test_timestamp_format(self):
         self.assertRegex(domain.now_iso(), r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$")
 
