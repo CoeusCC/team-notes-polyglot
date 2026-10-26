@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "jsr:@std/assert@1";
-import { cpLength, parseCreate, parseIfMatch, parsePatch, trimWs } from "./domain.ts";
+import { cpLength, parseCreate, parseTeam, parseIfMatch, parsePatch, trimWs } from "./domain.ts";
 import { createStore } from "./main.ts";
 import { createHandler } from "./http.ts";
 
@@ -95,4 +95,16 @@ Deno.test("error precedence and identical 404s", async () => {
   const bodies = await Promise.all([n.id, crypto.randomUUID(), "not-a-uuid"].map(async (id) =>
     await (await call(h, "GET", `/notes/${id}`, "carol")).text()));
   assert(bodies.every((b) => b === bodies[0]));
+});
+
+Deno.test("team slug validation: pattern, length, name trimming, unknown fields", () => {
+  for (const id of ["ab", "AB", "has_underscore", "a b", "x".repeat(41), "ünï"]) {
+    const r = parseTeam({ id, name: "n" });
+    assert(!r.ok && r.errors[0].field === "id", id);
+  }
+  for (const id of ["abc", "a-1", "x".repeat(40), "team-red"]) assert(parseTeam({ id, name: "n" }).ok, id);
+  const r = parseTeam({ id: "abc", name: "  Crew  " });
+  assert(r.ok && r.value.name === "Crew");
+  const bad = parseTeam({ id: "abc", name: "   ", owner: "bob" });
+  assert(!bad.ok && bad.errors.map((e) => e.field).sort().join() === "name,owner");
 });
