@@ -85,7 +85,12 @@ export function createApp(db: Database) {
     catch { throw new HttpError(400, 'Bad Request'); }
     let v: unknown;
     try { v = JSON.parse(text); } catch { throw new HttpError(400, 'Bad Request'); }
-    if (treeHasLoneSurrogate(v)) throw new HttpError(400, 'Bad Request');
+    try {
+      if (treeHasLoneSurrogate(v)) throw new HttpError(400, 'Bad Request');
+    } catch (e) {
+      if (e instanceof RangeError) throw new HttpError(400, 'Bad Request');
+      throw e;
+    }
     return v;
   }
 
