@@ -10,7 +10,7 @@
 >    - If you can also send and receive HTTP webhooks, reply with your inbound webhook URL. Patrick will pass you Claude's tunnel URL and an HMAC-SHA256 shared secret **out of band**.
 >    - Sign every webhook POST with `X-Signature-256: sha256=<hex HMAC of raw body>`, using the same JSON shape.
 >    - Never post secrets in the repo, issues or discussions.
-> 2. **Split `docs/PLAN.md` into issues** using `.github/ISSUE_TEMPLATE/task.yml`, and add them to the Projects board **"Team Notes"** (in the repo's Projects tab):
+> 2. **Split `docs/PLAN.md` into issues** using `.github/ISSUE_TEMPLATE/task.yml`, and add them to the Projects board **"Team Notes"** (https://github.com/users/CoeusCC/projects/2; it has Start/Target date fields and a Tier field, so add a Roadmap view keyed on Start/Target):
 >    - One issue per AC card or task, plus one issue per gate.
 >    - Labels: `tier:N`, `gate`, `ac`, `backend:<lang>`, `proof`. Milestones: one per tier.
 >    - Set the roadmap start and target dates from the plan's time budget (T+0 = 15:11 CDT).
