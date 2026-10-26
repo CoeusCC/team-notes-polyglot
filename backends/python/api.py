@@ -32,7 +32,7 @@ class Request:
     """body_reader(limit) -> bytes, raising TooLarge when the body exceeds limit."""
     def __init__(self, method, target, headers, has_body, body_reader):
         parts = urlsplit(target)
-        self.method, self.path, self.query = method, parts.path, parse_qs(parts.query)
+        self.method, self.path, self.query = method, parts.path, parse_qs(parts.query, keep_blank_values=True)
         self.headers = {k.lower(): v for k, v in headers.items()}
         self.has_body, self._read = has_body, body_reader
 
@@ -52,11 +52,16 @@ def problem(status, errors=None, headers=None, close=False):
 NOT_FOUND = problem(404)  # one shared body: hidden, missing, malformed and unknown routes are identical
 
 
+def media_error(req):
+    """ERR-3: any non-empty body that is not application/json gets 415, on every operation."""
+    ctype = req.headers.get("content-type", "").split(";")[0].strip().lower()
+    return problem(415) if req.has_body and ctype != "application/json" else None
+
+
 def parse_json_body(req):
     """Applies 415 -> 413 -> 400. Returns (data, error_response)."""
-    ctype = req.headers.get("content-type", "").split(";")[0].strip().lower()
-    if req.has_body and ctype != "application/json":
-        return None, problem(415)
+    if media_error(req):
+        return None, media_error(req)
     try:
         raw = req._read(domain.MAX_BODY_BYTES)
     except TooLarge:
@@ -84,7 +89,10 @@ def list_teams(store, user, req):
 def list_notes(store, user, req, team_id):
     if not store.is_member(team_id, user["id"]):
         return NOT_FOUND
-    archived = req.query.get("archived", ["false"])[-1] == "true"
+    flag = req.query.get("archived", ["false"])[-1]
+    if flag not in ("true", "false"):
+        return problem(422, [("archived", "must be true or false")])
+    archived = flag == "true"
     return Response(200, {"items": store.list_notes(team_id, archived)})
 
 
@@ -129,6 +137,8 @@ def patch_note(store, user, req, note_id):
 def delete_note(store, user, req, note_id):
     if not store.get_note(note_id, user["id"], include_deleted=True):
         return NOT_FOUND
+    if media_error(req):
+        return media_error(req)
     store.soft_delete(note_id)
     return Response(204)
 
@@ -136,6 +146,8 @@ def delete_note(store, user, req, note_id):
 def restore_note(store, user, req, note_id):
     if not store.get_note(note_id, user["id"], include_deleted=True):
         return NOT_FOUND
+    if media_error(req):
+        return media_error(req)
     return note_response(200, store.restore(note_id))
 
 
