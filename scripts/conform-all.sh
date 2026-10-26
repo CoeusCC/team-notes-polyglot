@@ -13,7 +13,7 @@ if (( !allow_dirty )) && [[ -n $(git status --porcelain --untracked-files=no) ]]
 fi
 
 # backend  port  start-command (run from the repo root)
-declare -A PORT=( [node-ts]=3101 [deno]=3102 [php]=3103 [python]=3104 [rust]=3106 )
+declare -A PORT=( [node-ts]=3101 [deno]=3102 [php]=3103 [python]=3104 [rust]=3106 [dotnet]=3107 [go]=3108 [java]=3109 [bun]=3110 )
 start() {
   local b=$1 p=$2
   case $b in
@@ -34,7 +34,7 @@ for b in "${backends[@]}"; do
   if curl -sf "http://localhost:$p/health" >/dev/null 2>&1; then echo "$b: port $p already serving; refusing (stale server would fake verdicts)" >&2; status=1; continue; fi
   start "$b" "$p" >"evidence/$b.server.log" 2>&1 &
   pid=$!
-  for _ in $(seq 1 120); do curl -sf "http://localhost:$p/health" >/dev/null && break; sleep 0.5; done
+  for _ in $(seq 1 600); do curl -sf "http://localhost:$p/health" >/dev/null && break; sleep 0.5; done
   BASE_URL=http://localhost:$p node conformance/run.mjs --strict --json "evidence/$b.json" >"evidence/$b.txt" 2>&1
   rc=$?
   kill "$pid" 2>/dev/null; pkill -P "$pid" 2>/dev/null; wait "$pid" 2>/dev/null
