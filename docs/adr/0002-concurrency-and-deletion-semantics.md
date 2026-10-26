@@ -1,6 +1,6 @@
 # ADR-0002: Concurrency and deletion semantics (Tier 2)
 
-- **Status:** Accepted (decided by Patrick on 2026-10-26; the Tier 2 cards are still awaiting ratification)
+- **Status:** Accepted (decided by Patrick on 2026-10-26; Tier 2 cards ratified the same day)
 - **Builds on:** [ADR-0001](0001-architecture.md), which chose state-based storage with `version`, ETag and `If-Match`
 - **Cards:** NOTES-FUNC-CONC-2, NOTES-FUNC-CONC-3, NOTES-FUNC-DEL-2, NOTES-FUNC-DEL-3
 
