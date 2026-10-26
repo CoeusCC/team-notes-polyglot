@@ -1,11 +1,14 @@
 ---
-title: Team Notes: acceptance criteria
-status: draft          # draft → ratified (by Patrick only)
-ratified: { by: null, on: null }
-format: SpecDLC card (Claim / Binds / Interface / Forbids / Permits / Falsifier)
+title: "Team Notes - acceptance criteria"
+status: draft
+ratified_by: ""
+ratified_on: ""
+format: "SpecDLC card (Claim / Binds / Interface / Forbids / Permits / Falsifier)"
 ---
 
 # Team Notes: acceptance criteria
+
+Status moves from `draft` to `ratified`, and only Patrick ratifies.
 
 The key words MUST, MUST NOT and MAY follow RFC 2119. Aliases follow the pattern `NOTES-<KIND>-<CAT>-<N>`, where KIND is FUNC (behavior), SEC (security) or TECH (technical).
 

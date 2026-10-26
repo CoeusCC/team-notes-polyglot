@@ -70,7 +70,14 @@ const lookup = (vars, path) => path.split('.').reduce((o, k) => o?.[k], vars);
 const repeat = (s) => s.replace(/<repeat:(\d+):(.)>/g, (_, n, ch) => ch.repeat(Number(n)));
 
 function subsetMismatch(expected, actual, at = '$') {
-  if (expected && typeof expected === 'object' && !Array.isArray(expected)) {
+  if (Array.isArray(expected)) {
+    // Each expected element must subset-match some element of the actual array.
+    if (!Array.isArray(actual)) return `${at}: expected array, got ${JSON.stringify(actual)}`;
+    for (const [i, e] of expected.entries())
+      if (!actual.some((a) => subsetMismatch(e, a) === null)) return `${at}[${i}]: no element matches ${JSON.stringify(e)}`;
+    return null;
+  }
+  if (expected && typeof expected === 'object') {
     if (!actual || typeof actual !== 'object') return `${at}: expected object, got ${JSON.stringify(actual)}`;
     for (const [k, v] of Object.entries(expected)) {
       const m = subsetMismatch(v, actual[k], `${at}.${k}`);
