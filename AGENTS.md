@@ -29,5 +29,12 @@ Follow `.claude/skills/ub-mode/SKILL.md`:
 
 ## Running things
 - Reference backend: `cd backends/node-ts && npm start`, which serves on port 3001.
-- Conformance: `BASE_URL=http://localhost:3001 node conformance/run.mjs`.
+- Conformance: `(cd conformance && npm ci)` once, then `BASE_URL=http://localhost:3001 node conformance/run.mjs`.
 - Multi-agent fan-out (Claude): use `/workflows`, and always set the model explicitly. Use **Sonnet** for implementation and **Haiku** for research or lookups. Use Opus only for orchestration and adversarial review.
+
+## Assessing this repo (reviewer agents)
+See also `START-HERE.md`.
+- **Authoritative:** `spec/` (contract, schema, ratified ACs), `conformance/cases.json`, `docs/adr/`, `backends/*`, the newest `Evidence:` commit and `evidence/matrix.md`.
+- **Not authoritative:** `docs/PLAN.md` (superseded by spec and ADRs), `docs/handoff/`, `harness/`, `evidence/history.jsonl`, `evidence/*-red.txt` (deliberately failing runs), and every non-`main` branch (`grok/*` and similar are agent workspaces).
+- **Verify, don't trust:** `scripts/conform-all.sh` re-runs every backend against the suite (needs a clean tree); `scripts/falsify.sh` injects faults the suite must catch; `(cd backends/node-ts && node --test test/)` runs the unit tests. A "red first" commit at the tip fails on purpose until its fix lands.
+- **Out of scope by design:** what README.md lists under "What I'd change". Don't count a missing feature as a defect unless an AC or the spec requires it.
