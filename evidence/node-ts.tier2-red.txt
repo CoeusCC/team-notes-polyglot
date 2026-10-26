@@ -1,0 +1,59 @@
+ok   health-open [NOTES-SEC-AUTHN-1]
+ok   authn-missing-token [NOTES-SEC-AUTHN-1]
+ok   authn-bad-token [NOTES-SEC-AUTHN-1]
+ok   authn-malformed-scheme [NOTES-SEC-AUTHN-1]
+ok   me-alice [NOTES-FUNC-ME-1]
+ok   teams-carol-only-blue [NOTES-FUNC-TEAM-1]
+ok   teams-bob-member [NOTES-FUNC-TEAM-1]
+ok   create-note [NOTES-FUNC-NOTE-1]
+ok   create-note-location [NOTES-FUNC-NOTE-1]
+ok   create-note-location-header [NOTES-FUNC-NOTE-1]
+ok   teammate-reads-and-lists [NOTES-FUNC-NOTE-2]
+ok   nonmember-note-404 [NOTES-SEC-AUTHZ-1]
+ok   nonmember-404-before-validation [NOTES-SEC-AUTHZ-1]
+ok   nonmember-team-404 [NOTES-SEC-AUTHZ-2]
+ok   team-isolation-in-lists [NOTES-SEC-AUTHZ-2]
+ok   patch-title-only [NOTES-FUNC-NOTE-3]
+ok   delete-note [NOTES-FUNC-NOTE-4]
+ok   validate-empty-title [NOTES-FUNC-VALID-1]
+ok   validate-missing-title [NOTES-FUNC-VALID-1]
+ok   validate-long-title [NOTES-FUNC-VALID-1]
+ok   validate-max-title-ok [NOTES-FUNC-VALID-1]
+ok   validate-title-type [NOTES-FUNC-VALID-1]
+ok   validate-long-body [NOTES-FUNC-VALID-1]
+ok   validate-unknown-field [NOTES-FUNC-VALID-1]
+ok   validate-malformed-json [NOTES-FUNC-VALID-1]
+ok   validate-non-object-json [NOTES-FUNC-VALID-1]
+ok   validate-patch-empty [NOTES-FUNC-VALID-1]
+ok   validate-rejects-do-not-persist [NOTES-FUNC-VALID-1]
+ok   unknown-route-problem [NOTES-TECH-ERR-1]
+ok   payload-too-large [NOTES-TECH-ERR-1]
+ok   contract-core-shapes [NOTES-TECH-CONTRACT-1]
+ok   identical-404-bodies [NOTES-SEC-AUTHZ-3]
+ok   precedence-404-before-415 [NOTES-TECH-ERR-2]
+FAIL precedence-415 [NOTES-TECH-ERR-2]
+       step 1 (POST /teams/team-red/notes): status: expected 415, got 201 {"id":"dcb9da0a-8d7c-4719-ae2f-84f38720907a","teamId":"team-red","authorId":"alice","title":"t","body":"","version":1,"createdAt":"2026-10-26T20:33:48.488Z","updatedAt":"2026-10-26T20:33:48.488Z"}
+       step 1 (POST /teams/team-red/notes): header content-type: expected application/problem+json, got application/json
+ok   precedence-422-before-428 [NOTES-TECH-ERR-2]
+ok   formats-timestamps-location [NOTES-TECH-FMT-1]
+ok   formats-newest-first [NOTES-TECH-FMT-1]
+FAIL formats-code-points [NOTES-TECH-FMT-1]
+       step 1 (POST /teams/team-red/notes): status: expected 201, got 422 {"type":"https://teamnotes.example/problems/validation-failed","title":"Validation Failed","status":422,"errors":[{"field":"title","message":"must be 1-200 characters after trimming"}]}
+ok   readonly-and-null-bodies [NOTES-FUNC-VALID-2]
+FAIL etag-tracks-version [NOTES-FUNC-CONC-1]
+       step 1 (POST /teams/team-red/notes): header etag: expected "1", got null
+FAIL patch-requires-if-match [NOTES-FUNC-CONC-2]
+       step 2 (PATCH /notes/${n.id}): status: expected 428, got 200 {"id":"e4e612d0-d640-46ba-9b4a-7ed81206db28","teamId":"team-red","authorId":"alice","title":"no precondition","body":"","version":2,"createdAt":"2026-10-26T20:33:48.535Z","updatedAt":"2026-10-26T20:33
+FAIL lost-update-prevented [NOTES-FUNC-CONC-3]
+       step 2 (GET /notes/${n.id}): header etag: expected "1", got null
+FAIL delete-idempotent-soft [NOTES-FUNC-DEL-1]
+       step 3 (DELETE /notes/${n.id}): status: expected 204, got 404 {"type":"https://teamnotes.example/problems/not-found","title":"Not Found","status":404}
+FAIL restore-brings-back [NOTES-FUNC-DEL-2]
+       step 4 (POST /notes/${n.id}/restore): status: expected 200, got 404 {"type":"https://teamnotes.example/problems/not-found","title":"Not Found","status":404}
+       step 4 (POST /notes/${n.id}/restore): header etag: expected "2", got null
+       step 4 (POST /notes/${n.id}/restore): $.title: expected "rest e82x49", got "Not Found"
+FAIL archived-is-trash-view [NOTES-FUNC-DEL-3]
+       step 5 (GET /teams/team-red/notes?archived=true): items missing d0170c86-2ff0-46d7-ba6d-2300e4d4cd05
+       step 5 (GET /teams/team-red/notes?archived=true): items unexpectedly contain e9fd2b78-7066-40d0-9112-3bb53617a087
+
+37/45 cases passed · ACs: 14 passed, 8 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3001

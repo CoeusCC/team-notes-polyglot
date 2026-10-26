@@ -100,7 +100,7 @@ const interpolate = (value, vars) => {
   return value;
 };
 const lookup = (vars, path) => path.split('.').reduce((o, k) => o?.[k], vars);
-const repeat = (s) => s.replace(/<repeat:(\d+):(.)>/g, (_, n, ch) => ch.repeat(Number(n)));
+const repeat = (s) => s.replace(/<repeat:(\d+):(.)>/gu, (_, n, ch) => ch.repeat(Number(n)));
 
 function subsetMismatch(expected, actual, at = '$') {
   if (Array.isArray(expected)) {
@@ -150,6 +150,14 @@ async function runStep(step, vars) {
   const ids = Array.isArray(json?.items) ? json.items.map((n) => n.id) : [];
   for (const id of [].concat(exp.itemsContain ?? [])) if (!ids.includes(id)) failures.push(`items missing ${id}`);
   for (const id of [].concat(exp.itemsLack ?? [])) if (ids.includes(id)) failures.push(`items unexpectedly contain ${id}`);
+  if (exp.bodyEquals !== undefined && text !== exp.bodyEquals)
+    failures.push(`body not byte-identical: expected ${exp.bodyEquals.slice(0, 120)}, got ${text.slice(0, 120)}`);
+  for (const [field, re] of Object.entries(exp.jsonMatches ?? {}))
+    if (!new RegExp(re).test(String(json?.[field]))) failures.push(`${field}=${json?.[field]} does not match /${re}/`);
+  if (exp.firstItems) {
+    const want = [].concat(exp.firstItems);
+    if (JSON.stringify(ids.slice(0, want.length)) !== JSON.stringify(want)) failures.push(`first items: expected ${want}, got ${ids.slice(0, want.length)}`);
+  }
   if (exp.noItemMatches && (json?.items ?? []).some((n) => subsetMismatch(exp.noItemMatches, n) === null))
     failures.push(`an item unexpectedly matches ${JSON.stringify(exp.noItemMatches)}`);
   if (exp.itemsExactly) {
@@ -167,6 +175,7 @@ async function runStep(step, vars) {
       failures.push(`problem.status ${json.status} != HTTP ${res.status} (NOTES-TECH-ERR-1)`);
   }
   if (step.save) vars[step.save] = json;
+  if (step.saveText) vars[step.saveText] = text;
   if (step.saveHeaders) for (const [k, h] of Object.entries(step.saveHeaders)) vars[k] = res.headers.get(h);
   return failures;
 }

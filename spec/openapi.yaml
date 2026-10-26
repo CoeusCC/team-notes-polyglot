@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Team Notes API
-  version: 0.1.0-tier1
+  version: 0.2.0-tier2
   description: |
     Notes shared within small teams. Each note belongs to exactly one team, and every
     member of that team can read and edit it.
@@ -9,7 +9,11 @@ info:
     * **Auth:** every endpoint except `/health` needs `Authorization: Bearer <token>`.
     * **Visibility:** a resource outside the caller's teams is answered with `404`, never `403`,
       so the API does not reveal whether it exists (ADR-0001).
-    * **Errors:** every error is an RFC 9457 `application/problem+json` document.
+    * **Errors:** every error is an RFC 9457 `application/problem+json` document. Precedence:
+      401 → 404 → 415 → 413 → 400 → 422 → 428 → 412 (NOTES-TECH-ERR-2, ADR-0003).
+    * **Concurrency:** every single-note response carries `ETag: "<version>"`. PATCH requires a matching
+      `If-Match`: a missing header or `*` gets 428, a stale one gets 412 (ADR-0002).
+    * **Deletion:** DELETE is soft and idempotent. `POST /notes/{id}/restore` undoes it, and `?archived=true` lists the trash.
     * **Source of truth:** behavior is pinned down by `spec/acceptance-criteria.md` and checked by `conformance/`.
 servers:
   - url: http://localhost:3001
@@ -65,7 +69,12 @@ paths:
       - $ref: '#/components/parameters/TeamId'
     get:
       operationId: listTeamNotes
-      description: The team's notes, newest first.
+      description: The team's live notes, newest first. With `archived=true`, only deleted notes (trash).
+      parameters:
+        - name: archived
+          in: query
+          required: false
+          schema: { type: string, enum: ['true', 'false'], default: 'false' }
       responses:
         '200':
           description: The team's notes
@@ -85,6 +94,7 @@ paths:
         '201':
           description: Created
           headers:
+            ETag: { $ref: '#/components/headers/ETag' }
             Location:
               schema: { type: string }
               description: /notes/{id}
@@ -95,6 +105,7 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
         '413': { $ref: '#/components/responses/PayloadTooLarge' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
         '422': { $ref: '#/components/responses/Unprocessable' }
 
   /notes/{noteId}:
@@ -105,6 +116,8 @@ paths:
       responses:
         '200':
           description: The note
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Note' }
@@ -113,6 +126,12 @@ paths:
     patch:
       operationId: updateNote
       description: A partial update. Only the fields present change, and `version` increments by one.
+      parameters:
+        - name: If-Match
+          in: header
+          required: true
+          description: The note's current ETag, e.g. `"3"`. Missing or `*` gets 428.
+          schema: { type: string }
       requestBody:
         required: true
         content:
@@ -121,18 +140,41 @@ paths:
       responses:
         '200':
           description: Updated
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Note' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '412': { $ref: '#/components/responses/PreconditionFailed' }
         '413': { $ref: '#/components/responses/PayloadTooLarge' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
         '422': { $ref: '#/components/responses/Unprocessable' }
+        '428': { $ref: '#/components/responses/PreconditionRequired' }
     delete:
       operationId: deleteNote
+      description: Soft delete. Idempotent; deleting an already-deleted note also returns 204.
       responses:
         '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /notes/{noteId}/restore:
+    parameters:
+      - $ref: '#/components/parameters/NoteId'
+    post:
+      operationId: restoreNote
+      description: Undo a soft delete (version + 1). Restoring a live note is a no-op 200.
+      responses:
+        '200':
+          description: The restored note
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Note' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
 
@@ -154,7 +196,29 @@ components:
       required: true
       schema: { type: string, minLength: 1, maxLength: 64 }
 
+  headers:
+    ETag:
+      description: Strong ETag carrying the note's version, e.g. `"3"`.
+      schema: { type: string, pattern: '^"[0-9]+"$' }
+
   responses:
+    PreconditionFailed:
+      description: If-Match does not match the current version
+      headers:
+        ETag: { $ref: '#/components/headers/ETag' }
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    PreconditionRequired:
+      description: If-Match missing (or `*`)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    UnsupportedMediaType:
+      description: Request body is not application/json
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
     BadRequest:
       description: Malformed request (e.g. invalid JSON)
       content:
@@ -241,6 +305,7 @@ components:
         version: { type: integer, minimum: 1 }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+        deletedAt: { type: string, format: date-time, description: Present only on deleted notes. }
 
     NoteList:
       type: object
@@ -256,7 +321,7 @@ components:
       additionalProperties: false
       required: [title]
       properties:
-        title: { type: string, minLength: 1, maxLength: 200, description: 'Trimmed; must be non-empty after trimming.' }
+        title: { type: string, minLength: 1, maxLength: 200, description: 'Trimmed and stored trimmed; length in Unicode code points.' }
         body: { type: string, maxLength: 100000, default: '' }
 
     NotePatch:

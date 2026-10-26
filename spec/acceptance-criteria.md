@@ -1,9 +1,9 @@
 ---
 title: "Team Notes - acceptance criteria"
-status: "tier 1 ratified; tier 2 draft"
+status: "tiers 1-2 ratified"
 ratified_by: "Patrick"
 ratified_on: "2026-10-26"
-ratified_tiers: "1"
+ratified_tiers: "1,2"
 format: "SpecDLC card (Claim / Binds / Interface / Forbids / Permits / Falsifier)"
 ---
 
@@ -83,9 +83,26 @@ Shared fixtures (seeded by `spec/schema.sql`):
 - **Claim.** Every response body validates against the schema declared in `spec/openapi.yaml` for that operation and status.
 - **Falsifier.** The conformance runner validates every response with ajv. Any schema violation fails the run.
 
+#### NOTES-TECH-ERR-2: Error precedence is fixed (amendment, ratified 2026-10-26)
+- **Claim.** When a request has several problems, the first applicable status wins, in this order: `401` (authentication) → `404` (not found or not visible) → `415` (a body is sent and `Content-Type` is not `application/json`) → `413` (body over 2 MiB) → `400` (malformed JSON) → `422` (validation) → `428` (missing or `*` `If-Match`) → `412` (stale `If-Match`).
+- **Interface.** 413 comes before 400 because a server must stop reading an oversized body before it can know whether the body parses (ADR-0003).
+- **Falsifier.** A non-member sending a `text/plain` malformed body gets 404. A member sending `text/plain` gets 415. A member sending an invalid body without `If-Match` gets 422.
+
+#### NOTES-TECH-FMT-1: Wire formats are pinned (amendment, ratified 2026-10-26)
+- **Claim.** Timestamps are RFC 3339 UTC with milliseconds and `Z` (`2026-10-26T20:20:43.252Z`). `Location` is a relative path (`/notes/{id}`). Lists are `{"items": [...]}` sorted newest first. Lengths are counted in Unicode code points. A title is stored trimmed.
+- **Falsifier.** `createdAt` matches `^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$`. Two notes created in sequence list newest first. A 200-emoji title is accepted and a 201-emoji title is rejected. `"  hi  "` is stored as `"hi"`.
+
+#### NOTES-SEC-AUTHZ-3: Hidden and malformed ids get the identical 404 (amendment, ratified 2026-10-26)
+- **Claim.** The 404 body for a note in another team, for a random UUID, and for a malformed id (`/notes/not-a-uuid`) is byte-identical.
+- **Falsifier.** Carol GETs alice's note, a random UUID and `not-a-uuid`. The three response bodies are byte-identical.
+
+#### NOTES-FUNC-VALID-2: Read-only and null bodies are rejected (amendment, ratified 2026-10-26)
+- **Claim.** Fields the server owns (`id`, `teamId`, `authorId`, `version`, `createdAt`, `updatedAt`, `deletedAt`) get 422 in POST and PATCH bodies. A body of `null`, `{}` (on PATCH) or a non-object gets 422. Every successful PATCH increments `version` by exactly 1, even if the values are unchanged.
+- **Falsifier.** A PATCH with `{"authorId":"carol"}` → 422 with an `errors[]` entry for field `authorId`, and the note is unchanged. A PATCH with `null` → 422. A PATCH with the same title → 200 and version+1.
+
 ---
 
-## Tier 2: concurrency and soft delete (draft; decisions folded in 2026-10-26, awaiting ratification)
+## Tier 2: concurrency and soft delete (ratified by Patrick, 2026-10-26; supersedes NOTE-3's unconditional PATCH and NOTE-4's delete wording)
 
 #### NOTES-FUNC-CONC-1: Reads expose the version as a strong ETag
 - **Claim.** `GET /notes/{id}`, `POST` (201), `PATCH` (200) and `POST …/restore` (200) return `ETag: "<version>"`, which always equals the body's `version`.
