@@ -2,7 +2,7 @@ import { createServer as createHttpServer } from 'node:http';
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { newNoteFields } from './domain/note.ts';
-import { validateCreate, validatePatch } from './domain/validation.ts';
+import { validateCreate, validatePatch, validateTeamCreate } from './domain/validation.ts';
 import type { FieldError } from './domain/validation.ts';
 import { etag, parseIfMatch } from './domain/precondition.ts';
 import type { Note } from './domain/note.ts';
@@ -21,6 +21,8 @@ const problem = (status: number, slug: string, title: string, extra: Record<stri
 });
 const unauthorized = () => problem(401, 'unauthorized', 'Unauthorized', { detail: 'A valid bearer token is required.' });
 // One response for every "cannot see it" case: missing, hidden, deleted, wrong team.
+const forbidden = () => problem(403, 'forbidden', 'Forbidden', { detail: 'Only the team owner may change membership.' });
+const conflict = (detail: string) => problem(409, 'conflict', 'Conflict', { detail });
 const notFound = () => problem(404, 'not-found', 'Not Found');
 const badRequest = (detail: string) => problem(400, 'bad-request', 'Bad Request', { detail });
 const invalid = (errors: FieldError[]) => problem(422, 'validation-failed', 'Validation Failed', { errors });
@@ -102,13 +104,20 @@ async function route(req: IncomingMessage, store: Store): Promise<Reply> {
 
   const known = segs !== null && (
     (segs.length === 1 && (a === 'me' || a === 'teams') && method === 'GET') ||
+    (segs.length === 1 && a === 'teams' && method === 'POST') ||
+    (segs.length === 2 && a === 'teams' && method === 'GET') ||
+    (segs.length === 3 && a === 'teams' && c === 'members' && method === 'GET') ||
+    (segs.length === 4 && a === 'teams' && b !== undefined && segs[2] === 'members' && (method === 'PUT' || method === 'DELETE')) ||
     (segs.length === 3 && a === 'teams' && c === 'notes' && (method === 'GET' || method === 'POST')) ||
     (segs.length === 2 && a === 'notes' && (method === 'GET' || method === 'PATCH' || method === 'DELETE')) ||
     (segs.length === 3 && a === 'notes' && c === 'restore' && method === 'POST'));
   if (!known) return notFound();
 
   if (a === 'me') return ok({ id: user.id, name: user.name, teams: store.teamsOf(user.id) });
-  if (a === 'teams' && segs!.length === 1) return ok({ items: store.teamsOf(user.id) });
+  if (a === 'teams' && segs!.length === 1) {
+    return method === 'POST' ? createTeam(req, store, user) : ok({ items: store.teamsOf(user.id) });
+  }
+  if (a === 'teams' && c !== 'notes') return teamRoute(req, store, user, method, segs!);
 
   if (a === 'teams') {
     const teamId = b!;
@@ -148,6 +157,32 @@ async function route(req: IncomingMessage, store: Store): Promise<Reply> {
   if (note.deletedAt !== undefined) return notFound();
   if (method === 'GET') return noteReply(200, note);
   return patch(req, store, note, user);
+}
+
+async function createTeam(req: IncomingMessage, store: Store, user: User): Promise<Reply> {
+  const parsed = await readJson(req);
+  if ('reply' in parsed) return parsed.reply;
+  const v = validateTeamCreate(parsed.value);
+  if (!v.ok) return invalid(v.errors);
+  if (!store.createTeam(v.value.id, v.value.name, user.id)) return conflict('A team with this id already exists.');
+  return { status: 201, body: { ...v.value, role: 'owner' }, headers: { location: `/teams/${v.value.id}` } };
+}
+
+/** Team reads and owner-only membership changes. 404 for non-members, then 403 for non-owners (ADR-0006). */
+async function teamRoute(req: IncomingMessage, store: Store, user: User, method: string, segs: string[]): Promise<Reply> {
+  const teamId = segs[1]!;
+  const team = store.teamFor(teamId, user.id);
+  if (!team) return notFound();
+  if (method === 'GET') return ok(segs.length === 2 ? team : { items: store.members(teamId) });
+  if (team.role !== 'owner') return forbidden();
+  const body = await takeBody(req); // a JSON body is ignored; any other non-empty body is 415
+  if ('reply' in body) return body.reply;
+  const userId = segs[3]!;
+  if (method === 'PUT') {
+    if (!store.userExists(userId)) return invalid([{ field: 'userId', message: 'unknown user' }]);
+    return ok(store.addMember(teamId, userId));
+  }
+  return store.removeMember(teamId, userId) ? { status: 204 } : conflict('The last owner cannot be removed.');
 }
 
 /** PATCH, in precedence order: 413, 400, 422, 428, 412 (415 for a non-JSON body). Visibility (401, 404) is already decided. */
