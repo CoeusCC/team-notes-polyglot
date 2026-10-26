@@ -909,6 +909,59 @@
      }
     }
    ]
+  },
+  {
+   "id": "contract-core-shapes",
+   "falsifies": "NOTES-TECH-CONTRACT-1",
+   "steps": [
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/me",
+     "expect": {
+      "status": 200
+     }
+    },
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/teams",
+     "expect": {
+      "status": 200
+     }
+    },
+    {
+     "as": "bob",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "body": {
+      "title": "shape ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "n"
+    },
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/teams/team-red/notes",
+     "expect": {
+      "status": 200
+     }
+    },
+    {
+     "as": "bob",
+     "method": "PATCH",
+     "path": "/notes/${n.id}",
+     "body": {
+      "body": "x"
+     },
+     "expect": {
+      "status": 200
+     }
+    }
+   ]
   }
  ]
 }

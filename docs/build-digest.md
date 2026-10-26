@@ -2,7 +2,7 @@
 
 This is an append-only log, with one entry per gate and per significant commit. `builddigest` is the sha256 (shortened) of `git ls-tree -r HEAD`, following `SpecDLC-Research/specs/verdict-runner.md`. Mechanical fields come from `scripts/digest.sh`. The decision lines are written by hand.
 
-The session started at 2026-10-26T15:11 CDT, with a 180-minute budget, so the deadline is about 18:11 CDT.
+Clock: Patrick's TestGorilla timer is the authority. It started at **14:48 CDT**. Feature freeze is at **16:48** (T+120), target submission at **17:35**, and the hard stop at **17:48**. Corrected at 15:30. Claude's session started late, at 15:11; the first entries record that wall-clock time.
 
 
 ## 2026-10-26T15:22:00-05:00 · Gate 1 candidate: Tier 1 MVP (node-ts)

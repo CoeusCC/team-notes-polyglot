@@ -2,7 +2,10 @@
 // Conformance runner. It runs the data-only cases in cases.json against any backend at BASE_URL
 // and validates every response against spec/openapi.yaml.
 //
-//   BASE_URL=http://localhost:3001 node conformance/run.mjs [--only <alias-or-case-prefix>] [--json out.json]
+//   BASE_URL=http://localhost:3001 node conformance/run.mjs [--only <alias-or-case-prefix>] [--json out.json] [--strict]
+//   node conformance/run.mjs --check     # self-check cases.json against the AC file; no server needed
+//
+// --strict also fails when a ratified AC has no case ("unverified"). Draft ACs are reported but not required.
 //
 // It exits 0 only if every case passes. Each case names the AC it falsifies. A failing case refutes that AC.
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -18,8 +21,38 @@ const args = process.argv.slice(2);
 const only = args.includes('--only') ? args[args.indexOf('--only') + 1] : null;
 const jsonOut = args.includes('--json') ? args[args.indexOf('--json') + 1] : null;
 
+const strict = args.includes('--strict');
 const spec = YAML.parse(readFileSync(join(here, '../spec/openapi.yaml'), 'utf8'));
 const { cases, tokens } = JSON.parse(readFileSync(join(here, 'cases.json'), 'utf8'));
+
+// ---- AC catalogue: every card heading, and whether its tier is ratified ------------------------
+const acText = readFileSync(join(here, '../spec/acceptance-criteria.md'), 'utf8');
+const ratifiedTiers = (acText.match(/^ratified_tiers:\s*"([^"]*)"/m)?.[1] ?? '').split(',').map((t) => t.trim()).filter(Boolean);
+const catalogue = {};
+let tier = null;
+for (const line of acText.split('\n')) {
+  const t = line.match(/^## Tier (\d+)/); if (t) tier = t[1];
+  const h = line.match(/^#### (NOTES-[A-Z]+-[A-Z]+-\d+)/);
+  if (h) catalogue[h[1]] = { tier, ratified: ratifiedTiers.includes(tier) };
+}
+
+if (args.includes('--check')) {
+  const problems = [];
+  const ids = new Set();
+  for (const c of cases) {
+    if (ids.has(c.id)) problems.push(`duplicate case id ${c.id}`);
+    ids.add(c.id);
+    if (!catalogue[c.falsifies]) problems.push(`${c.id}: falsifies unknown AC ${c.falsifies}`);
+    for (const [i, st] of (c.steps ?? []).entries())
+      if (st.expect?.status === undefined) problems.push(`${c.id} step ${i + 1}: no expect.status`);
+  }
+  const covered = new Set(cases.map((c) => c.falsifies));
+  for (const [ac, meta] of Object.entries(catalogue))
+    if (!covered.has(ac)) (meta.ratified ? problems : console.log(`note: draft AC ${ac} has no case yet`), meta.ratified && problems.push(`ratified AC ${ac} has no case`));
+  for (const p of problems) console.log(`CHECK ${p}`);
+  console.log(`check: ${cases.length} cases, ${Object.keys(catalogue).length} ACs (ratified tiers: ${ratifiedTiers.join(',') || 'none'}), ${problems.length} problems`);
+  process.exit(problems.length ? 1 : 0);
+}
 
 // ---- OpenAPI response validation -------------------------------------------------------------
 const ajv = new Ajv2020({ strict: false, allErrors: true });
@@ -157,7 +190,11 @@ for (const c of selected) {
 const byAc = {};
 for (const r of results) (byAc[r.falsifies] ??= []).push(r.passed);
 const acVerdicts = Object.fromEntries(Object.entries(byAc).map(([ac, ps]) => [ac, ps.every(Boolean) ? 'passed' : 'refuted']));
+// An AC with no case gets no verdict: it is "unverified", never silently counted as passing.
+const unverified = only ? [] : Object.keys(catalogue).filter((ac) => !byAc[ac] && catalogue[ac].ratified);
+for (const ac of unverified) acVerdicts[ac] = 'unverified';
 const passed = results.filter((r) => r.passed).length;
-console.log(`\n${passed}/${results.length} cases passed · ACs: ${Object.values(acVerdicts).filter((v) => v === 'passed').length}/${Object.keys(acVerdicts).length} passed · BASE_URL=${BASE_URL}`);
+const count = (v) => Object.values(acVerdicts).filter((x) => x === v).length;
+console.log(`\n${passed}/${results.length} cases passed · ACs: ${count('passed')} passed, ${count('refuted')} refuted, ${count('unverified')} unverified (ratified, no case) · BASE_URL=${BASE_URL}`);
 if (jsonOut) writeFileSync(jsonOut, JSON.stringify({ baseUrl: BASE_URL, results, acVerdicts }, null, 2));
-process.exit(passed === results.length ? 0 : 1);
+process.exit(passed === results.length && !(strict && unverified.length) ? 0 : 1);
