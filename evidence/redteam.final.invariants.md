@@ -1,0 +1,471 @@
+# Red team: invariant fuzzer results
+
+Generated 2026-10-26T22:01:22.909Z. Ops per run: 1500. Seeds: 7.
+
+Invariants: I1 no 5xx; I2 4xx is problem+json with matching status; I3 no cross-team leak; I4 monotonic versions / rejected PATCH leaves state alone; I5 no lost update (incl. 16-way burst); I6 deleted-note semantics; I7 ETag == "<version>"; I8 no unauthenticated 2xx except /health; M = model/oracle agreement (status codes per ADR-0003 precedence).
+
+| backend | seed | requests | I1 chk/viol | I2 chk/viol | I3 chk/viol | I4 chk/viol | I5 chk/viol | I6 chk/viol | I7 chk/viol | I8 chk/viol | M chk/viol | bursts ok/total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| node-ts | 7 | 2814 | 2805/0 | 2805/0 | 754/0 | 379/0 | 44/0 | 238/0 | 441/0 | 436/0 | 1263/0 | 12/12 |
+| deno | 7 | 2814 | 2814/0 | 2814/0 | 754/0 | 379/0 | 44/0 | 238/0 | 441/0 | 441/0 | 1271/0 | 12/12 |
+| python | 7 | 2814 | 2813/0 | 2813/0 | 754/0 | 379/0 | 44/0 | 238/0 | 441/0 | 440/0 | 1270/0 | 12/12 |
+| rust | 7 | 2814 | 2814/0 | 2814/0 | 754/0 | 379/0 | 44/0 | 238/0 | 441/0 | 441/0 | 1271/0 | 12/12 |
+| php | 7 | 2814 | 2814/0 | 2814/0 | 754/0 | 379/0 | 44/0 | 238/0 | 441/0 | 441/0 | 1271/0 | 12/12 |
+| go | 7 | 2814 | 2812/0 | 2812/22 | 754/0 | 379/0 | 44/0 | 238/0 | 441/0 | 440/0 | 1270/0 | 12/12 |
+| java | 7 | 2814 | 2778/36 | 2778/0 | 748/0 | 379/0 | 44/0 | 238/0 | 441/0 | 429/0 | 1269/0 | 12/12 |
+| dotnet | 7 | 2814 | 2814/0 | 2814/53 | 754/0 | 379/0 | 44/0 | 238/0 | 441/0 | 441/0 | 1271/2 | 12/12 |
+| bun | 7 | 2814 | 2814/0 | 2814/0 | 754/0 | 379/0 | 44/0 | 238/0 | 441/0 | 441/0 | 1271/0 | 12/12 |
+
+## Violations: go seed 7
+
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `alice GET /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `carol GET /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `none GET /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `alice POST /%E0%A4%A If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `carol POST /%E0%A4%A If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `none POST /%E0%A4%A If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `alice DELETE /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `carol DELETE /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `none DELETE /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `alice PATCH /%E0%A4%A If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `carol PATCH /%E0%A4%A If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `none PATCH /%E0%A4%A If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `alice OPTIONS /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `carol OPTIONS /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type "text/plain; charset=utf-8"
+  - request: `none OPTIONS /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 155: status 400 content-type "text/plain; charset=utf-8"
+  - request: `bob PATCH /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 342: status 400 content-type "text/plain; charset=utf-8"
+  - request: `bob GET /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 573: status 400 content-type "text/plain; charset=utf-8"
+  - request: `alice GET /%E0%A4%A If-Match:*`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 851: status 400 content-type "text/plain; charset=utf-8"
+  - request: `bad PUT /%E0%A4%A If-Match:"1" body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+- **I2** at op 864: status 400 content-type "text/plain; charset=utf-8"
+  - request: `bob DELETE /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target go=http://127.0.0.1:3506 --seed 7 --ops 1500`
+
+## Violations: java seed 7
+
+- **I1** at op 80: transport failure: Error: socket hang up
+  - request: `bob GET /notes/__proto__ If-Match:*`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 105: transport failure: Error: socket hang up
+  - request: `bad PATCH /notes/22def5ed-7a79-427d-a5a6-4895169ca030 If-Match:é body={"body":"multi\nline\r\n"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 155: transport failure: Error: socket hang up
+  - request: `bob PATCH /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 195: transport failure: Error: socket hang up
+  - request: `carol GET /notes/9BB0A26C-17B7-40D5-94F8-6A70647D68DB`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 272: transport failure: Error: socket hang up
+  - request: `none GET /teams/team-red/notes?archived[]=true`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 280: transport failure: Error: socket hang up
+  - request: `alice POST /health?x=1 body={"title":"x"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 436: transport failure: Error: socket hang up
+  - request: `none PUT /teams/team-red/notes// If-Match:"1" body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 453: transport failure: Error: socket hang up
+  - request: `carol PATCH /teams/%74eam-red/notes body={"title":"x","body":" "}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 490: transport failure: Error: socket hang up
+  - request: `bad HEAD /teams//notes`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 503: transport failure: Error: socket hang up
+  - request: `bad OPTIONS /teams/__proto__/notes`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 507: transport failure: Error: socket hang up
+  - request: `bob PUT /health?x=1`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 525: transport failure: Error: socket hang up
+  - request: `bob DELETE /teams/team-red/notes?archived[]=true`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 526: transport failure: Error: socket hang up
+  - request: `bob GET /teams/TEAM-RED/notes If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 673: transport failure: Error: socket hang up
+  - request: `carol PATCH /health?x=1`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 676: transport failure: Error: socket hang up
+  - request: `alice POST /teams/team-red%2fnotes body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 693: transport failure: Error: socket hang up
+  - request: `alice POST /teams/%74eam-red/notes body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 760: transport failure: Error: socket hang up
+  - request: `hdr GET /notes/bc62ebc9-c7d7-42d7-8247-6f6c44ff5383/extra`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 764: transport failure: Error: socket hang up
+  - request: `bad GET /notes/22def5ed-7a79-427d-a5a6-4895169ca030%2f`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 767: transport failure: Error: socket hang up
+  - request: `bob GET /notes/FBDB229E-1A91-4F8A-91E6-FFF6475AEA6B If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 771: transport failure: Error: socket hang up
+  - request: `hdr PUT /teams/team-red/notes/ If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 788: transport failure: Error: socket hang up
+  - request: `carol PATCH /notes/22def5ed-7a79-427d-a5a6-4895169ca030%20 body={"title":"x"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 829: transport failure: Error: socket hang up
+  - request: `bad PATCH /teams/ body=null`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 877: transport failure: Error: socket hang up
+  - request: `carol PUT /notes/8d97fed8-06ef-4ed9-8da0-f74e9577d830%00 If-Match:*`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 901: transport failure: Error: socket hang up
+  - request: `bob PATCH /notes/22def5ed-7a79-427d-a5a6-4895169ca030 If-Match:é body={"title":null}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 944: transport failure: Error: socket hang up
+  - request: `none GET /notes/4723deb5-80fc-4f25-b826-43384374e3de?x=%ff If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 976: transport failure: Error: socket hang up
+  - request: `bob GET /`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 998: transport failure: Error: socket hang up
+  - request: `none GET /notes/4723deb5-80fc-4f25-b826-43384374e3de?x=%ff`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1058: transport failure: Error: socket hang up
+  - request: `bad PUT /notes/88ccad6f-fb96-4bcf-9b4c-f515271e56ab/..`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1122: transport failure: Error: socket hang up
+  - request: `bob POST /notes/%20ab01b3ed-5e70-4685-b392-4d9719267c98 body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1126: transport failure: Error: socket hang up
+  - request: `hdr DELETE /teams/team-red/notes// If-Match:"1"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1174: transport failure: Error: socket hang up
+  - request: `bad GET /notes/65945bb1-d4e2-4369-affa-89ed45d8c68e/restore/`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1232: transport failure: Error: socket hang up
+  - request: `alice PATCH /me?x=1 body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1301: transport failure: Error: socket hang up
+  - request: `none HEAD /notes/..`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1433: transport failure: Error: socket hang up
+  - request: `alice OPTIONS /teams/tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt/notes`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1452: transport failure: Error: socket hang up
+  - request: `alice PATCH /notes/constructor body=null`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+- **I1** at op 1457: transport failure: Error: socket hang up
+  - request: `carol HEAD /notes/2847aa7f-7c71-41d3-8fd1-c6dee505c1ac%00 If-Match:W/"1"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target java=http://127.0.0.1:3507 --seed 7 --ops 1500`
+
+## Violations: dotnet seed 7
+
+- **I2** at op 0: status 400 content-type ""
+  - request: `alice GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `carol GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `none GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `alice POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `carol POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `none POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `alice DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `carol DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `none DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `alice PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `carol PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `none PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:"1" body={"title":"p"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `alice OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `carol OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 0: status 400 content-type ""
+  - request: `none OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 80: status 400 content-type ""
+  - request: `bob GET /notes/__proto__ If-Match:*`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 105: status 400 content-type ""
+  - request: `bad PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887 If-Match:é body={"body":"multi\nline\r\n"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **M** at op 105: expected 401 got 400
+  - request: `bad PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887 If-Match:é body={"body":"multi\nline\r\n"}`
+  - sequence touching the note: `#29 patch bob note#0 v1 ifmatch=stale:"0" {"body":""}` → `#45 delete alice note#0` → `#48 patch alice note#0 v1(deleted) ifmatch=listcur:"1", "2" {"body":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb` → `#49 get carol note#0` → `#50 patch alice note#0 v1(deleted) ifmatch=current:"1" {"title":` → `#52 delete bad note#0` → `#60 patch carol note#0 v1(deleted) ifmatch=weak:W/"1" {"title":"\ud800"}` → `#73 get bob note#0` → `#90 patch alice note#0 v1(deleted) ifmatch=current:"1" {"deletedAt":{}}` → `#97 delete carol note#0` → `#99 patch alice note#0 v1(deleted) ifmatch=missing:undefined {"title":""}` → `#105 patch bad note#0 v1(deleted) ifmatch=garbage:é {"body":"multi\nline\r\n"}`
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 155: status 400 content-type ""
+  - request: `bob PATCH /%E0%A4%A`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 195: status 400 content-type ""
+  - request: `carol GET /notes/B3D88FA1-DE4E-42C8-81BA-8ECB0220C410`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 197: status 400 content-type ""
+  - request: `carol PUT /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%00 If-Match:"1","2" body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 272: status 400 content-type ""
+  - request: `none GET /teams/team-red/notes?archived[]=true`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 280: status 400 content-type ""
+  - request: `alice POST /health?x=1 body={"title":"x"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 436: status 400 content-type ""
+  - request: `none PUT /teams/team-red/notes// If-Match:"1" body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 453: status 400 content-type ""
+  - request: `carol PATCH /teams/%74eam-red/notes body={"title":"x","body":" "}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 503: status 400 content-type ""
+  - request: `bad OPTIONS /teams/__proto__/notes`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 507: status 400 content-type ""
+  - request: `bob PUT /health?x=1`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 511: status 400 content-type ""
+  - request: `alice PUT /notes/25455fcc-1864-4e8c-b745-9348df875f49%00 body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 525: status 400 content-type ""
+  - request: `bob DELETE /teams/team-red/notes?archived[]=true`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 526: status 400 content-type ""
+  - request: `bob GET /teams/TEAM-RED/notes If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 673: status 400 content-type ""
+  - request: `carol PATCH /health?x=1`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 676: status 400 content-type ""
+  - request: `alice POST /teams/team-red%2fnotes body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 693: status 400 content-type ""
+  - request: `alice POST /teams/%74eam-red/notes body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 718: status 400 content-type ""
+  - request: `carol GET /notes/124ca254-799e-4dd8-b82c-e508b16ab3e4%00 If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 760: status 400 content-type ""
+  - request: `hdr GET /notes/642f96ed-8a71-4706-9596-85ba9fd6c9af/extra`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 764: status 400 content-type ""
+  - request: `bad GET /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%2f`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 767: status 400 content-type ""
+  - request: `bob GET /notes/F90FB67C-F948-4AC8-99B0-2D8CDBA1BD45 If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 771: status 400 content-type ""
+  - request: `hdr PUT /teams/team-red/notes/ If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 788: status 400 content-type ""
+  - request: `carol PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%20 body={"title":"x"}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 829: status 400 content-type ""
+  - request: `bad PATCH /teams/ body=null`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 877: status 400 content-type ""
+  - request: `carol PUT /notes/5aabd31d-7920-49d1-bf59-86415f941aca%00 If-Match:*`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 901: status 400 content-type ""
+  - request: `bob PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887 If-Match:é body={"title":null}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **M** at op 901: expected 404 got 400
+  - request: `bob PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887 If-Match:é body={"title":null}`
+  - sequence touching the note: `#381 patch alice note#0 v2(deleted) ifmatch=star:* {"title":"hello"}` → `#388 patch alice note#0 v2(deleted) ifmatch=listcur:"2", "3" {"title":"constructor"}` → `#390 patch alice note#0 v2(deleted) ifmatch=current:"2" {"updatedAt":false}` → `#427 delete bob note#0` → `#477 restore carol note#0 (model deleted=true)` → `#506 delete bob note#0` → `#540 patch carol note#0 v2(deleted) ifmatch=star:* {"title":"  padded  ","body":"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀` → `#593 get carol note#0` → `#641 delete none note#0` → `#647 patch alice note#0 v2(deleted) ifmatch=star:* {"body":"body text"}` → `#679 patch carol note#0 v2(deleted) ifmatch=future:"4" {"body":"multi\nline\r\n"}` → `#901 patch bob note#0 v2(deleted) ifmatch=garbage:é {"title":null}`
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 944: status 400 content-type ""
+  - request: `none GET /notes/5201b084-3560-40a0-8fae-062e8f55aea4?x=%ff If-Match:"1","2"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 976: status 400 content-type ""
+  - request: `bob GET /`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 998: status 400 content-type ""
+  - request: `none GET /notes/5201b084-3560-40a0-8fae-062e8f55aea4?x=%ff`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1058: status 400 content-type ""
+  - request: `bad PUT /notes/a0f4d4c0-57ef-4b8f-b0a7-395175f6bd4c/..`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1122: status 400 content-type ""
+  - request: `bob POST /notes/%204ae1fb63-f812-4dba-9fce-4d6a52ce27ec body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1125: status 400 content-type ""
+  - request: `carol PATCH /notes/3ac744ad-1ccd-42b3-8159-e17db6fae3fa%00 If-Match:"1"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1126: status 400 content-type ""
+  - request: `hdr DELETE /teams/team-red/notes// If-Match:"1"`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1174: status 400 content-type ""
+  - request: `bad GET /notes/25455fcc-1864-4e8c-b745-9348df875f49/restore/`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1232: status 400 content-type ""
+  - request: `alice PATCH /me?x=1 body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1339: status 400 content-type ""
+  - request: `bad PATCH /notes/02670869-fefa-492c-a579-fe379acd93f1%00 body={}`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1433: status 400 content-type ""
+  - request: `alice OPTIONS /teams/tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt/notes`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+- **I2** at op 1452: status 400 content-type ""
+  - request: `alice PATCH /notes/constructor body=null`
+  - sequence touching the note: (none)
+  - repro: `node redteam/invariants.mjs --target dotnet=http://127.0.0.1:3508 --seed 7 --ops 1500`
+

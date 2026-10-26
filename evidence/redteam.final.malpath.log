@@ -1,0 +1,36 @@
+### go
+  /%E0%A4%A              authed=400/text/plain  notoken=400  <-- AUTHN/ERR issue
+  /%E0                   authed=404/application/problem+json  notoken=401
+  /%                     authed=400/text/plain  notoken=400  <-- AUTHN/ERR issue
+  /%zz                   authed=400/text/plain  notoken=400  <-- AUTHN/ERR issue
+  /notes/%00             authed=404/application/problem+json  notoken=401
+  /notes/%ff             authed=404/application/problem+json  notoken=401
+  /notes/x%00y           authed=404/application/problem+json  notoken=401
+  /%00                   authed=404/application/problem+json  notoken=401
+  /teams/%00/notes       authed=404/application/problem+json  notoken=401
+  /notes/a?x=%ff         authed=404/application/problem+json  notoken=401
+  /notes/a?x=%00         authed=404/application/problem+json  notoken=401
+### dotnet
+  /%E0%A4%A              authed=404/application/problem+json  notoken=401
+  /%E0                   authed=404/application/problem+json  notoken=401
+  /%                     authed=404/application/problem+json  notoken=401
+  /%zz                   authed=404/application/problem+json  notoken=401
+  /notes/%00             authed=400/-  notoken=400  <-- AUTHN/ERR issue
+  /notes/%ff             authed=404/application/problem+json  notoken=401
+  /notes/x%00y           authed=400/-  notoken=400  <-- AUTHN/ERR issue
+  /%00                   authed=400/-  notoken=400  <-- AUTHN/ERR issue
+  /teams/%00/notes       authed=400/-  notoken=400  <-- AUTHN/ERR issue
+  /notes/a?x=%ff         authed=404/application/problem+json  notoken=401
+  /notes/a?x=%00         authed=404/application/problem+json  notoken=401
+### node-ts
+  /%E0%A4%A              authed=404/application/problem+json  notoken=401
+  /%E0                   authed=404/application/problem+json  notoken=401
+  /%                     authed=404/application/problem+json  notoken=401
+  /%zz                   authed=404/application/problem+json  notoken=401
+  /notes/%00             authed=404/application/problem+json  notoken=401
+  /notes/%ff             authed=404/application/problem+json  notoken=401
+  /notes/x%00y           authed=404/application/problem+json  notoken=401
+  /%00                   authed=404/application/problem+json  notoken=401
+  /teams/%00/notes       authed=404/application/problem+json  notoken=401
+  /notes/a?x=%ff         authed=404/application/problem+json  notoken=401
+  /notes/a?x=%00         authed=404/application/problem+json  notoken=401

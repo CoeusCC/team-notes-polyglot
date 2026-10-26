@@ -1,0 +1,18 @@
+=== HEAD raw-socket body-presence (RFC 9110) ===
+node-ts  status=404 CL=88 bytesAfterHeaders=0 ok
+deno     status=404 CL=82 bytesAfterHeaders=0 ok
+python   status=404 CL=88 bytesAfterHeaders=0 ok
+rust     status=404 CL=88 bytesAfterHeaders=0 ok
+php      status=404 CL=undefined bytesAfterHeaders=0 ok
+go       status=404 CL=55 bytesAfterHeaders=0 ok
+java     status=404 CL=55 bytesAfterHeaders=55 BODY-ON-HEAD!
+dotnet   status=timeout CL=55 bytesAfterHeaders=0 ok
+bun      status=404 CL=undefined bytesAfterHeaders=0 ok
+
+=== java/dotnet raw HEAD ===
+=== dotnet raw HEAD (status=timeout) ===
+"HTTP/1.1 404 Not Found\r\nContent-Length: 55\r\nConnection: close\r\nContent-Type: application/problem+json\r\nDate: Mon, 26 Oct 2026 22:07:16 GMT\r\n\r\n"
+dotnet node:http HEAD -> 404 CL=55
+=== java raw HEAD (status=404) ===
+"HTTP/1.1 404 Not Found\r\nContent-type: application/problem+json\r\nContent-Length: 55\r\n\r\n{\"type\":\"about:blank\",\"title\":\"Not Found\",\"status\":404}"
+java node:http HEAD -> 404 CL=55

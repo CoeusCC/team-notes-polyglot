@@ -1,0 +1,90 @@
+### node-ts
+   /%E0%A4%A a=404/application/problem+json n=401
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=404/application/problem+json n=401
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401
+### deno
+   /%E0%A4%A a=404/application/problem+json n=401
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=404/application/problem+json n=401
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401
+### python
+   /%E0%A4%A a=404/application/problem+json n=401
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=404/application/problem+json n=401
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401
+### rust
+   /%E0%A4%A a=404/application/problem+json n=401
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=404/application/problem+json n=401
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401
+### php
+   /%E0%A4%A a=404/application/problem+json n=401
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=404/application/problem+json n=401
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401
+### go
+   /%E0%A4%A a=400/text/plain n=400
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=404/application/problem+json n=401
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401
+### java
+   /%E0%A4%A a=404/application/problem+json n=401
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=404/application/problem+json n=401
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401
+### dotnet
+   /%E0%A4%A a=404/application/problem+json n=401
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=400/- n=400
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401
+### bun
+   /%E0%A4%A a=404/application/problem+json n=401
+   /notes/__proto__ a=404/application/problem+json n=401
+   /teams//notes a=404/application/problem+json n=401
+   /teams/team-red/notes// a=404/application/problem+json n=401
+   /notes/%00 a=404/application/problem+json n=401
+   /x/../me a=404/application/problem+json n=401
+   /notes/not-a-uuid a=404/application/problem+json n=401
+   /%2e%2e%2fteams a=404/application/problem+json n=401
+   /notes/%E0 a=404/application/problem+json n=401

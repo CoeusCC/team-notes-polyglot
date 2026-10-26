@@ -9,3 +9,5 @@ evidence/tmp/
 evidence/*.server.log
 .dogfood/
 bench/results/
+.redact-patterns
+.redact-deny

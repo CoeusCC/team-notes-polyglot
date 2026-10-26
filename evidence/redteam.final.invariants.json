@@ -1,0 +1,1831 @@
+{
+  "generated": "2026-10-26T22:01:22.911Z",
+  "ops": 1500,
+  "seeds": [
+    7
+  ],
+  "results": [
+    {
+      "target": "node-ts",
+      "url": "http://127.0.0.1:3501",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 9,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 3067,
+      "checks": {
+        "I1": 2805,
+        "I2": 2805,
+        "I3": 754,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 436,
+        "M": 1263
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 45
+    },
+    {
+      "target": "deno",
+      "url": "http://127.0.0.1:3502",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 1414,
+      "checks": {
+        "I1": 2814,
+        "I2": 2814,
+        "I3": 754,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 441,
+        "M": 1271
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 45
+    },
+    {
+      "target": "python",
+      "url": "http://127.0.0.1:3503",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 1,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 16568,
+      "checks": {
+        "I1": 2813,
+        "I2": 2813,
+        "I3": 754,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 440,
+        "M": 1270
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 45
+    },
+    {
+      "target": "rust",
+      "url": "http://127.0.0.1:3504",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 977,
+      "checks": {
+        "I1": 2814,
+        "I2": 2814,
+        "I3": 754,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 441,
+        "M": 1271
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 45
+    },
+    {
+      "target": "php",
+      "url": "http://127.0.0.1:3505",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 2975,
+      "checks": {
+        "I1": 2814,
+        "I2": 2814,
+        "I3": 754,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 441,
+        "M": 1271
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 45
+    },
+    {
+      "target": "go",
+      "url": "http://127.0.0.1:3506",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 2,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 2860,
+      "checks": {
+        "I1": 2812,
+        "I2": 2812,
+        "I3": 754,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 440,
+        "M": 1270
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 22,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice GET /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol OPTIONS /notes/%20df04104b-a7ac-4909-96ee-93e61b6d723f",
+            "#0 probe none OPTIONS /notes/%20df04104b-a7ac-4909-96ee-93e61b6d723f",
+            "#0 probe alice GET /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol GET /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none OPTIONS /notes/%20df04104b-a7ac-4909-96ee-93e61b6d723f",
+            "#0 probe alice GET /%E0%A4%A",
+            "#0 probe carol GET /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none GET /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice GET /%E0%A4%A",
+            "#0 probe carol GET /%E0%A4%A",
+            "#0 probe none GET /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice POST /%E0%A4%A If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol GET /%E0%A4%A",
+            "#0 probe none GET /%E0%A4%A",
+            "#0 probe alice POST /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol POST /%E0%A4%A If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none GET /%E0%A4%A",
+            "#0 probe alice POST /%E0%A4%A",
+            "#0 probe carol POST /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none POST /%E0%A4%A If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice POST /%E0%A4%A",
+            "#0 probe carol POST /%E0%A4%A",
+            "#0 probe none POST /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice DELETE /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol POST /%E0%A4%A",
+            "#0 probe none POST /%E0%A4%A",
+            "#0 probe alice DELETE /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol DELETE /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none POST /%E0%A4%A",
+            "#0 probe alice DELETE /%E0%A4%A",
+            "#0 probe carol DELETE /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none DELETE /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice DELETE /%E0%A4%A",
+            "#0 probe carol DELETE /%E0%A4%A",
+            "#0 probe none DELETE /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice PATCH /%E0%A4%A If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol DELETE /%E0%A4%A",
+            "#0 probe none DELETE /%E0%A4%A",
+            "#0 probe alice PATCH /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol PATCH /%E0%A4%A If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none DELETE /%E0%A4%A",
+            "#0 probe alice PATCH /%E0%A4%A",
+            "#0 probe carol PATCH /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none PATCH /%E0%A4%A If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice PATCH /%E0%A4%A",
+            "#0 probe carol PATCH /%E0%A4%A",
+            "#0 probe none PATCH /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice OPTIONS /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol HEAD /%E0%A4%A",
+            "#0 probe none HEAD /%E0%A4%A",
+            "#0 probe alice OPTIONS /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol OPTIONS /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none HEAD /%E0%A4%A",
+            "#0 probe alice OPTIONS /%E0%A4%A",
+            "#0 probe carol OPTIONS /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none OPTIONS /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice OPTIONS /%E0%A4%A",
+            "#0 probe carol OPTIONS /%E0%A4%A",
+            "#0 probe none OPTIONS /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 155,
+          "desc": "bob PATCH /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#153 hostile bad GET /notes/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "#154 hostile alice GET /notes/%2e%2e%2fteams",
+            "#155 hostile bob PATCH /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 342,
+          "desc": "bob GET /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#340 delete alice note#10",
+            "#341 hostile alice GET /teams/team-red/notes?archived[]=true",
+            "#342 hostile bob GET /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 573,
+          "desc": "alice GET /%E0%A4%A If-Match:*",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#571 get alice note#6",
+            "#572 hostile bob POST /notes/__proto__ auth=\"tok_alice\"",
+            "#573 hostile alice GET /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 824,
+          "desc": "alice OPTIONS /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#822 hostile bob GET /me?x=1",
+            "#823 list bob team-red?archived=TRUE&x=%E0",
+            "#824 hostile alice OPTIONS /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 851,
+          "desc": "bad PUT /%E0%A4%A If-Match:\"1\" body={}",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#849 list carol team-blue?archived=TRUE&x=%E0",
+            "#850 patch none note#2 v6 ifmatch=current:\"6\" {\"updatedAt\":null}",
+            "#851 hostile bad PUT /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 855,
+          "desc": "alice DELETE /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#853 hostile bad HEAD /notes/%203eb9c58d-cfd1-4ff9-a03d-aeac02c84a63",
+            "#854 create bob team-red {\"title\":\"a b\\tc\",\"body\":\"\"}",
+            "#855 hostile alice DELETE /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 864,
+          "desc": "bob DELETE /%E0%A4%A",
+          "detail": "status 400 content-type \"text/plain; charset=utf-8\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#862 delete bob note#11",
+            "#863 restore alice note#24 (model deleted=false)",
+            "#864 hostile bob DELETE /%E0%A4%A"
+          ]
+        }
+      ],
+      "notesCreated": 45
+    },
+    {
+      "target": "java",
+      "url": "http://127.0.0.1:3507",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 36,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 7944,
+      "checks": {
+        "I1": 2778,
+        "I2": 2778,
+        "I3": 748,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 429,
+        "M": 1269
+      },
+      "violationCounts": {
+        "I1": 36,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 80,
+          "desc": "bob GET /notes/__proto__ If-Match:*",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#78 patch bob note#1 v1(deleted) ifmatch=current:\"1\" {\"title\":\"  padded  \"}",
+            "#79 hostile alice PUT /health/",
+            "#80 hostile bob GET /notes/__proto__"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 105,
+          "desc": "bad PATCH /notes/22def5ed-7a79-427d-a5a6-4895169ca030 If-Match:é body={\"body\":\"multi\\nline\\r\\n\"}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#103 patch bob note#3 v1 ifmatch=listcur:\"1\", \"2\" {\"body\":\"\"}",
+            "#104 hostile none POST /",
+            "#105 patch bad note#0 v1(deleted) ifmatch=garbage:é {\"body\":\"multi\\nline\\r\\n\"}"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 155,
+          "desc": "bob PATCH /%E0%A4%A",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#153 hostile bad GET /notes/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "#154 hostile alice GET /notes/%2e%2e%2fteams",
+            "#155 hostile bob PATCH /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 195,
+          "desc": "carol GET /notes/9BB0A26C-17B7-40D5-94F8-6A70647D68DB",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#193 patch bad note#5 v1(deleted) ifmatch=garbage:\"-1\" {\"title\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "#194 restore bob note#1 (model deleted=false)",
+            "#195 hostile carol GET /notes/9BB0A26C-17B7-40D5-94F8-6A70647D68DB"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 272,
+          "desc": "none GET /teams/team-red/notes?archived[]=true",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#270 patch carol note#7 v1 ifmatch=garbage:99999999999999999999 {\"title\":\"hello\"}",
+            "#271 get carol note#7",
+            "#272 hostile none GET /teams/team-red/notes?archived[]=true"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 280,
+          "desc": "alice POST /health?x=1 body={\"title\":\"x\"}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#278 create alice team-blue {\"title\":\"hello\",\"body\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "#279 patch alice note#9 v1 ifmatch=current:\"1\" {\"body\":[]}",
+            "#280 hostile alice POST /health?x=1"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 436,
+          "desc": "none PUT /teams/team-red/notes// If-Match:\"1\" body={}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#434 patch bob note#4 v5 ifmatch=current:\"5\" {\"body\":\"😀😀😀😀😀😀😀😀\"}",
+            "#435 patch alice note#9 v1 ifmatch=stale:\"0\" {\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#436 hostile none PUT /teams/team-red/notes//"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 453,
+          "desc": "carol PATCH /teams/%74eam-red/notes body={\"title\":\"x\",\"body\":\"\u0000\"}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#451 create alice team-red {\"title\":\"Ünï 😀\"}",
+            "#452 list alice team-red?archived=true&archived=false",
+            "#453 hostile carol PATCH /teams/%74eam-red/notes"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 490,
+          "desc": "bad HEAD /teams//notes",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#488 patch alice note#13 v1 ifmatch=star:* {\"body\":\"multi\\nline\\r\\n\"}",
+            "#489 list carol team-blue",
+            "#490 hostile bad HEAD /teams//notes"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 503,
+          "desc": "bad OPTIONS /teams/__proto__/notes",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#501 restore bob note#8 (model deleted=true)",
+            "#502 patch carol note#15 v2 ifmatch=current:\"2\" null",
+            "#503 hostile bad OPTIONS /teams/__proto__/notes"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 507,
+          "desc": "bob PUT /health?x=1",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#505 patch bad note#10 v3 ifmatch=current:\"3\" {\"title\":\"t946991\",\"body\":\"\"}",
+            "#506 delete bob note#0",
+            "#507 hostile bob PUT /health?x=1"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 525,
+          "desc": "bob DELETE /teams/team-red/notes?archived[]=true",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#523 get alice note#14",
+            "#524 restore alice note#3 (model deleted=false)",
+            "#525 hostile bob DELETE /teams/team-red/notes?archived[]=true"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 526,
+          "desc": "bob GET /teams/TEAM-RED/notes If-Match:\"1\",\"2\"",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#524 restore alice note#3 (model deleted=false)",
+            "#525 hostile bob DELETE /teams/team-red/notes?archived[]=true",
+            "#526 hostile bob GET /teams/TEAM-RED/notes"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 673,
+          "desc": "carol PATCH /health?x=1",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#671 get bob note#12",
+            "#672 create none __proto__ {\"title\":\"hello\",\"body\":\"body text\"}",
+            "#673 hostile carol PATCH /health?x=1"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 676,
+          "desc": "alice POST /teams/team-red%2fnotes body={}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#674 get bad note#21",
+            "#675 patch alice note#8 v4(deleted) ifmatch=current:\"4\" {\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#676 hostile alice POST /teams/team-red%2fnotes"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 693,
+          "desc": "alice POST /teams/%74eam-red/notes body={}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#691 patch bob note#14 v1(deleted) ifmatch=future:\"5\" {\"body\":\"multi\\nline\\r\\n\"}",
+            "#692 get carol note#3",
+            "#693 hostile alice POST /teams/%74eam-red/notes"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 760,
+          "desc": "hdr GET /notes/bc62ebc9-c7d7-42d7-8247-6f6c44ff5383/extra",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#758 create alice team-blue {\"title\":\"ok\",\"deletedAt\":true}",
+            "#759 get carol note#22",
+            "#760 hostile alice GET /notes/bc62ebc9-c7d7-42d7-8247-6f6c44ff5383/extra auth=\"Bearer\""
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 764,
+          "desc": "bad GET /notes/22def5ed-7a79-427d-a5a6-4895169ca030%2f",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#762 get carol note#18",
+            "#763 get alice note#13",
+            "#764 hostile bad GET /notes/22def5ed-7a79-427d-a5a6-4895169ca030%2f"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 767,
+          "desc": "bob GET /notes/FBDB229E-1A91-4F8A-91E6-FFF6475AEA6B If-Match:\"1\",\"2\"",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#765 hostile bob OPTIONS /teams/constructor/notes",
+            "#766 list carol team-red?archived=TRUE&x=%E0",
+            "#767 hostile bob GET /notes/FBDB229E-1A91-4F8A-91E6-FFF6475AEA6B"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 771,
+          "desc": "hdr PUT /teams/team-red/notes/ If-Match:\"1\",\"2\"",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#769 create carol team-red {\"title\":\"ok\",\"version\":false}",
+            "#770 patch bob note#8 v4(deleted) ifmatch=listcur:\"4\", \"5\" {\"title\":\"  padded  \"}",
+            "#771 hostile bob PUT /teams/team-red/notes/ auth=\"Bearer\""
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 788,
+          "desc": "carol PATCH /notes/22def5ed-7a79-427d-a5a6-4895169ca030%20 body={\"title\":\"x\"}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#786 patch bob note#9 v1 ifmatch=weak:W/\"1\" {\"body\":\"multi\\nline\\r\\n\"}",
+            "#787 get bad note#16",
+            "#788 hostile carol PATCH /notes/22def5ed-7a79-427d-a5a6-4895169ca030%20"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 829,
+          "desc": "bad PATCH /teams/ body=null",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#827 patch bob note#8 v4(deleted) ifmatch=star:* {\"body\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "#828 create alice team-red%2f.. {\"title\":\"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀\"}",
+            "#829 hostile bad PATCH /teams/"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 877,
+          "desc": "carol PUT /notes/8d97fed8-06ef-4ed9-8da0-f74e9577d830%00 If-Match:*",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#875 restore carol note#17 (model deleted=true)",
+            "#876 hostile none PUT /teams/TEAM-RED/notes",
+            "#877 hostile carol PUT /notes/8d97fed8-06ef-4ed9-8da0-f74e9577d830%00"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 901,
+          "desc": "bob PATCH /notes/22def5ed-7a79-427d-a5a6-4895169ca030 If-Match:é body={\"title\":null}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#900 BURST 16x PATCH note#25 If-Match \"1\"",
+            "#900 list alice team-blue",
+            "#901 patch bob note#0 v2(deleted) ifmatch=garbage:é {\"title\":null}"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 944,
+          "desc": "none GET /notes/4723deb5-80fc-4f25-b826-43384374e3de?x=%ff If-Match:\"1\",\"2\"",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#942 get bob note#29",
+            "#943 get bad note#14",
+            "#944 hostile none GET /notes/4723deb5-80fc-4f25-b826-43384374e3de?x=%ff"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 976,
+          "desc": "bob GET /",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#974 patch alice note#19 v1 ifmatch=current:\"1\" {\"body\":\"😀😀😀😀😀😀\"}",
+            "#975 patch none note#3 v5 ifmatch=garbage:\"\" {\"title\":\"hello\",\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#976 hostile bob GET /"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 998,
+          "desc": "none GET /notes/4723deb5-80fc-4f25-b826-43384374e3de?x=%ff",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#996 patch alice note#20 v2 ifmatch=missing:undefined {",
+            "#997 delete alice note#5",
+            "#998 hostile none GET /notes/4723deb5-80fc-4f25-b826-43384374e3de?x=%ff"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1058,
+          "desc": "bad PUT /notes/88ccad6f-fb96-4bcf-9b4c-f515271e56ab/..",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1056 list bob team-blue?archived=",
+            "#1057 restore bob note#4 (model deleted=true)",
+            "#1058 hostile bad PUT /notes/88ccad6f-fb96-4bcf-9b4c-f515271e56ab/.."
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1122,
+          "desc": "bob POST /notes/%20ab01b3ed-5e70-4685-b392-4d9719267c98 body={}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1120 delete alice note#9",
+            "#1121 get alice note#14",
+            "#1122 hostile bob POST /notes/%20ab01b3ed-5e70-4685-b392-4d9719267c98"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1126,
+          "desc": "hdr DELETE /teams/team-red/notes// If-Match:\"1\"",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1124 list bob team-blue?archived=",
+            "#1125 hostile carol PATCH /notes/9d3aca67-aa34-4c3f-aab3-9a90f0f83855%00",
+            "#1126 hostile carol DELETE /teams/team-red/notes// auth=\"tok_alice\""
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1174,
+          "desc": "bad GET /notes/65945bb1-d4e2-4369-affa-89ed45d8c68e/restore/",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1172 patch bob note#2 v6(deleted) ifmatch=current:\"6\" {\"title\":\"hello\",\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#1173 patch bad note#11 v2(deleted) ifmatch=current:\"2\" {\"title\":\"t429490\"}",
+            "#1174 hostile bad GET /notes/65945bb1-d4e2-4369-affa-89ed45d8c68e/restore/"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1232,
+          "desc": "alice PATCH /me?x=1 body={}",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1230 patch carol note#33 v1 ifmatch=current:\"1\" {\"title\":true}",
+            "#1231 patch bob note#38 v1 ifmatch=list:\"2\", \"3\" {\"body\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "#1232 hostile alice PATCH /me?x=1"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1301,
+          "desc": "none HEAD /notes/..",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1299 get bob note#41",
+            "#1300 patch bob note#21 v2 ifmatch=current:\"2\" {\"title\":\"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+            "#1301 hostile none HEAD /notes/.."
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1433,
+          "desc": "alice OPTIONS /teams/tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt/notes",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1431 hostile alice OPTIONS /notes/constructor",
+            "#1432 hostile bad GET /health/",
+            "#1433 hostile alice OPTIONS /teams/ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1452,
+          "desc": "alice PATCH /notes/constructor body=null",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1450 patch carol note#30 v5(deleted) ifmatch=current:\"5\" {\"title\":\"Ünï 😀\",\"body\":\"multi\\nline\\r\\n\"}",
+            "#1451 patch carol note#23 v2 ifmatch=current:\"2\" {\"title\":\"a b\\tc\"}",
+            "#1452 hostile alice PATCH /notes/constructor"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 7,
+          "op": 1457,
+          "desc": "carol HEAD /notes/2847aa7f-7c71-41d3-8fd1-c6dee505c1ac%00 If-Match:W/\"1\"",
+          "detail": "transport failure: Error: socket hang up",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1455 patch carol note#6 v1 ifmatch=current:\"1\" {\"body\":\"body text\"}",
+            "#1456 list alice team-blue?archived=TRUE&x=%E0",
+            "#1457 hostile carol HEAD /notes/2847aa7f-7c71-41d3-8fd1-c6dee505c1ac%00"
+          ]
+        }
+      ],
+      "notesCreated": 45
+    },
+    {
+      "target": "dotnet",
+      "url": "http://127.0.0.1:3508",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 3171,
+      "checks": {
+        "I1": 2814,
+        "I2": 2814,
+        "I3": 754,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 441,
+        "M": 1271
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 53,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 2
+      },
+      "violations": [
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%2f",
+            "#0 probe none OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%2f",
+            "#0 probe alice GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%2f",
+            "#0 probe alice GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe alice POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none GET /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe alice POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe alice DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none POST /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe alice DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe alice PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none DELETE /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe alice PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00 If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none PATCH /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "alice OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol HEAD /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none HEAD /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe alice OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "carol OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none HEAD /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe alice OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 0,
+          "desc": "none OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe carol OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00",
+            "#0 probe none OPTIONS /notes/cb5beec9-cc88-4aa9-b79f-ed03b8e51b28%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 80,
+          "desc": "bob GET /notes/__proto__ If-Match:*",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#78 patch bob note#1 v1(deleted) ifmatch=current:\"1\" {\"title\":\"  padded  \"}",
+            "#79 hostile alice PUT /health/",
+            "#80 hostile bob GET /notes/__proto__"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 105,
+          "desc": "bad PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887 If-Match:é body={\"body\":\"multi\\nline\\r\\n\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#103 patch bob note#3 v1 ifmatch=listcur:\"1\", \"2\" {\"body\":\"\"}",
+            "#104 hostile none POST /",
+            "#105 patch bad note#0 v1(deleted) ifmatch=garbage:é {\"body\":\"multi\\nline\\r\\n\"}"
+          ]
+        },
+        {
+          "inv": "M",
+          "seed": 7,
+          "op": 105,
+          "desc": "bad PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887 If-Match:é body={\"body\":\"multi\\nline\\r\\n\"}",
+          "detail": "expected 401 got 400",
+          "minimalSequence": [
+            "#29 patch bob note#0 v1 ifmatch=stale:\"0\" {\"body\":\"\"}",
+            "#45 delete alice note#0",
+            "#48 patch alice note#0 v1(deleted) ifmatch=listcur:\"1\", \"2\" {\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#49 get carol note#0",
+            "#50 patch alice note#0 v1(deleted) ifmatch=current:\"1\" {\"title\":",
+            "#52 delete bad note#0",
+            "#60 patch carol note#0 v1(deleted) ifmatch=weak:W/\"1\" {\"title\":\"\\ud800\"}",
+            "#73 get bob note#0",
+            "#90 patch alice note#0 v1(deleted) ifmatch=current:\"1\" {\"deletedAt\":{}}",
+            "#97 delete carol note#0",
+            "#99 patch alice note#0 v1(deleted) ifmatch=missing:undefined {\"title\":\"\"}",
+            "#105 patch bad note#0 v1(deleted) ifmatch=garbage:é {\"body\":\"multi\\nline\\r\\n\"}"
+          ],
+          "lastOps": [
+            "#103 patch bob note#3 v1 ifmatch=listcur:\"1\", \"2\" {\"body\":\"\"}",
+            "#104 hostile none POST /",
+            "#105 patch bad note#0 v1(deleted) ifmatch=garbage:é {\"body\":\"multi\\nline\\r\\n\"}"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 155,
+          "desc": "bob PATCH /%E0%A4%A",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#153 hostile bad GET /notes/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "#154 hostile alice GET /notes/%2e%2e%2fteams",
+            "#155 hostile bob PATCH /%E0%A4%A"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 195,
+          "desc": "carol GET /notes/B3D88FA1-DE4E-42C8-81BA-8ECB0220C410",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#193 patch bad note#5 v1(deleted) ifmatch=garbage:\"-1\" {\"title\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "#194 restore bob note#1 (model deleted=false)",
+            "#195 hostile carol GET /notes/B3D88FA1-DE4E-42C8-81BA-8ECB0220C410"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 197,
+          "desc": "carol PUT /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%00 If-Match:\"1\",\"2\" body={}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#195 hostile carol GET /notes/B3D88FA1-DE4E-42C8-81BA-8ECB0220C410",
+            "#196 get bob note#0",
+            "#197 hostile carol PUT /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 272,
+          "desc": "none GET /teams/team-red/notes?archived[]=true",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#270 patch carol note#7 v1 ifmatch=garbage:99999999999999999999 {\"title\":\"hello\"}",
+            "#271 get carol note#7",
+            "#272 hostile none GET /teams/team-red/notes?archived[]=true"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 280,
+          "desc": "alice POST /health?x=1 body={\"title\":\"x\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#278 create alice team-blue {\"title\":\"hello\",\"body\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "#279 patch alice note#9 v1 ifmatch=current:\"1\" {\"body\":[]}",
+            "#280 hostile alice POST /health?x=1"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 436,
+          "desc": "none PUT /teams/team-red/notes// If-Match:\"1\" body={}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#434 patch bob note#4 v5 ifmatch=current:\"5\" {\"body\":\"😀😀😀😀😀😀😀😀\"}",
+            "#435 patch alice note#9 v1 ifmatch=stale:\"0\" {\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#436 hostile none PUT /teams/team-red/notes//"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 453,
+          "desc": "carol PATCH /teams/%74eam-red/notes body={\"title\":\"x\",\"body\":\"\u0000\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#451 create alice team-red {\"title\":\"Ünï 😀\"}",
+            "#452 list alice team-red?archived=true&archived=false",
+            "#453 hostile carol PATCH /teams/%74eam-red/notes"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 503,
+          "desc": "bad OPTIONS /teams/__proto__/notes",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#501 restore bob note#8 (model deleted=true)",
+            "#502 patch carol note#15 v2 ifmatch=current:\"2\" null",
+            "#503 hostile bad OPTIONS /teams/__proto__/notes"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 507,
+          "desc": "bob PUT /health?x=1",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#505 patch bad note#10 v3 ifmatch=current:\"3\" {\"title\":\"t946991\",\"body\":\"\"}",
+            "#506 delete bob note#0",
+            "#507 hostile bob PUT /health?x=1"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 511,
+          "desc": "alice PUT /notes/25455fcc-1864-4e8c-b745-9348df875f49%00 body={}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#509 delete alice note#5",
+            "#510 delete alice note#8",
+            "#511 hostile alice PUT /notes/25455fcc-1864-4e8c-b745-9348df875f49%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 525,
+          "desc": "bob DELETE /teams/team-red/notes?archived[]=true",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#523 get alice note#14",
+            "#524 restore alice note#3 (model deleted=false)",
+            "#525 hostile bob DELETE /teams/team-red/notes?archived[]=true"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 526,
+          "desc": "bob GET /teams/TEAM-RED/notes If-Match:\"1\",\"2\"",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#524 restore alice note#3 (model deleted=false)",
+            "#525 hostile bob DELETE /teams/team-red/notes?archived[]=true",
+            "#526 hostile bob GET /teams/TEAM-RED/notes"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 673,
+          "desc": "carol PATCH /health?x=1",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#671 get bob note#12",
+            "#672 create none __proto__ {\"title\":\"hello\",\"body\":\"body text\"}",
+            "#673 hostile carol PATCH /health?x=1"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 676,
+          "desc": "alice POST /teams/team-red%2fnotes body={}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#674 get bad note#21",
+            "#675 patch alice note#8 v4(deleted) ifmatch=current:\"4\" {\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#676 hostile alice POST /teams/team-red%2fnotes"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 693,
+          "desc": "alice POST /teams/%74eam-red/notes body={}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#691 patch bob note#14 v1(deleted) ifmatch=future:\"5\" {\"body\":\"multi\\nline\\r\\n\"}",
+            "#692 get carol note#3",
+            "#693 hostile alice POST /teams/%74eam-red/notes"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 718,
+          "desc": "carol GET /notes/124ca254-799e-4dd8-b82c-e508b16ab3e4%00 If-Match:\"1\",\"2\"",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#716 delete alice note#12",
+            "#717 patch alice note#4 v6(deleted) ifmatch=current:\"6\" {\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#718 hostile carol GET /notes/124ca254-799e-4dd8-b82c-e508b16ab3e4%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 760,
+          "desc": "hdr GET /notes/642f96ed-8a71-4706-9596-85ba9fd6c9af/extra",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#758 create alice team-blue {\"title\":\"ok\",\"deletedAt\":true}",
+            "#759 get carol note#22",
+            "#760 hostile alice GET /notes/642f96ed-8a71-4706-9596-85ba9fd6c9af/extra auth=\"Bearer\""
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 764,
+          "desc": "bad GET /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%2f",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#762 get carol note#18",
+            "#763 get alice note#13",
+            "#764 hostile bad GET /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%2f"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 767,
+          "desc": "bob GET /notes/F90FB67C-F948-4AC8-99B0-2D8CDBA1BD45 If-Match:\"1\",\"2\"",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#765 hostile bob OPTIONS /teams/constructor/notes",
+            "#766 list carol team-red?archived=TRUE&x=%E0",
+            "#767 hostile bob GET /notes/F90FB67C-F948-4AC8-99B0-2D8CDBA1BD45"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 771,
+          "desc": "hdr PUT /teams/team-red/notes/ If-Match:\"1\",\"2\"",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#769 create carol team-red {\"title\":\"ok\",\"version\":false}",
+            "#770 patch bob note#8 v4(deleted) ifmatch=listcur:\"4\", \"5\" {\"title\":\"  padded  \"}",
+            "#771 hostile bob PUT /teams/team-red/notes/ auth=\"Bearer\""
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 788,
+          "desc": "carol PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%20 body={\"title\":\"x\"}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#786 patch bob note#9 v1 ifmatch=weak:W/\"1\" {\"body\":\"multi\\nline\\r\\n\"}",
+            "#787 get bad note#16",
+            "#788 hostile carol PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887%20"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 829,
+          "desc": "bad PATCH /teams/ body=null",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#827 patch bob note#8 v4(deleted) ifmatch=star:* {\"body\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "#828 create alice team-red%2f.. {\"title\":\"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀\"}",
+            "#829 hostile bad PATCH /teams/"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 877,
+          "desc": "carol PUT /notes/5aabd31d-7920-49d1-bf59-86415f941aca%00 If-Match:*",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#875 restore carol note#17 (model deleted=true)",
+            "#876 hostile none PUT /teams/TEAM-RED/notes",
+            "#877 hostile carol PUT /notes/5aabd31d-7920-49d1-bf59-86415f941aca%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 901,
+          "desc": "bob PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887 If-Match:é body={\"title\":null}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#900 BURST 16x PATCH note#25 If-Match \"1\"",
+            "#900 list alice team-blue",
+            "#901 patch bob note#0 v2(deleted) ifmatch=garbage:é {\"title\":null}"
+          ]
+        },
+        {
+          "inv": "M",
+          "seed": 7,
+          "op": 901,
+          "desc": "bob PATCH /notes/9cc60e84-3088-4ed5-8cad-b347f558a887 If-Match:é body={\"title\":null}",
+          "detail": "expected 404 got 400",
+          "minimalSequence": [
+            "#381 patch alice note#0 v2(deleted) ifmatch=star:* {\"title\":\"hello\"}",
+            "#388 patch alice note#0 v2(deleted) ifmatch=listcur:\"2\", \"3\" {\"title\":\"constructor\"}",
+            "#390 patch alice note#0 v2(deleted) ifmatch=current:\"2\" {\"updatedAt\":false}",
+            "#427 delete bob note#0",
+            "#477 restore carol note#0 (model deleted=true)",
+            "#506 delete bob note#0",
+            "#540 patch carol note#0 v2(deleted) ifmatch=star:* {\"title\":\"  padded  \",\"body\":\"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+            "#593 get carol note#0",
+            "#641 delete none note#0",
+            "#647 patch alice note#0 v2(deleted) ifmatch=star:* {\"body\":\"body text\"}",
+            "#679 patch carol note#0 v2(deleted) ifmatch=future:\"4\" {\"body\":\"multi\\nline\\r\\n\"}",
+            "#901 patch bob note#0 v2(deleted) ifmatch=garbage:é {\"title\":null}"
+          ],
+          "lastOps": [
+            "#900 BURST 16x PATCH note#25 If-Match \"1\"",
+            "#900 list alice team-blue",
+            "#901 patch bob note#0 v2(deleted) ifmatch=garbage:é {\"title\":null}"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 944,
+          "desc": "none GET /notes/5201b084-3560-40a0-8fae-062e8f55aea4?x=%ff If-Match:\"1\",\"2\"",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#942 get bob note#29",
+            "#943 get bad note#14",
+            "#944 hostile none GET /notes/5201b084-3560-40a0-8fae-062e8f55aea4?x=%ff"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 976,
+          "desc": "bob GET /",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#974 patch alice note#19 v1 ifmatch=current:\"1\" {\"body\":\"😀😀😀😀😀😀\"}",
+            "#975 patch none note#3 v5 ifmatch=garbage:\"\" {\"title\":\"hello\",\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#976 hostile bob GET /"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 998,
+          "desc": "none GET /notes/5201b084-3560-40a0-8fae-062e8f55aea4?x=%ff",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#996 patch alice note#20 v2 ifmatch=missing:undefined {",
+            "#997 delete alice note#5",
+            "#998 hostile none GET /notes/5201b084-3560-40a0-8fae-062e8f55aea4?x=%ff"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1058,
+          "desc": "bad PUT /notes/a0f4d4c0-57ef-4b8f-b0a7-395175f6bd4c/..",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1056 list bob team-blue?archived=",
+            "#1057 restore bob note#4 (model deleted=true)",
+            "#1058 hostile bad PUT /notes/a0f4d4c0-57ef-4b8f-b0a7-395175f6bd4c/.."
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1122,
+          "desc": "bob POST /notes/%204ae1fb63-f812-4dba-9fce-4d6a52ce27ec body={}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1120 delete alice note#9",
+            "#1121 get alice note#14",
+            "#1122 hostile bob POST /notes/%204ae1fb63-f812-4dba-9fce-4d6a52ce27ec"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1125,
+          "desc": "carol PATCH /notes/3ac744ad-1ccd-42b3-8159-e17db6fae3fa%00 If-Match:\"1\"",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1123 create carol team-red%2f.. true",
+            "#1124 list bob team-blue?archived=",
+            "#1125 hostile carol PATCH /notes/3ac744ad-1ccd-42b3-8159-e17db6fae3fa%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1126,
+          "desc": "hdr DELETE /teams/team-red/notes// If-Match:\"1\"",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1124 list bob team-blue?archived=",
+            "#1125 hostile carol PATCH /notes/3ac744ad-1ccd-42b3-8159-e17db6fae3fa%00",
+            "#1126 hostile carol DELETE /teams/team-red/notes// auth=\"tok_alice\""
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1174,
+          "desc": "bad GET /notes/25455fcc-1864-4e8c-b745-9348df875f49/restore/",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1172 patch bob note#2 v6(deleted) ifmatch=current:\"6\" {\"title\":\"hello\",\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "#1173 patch bad note#11 v2(deleted) ifmatch=current:\"2\" {\"title\":\"t429490\"}",
+            "#1174 hostile bad GET /notes/25455fcc-1864-4e8c-b745-9348df875f49/restore/"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1232,
+          "desc": "alice PATCH /me?x=1 body={}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1230 patch carol note#33 v1 ifmatch=current:\"1\" {\"title\":true}",
+            "#1231 patch bob note#38 v1 ifmatch=list:\"2\", \"3\" {\"body\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "#1232 hostile alice PATCH /me?x=1"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1339,
+          "desc": "bad PATCH /notes/02670869-fefa-492c-a579-fe379acd93f1%00 body={}",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1337 restore alice note#40 (model deleted=false)",
+            "#1338 create bob team-red%2f.. {\"title\":\"t353053\",\"body\":\"😀😀😀😀😀😀\"}",
+            "#1339 hostile bad PATCH /notes/02670869-fefa-492c-a579-fe379acd93f1%00"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1433,
+          "desc": "alice OPTIONS /teams/tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt/notes",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1431 hostile alice OPTIONS /notes/constructor",
+            "#1432 hostile bad GET /health/",
+            "#1433 hostile alice OPTIONS /teams/ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+          ]
+        },
+        {
+          "inv": "I2",
+          "seed": 7,
+          "op": 1452,
+          "desc": "alice PATCH /notes/constructor body=null",
+          "detail": "status 400 content-type \"\"",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1450 patch carol note#30 v5(deleted) ifmatch=current:\"5\" {\"title\":\"Ünï 😀\",\"body\":\"multi\\nline\\r\\n\"}",
+            "#1451 patch carol note#23 v2 ifmatch=current:\"2\" {\"title\":\"a b\\tc\"}",
+            "#1452 hostile alice PATCH /notes/constructor"
+          ]
+        }
+      ],
+      "notesCreated": 45
+    },
+    {
+      "target": "bun",
+      "url": "http://127.0.0.1:3509",
+      "seed": 7,
+      "ops": 1500,
+      "requests": 2814,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 2514,
+      "checks": {
+        "I1": 2814,
+        "I2": 2814,
+        "I3": 754,
+        "I4": 379,
+        "I5": 44,
+        "I6": 238,
+        "I7": 441,
+        "I8": 441,
+        "M": 1271
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 45
+    }
+  ]
+}
