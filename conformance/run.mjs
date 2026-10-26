@@ -7,6 +7,7 @@
 //
 // --strict also fails when a ratified AC has no case ("unverified"). Draft ACs are reported but not required.
 //
+// Step extras: noContract (skip OpenAPI validation, e.g. unknown routes), parallel: N + expectCounts {status: n}.
 // It exits 0 only if every case passes. Each case names the AC it falsifies. A failing case refutes that AC.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -44,7 +45,7 @@ if (args.includes('--check')) {
     ids.add(c.id);
     if (!catalogue[c.falsifies]) problems.push(`${c.id}: falsifies unknown AC ${c.falsifies}`);
     for (const [i, st] of (c.steps ?? []).entries())
-      if (st.expect?.status === undefined) problems.push(`${c.id} step ${i + 1}: no expect.status`);
+      if (st.expect?.status === undefined && !st.expectCounts) problems.push(`${c.id} step ${i + 1}: no expect.status`);
   }
   const covered = new Set(cases.map((c) => c.falsifies));
   for (const [ac, meta] of Object.entries(catalogue))
@@ -123,6 +124,26 @@ function subsetMismatch(expected, actual, at = '$') {
 }
 
 async function runStep(step, vars) {
+  if (step.parallel) {
+    // Fire N identical requests at once; check the status distribution (e.g. exactly one 200 under contention).
+    const single = { ...step, parallel: undefined, expect: {}, save: undefined };
+    const statuses = await Promise.all(Array.from({ length: step.parallel }, () => runStepStatus(single, vars)));
+    const counts = {};
+    for (const st of statuses) counts[st] = (counts[st] ?? 0) + 1;
+    const want = interpolate(step.expectCounts ?? {}, vars);
+    return JSON.stringify(Object.fromEntries(Object.entries(counts).sort())) === JSON.stringify(Object.fromEntries(Object.entries(want).sort()))
+      ? [] : [`parallel x${step.parallel}: expected status counts ${JSON.stringify(want)}, got ${JSON.stringify(counts)}`];
+  }
+  return runOne(step, vars);
+}
+
+async function runStepStatus(step, vars) {
+  const box = {};
+  await runOne({ ...step, _status: box }, vars);
+  return box.status;
+}
+
+async function runOne(step, vars) {
   const headers = { ...interpolate(step.headers ?? {}, vars) };
   const token = step.token ?? (step.as ? tokens[step.as] : null);
   if (token) headers.authorization = `Bearer ${token}`;
@@ -134,6 +155,7 @@ async function runStep(step, vars) {
   }
   const path = interpolate(step.path, vars);
   const res = await fetch(BASE_URL + path, { method: step.method, headers, body });
+  if (step._status) step._status.status = res.status;
   const text = await res.text();
   let json = null;
   if (text) { try { json = JSON.parse(text); } catch { json = undefined; } }
@@ -168,7 +190,7 @@ async function runStep(step, vars) {
     if (!json?.errors?.some((e) => e.field === field)) failures.push(`errors[] missing field '${field}'`);
   }
   if (json === undefined) failures.push(`body is not JSON: ${text.slice(0, 120)}`);
-  else if (step.method !== 'HEAD') {
+  else if (step.method !== 'HEAD' && !step.noContract) {
     const err = validateAgainstSpec(step.method, path, res.status, res.headers.get('content-type'), json);
     if (err) failures.push(`contract (NOTES-TECH-CONTRACT-1): ${err}`);
     if (res.status >= 400 && json && json.status !== res.status)

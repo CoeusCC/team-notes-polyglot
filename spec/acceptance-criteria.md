@@ -15,6 +15,8 @@ The key words MUST, MUST NOT and MAY follow RFC 2119. Aliases follow the pattern
 
 Each card's **Falsifier** is a concrete test that would refute the claim. Each falsifier maps to one or more cases in `conformance/cases.json` through `"falsifies": "<alias>"`.
 
+**Sets (ADR-0004).** Every card belongs to **Set: core** unless it says otherwise. Core cards are language-neutral behavior every implementation must have, and they are what the conformance suite checks. **Profile** cards (`Set: profile:<name>`) are smaller technical constraints for one environment, transport, language or SDK. They're listed at the end and are checked only where that profile applies.
+
 Shared fixtures (seeded by `spec/schema.sql`):
 
 | User | Token | Teams |
@@ -131,6 +133,68 @@ Shared fixtures (seeded by `spec/schema.sql`):
 #### NOTES-FUNC-DEL-3: Lists hide deleted notes unless asked
 - **Claim.** `GET /teams/{teamId}/notes` excludes deleted notes. With `?archived=true` it lists **only** deleted notes, as a trash view, each with a `deletedAt` value. `deletedAt` is an optional field on `Note`, present only on deleted notes (ADR-0002).
 - **Falsifier.** A deleted note is absent from the default list and present in `?archived=true`. A live note is the reverse.
+
+## Tier 2.1: cross-language pins (Set: core; ratified by Patrick, 2026-10-26)
+*Origin: four independent rebuilds plus Grok's replications passed 45/45 but **diverged** on behavior the suite didn't pin down. Grok drafted adversarial cases (PR #72) and an interrogate review, and Patrick decided each point. Rationale: ADR-0005.*
+
+#### NOTES-FUNC-CONC-4: If-Match uses RFC 9110 strong comparison on the opaque ETag string
+- **Claim.** `If-Match` is a comma-separated list of entity tags. It matches only if some entry is a strong tag **byte-equal** to the current `ETag` (`"3"`; not `"03"`, not unquoted `3`). A weak tag (`W/"3"`) never matches. A list containing `*` gets 428 (CONC-2).
+- **Falsifier.** On v1: `W/"1"` → 412; `"9", "1"` → 200; `"8", "9"` → 412; `"1", *` → 428; `"01"` → 412; `1` → 412.
+
+#### NOTES-FUNC-CONC-5: Under concurrency exactly one writer wins
+- **Claim.** N simultaneous PATCHes that carry the same current `If-Match` produce exactly one 200 and N−1 412s, and the version increases by exactly 1.
+- **Interface.** The check and the increment are one atomic conditional update (`UPDATE … WHERE version = ?`), never a read followed by a write.
+- **Falsifier.** 16 parallel PATCHes with `If-Match: "1"` → status counts `{200: 1, 412: 15}`, and GET then shows `version=2`.
+
+#### NOTES-FUNC-DEL-4: `archived` accepts only `true` or `false`
+- **Claim.** Any other value of `?archived=` (`yes`, `1`, `TRUE`, empty) gets 422 with `errors[].field = "archived"`.
+- **Falsifier.** `?archived=yes`, `=1`, `=TRUE`, `=` → 422 naming `archived`.
+
+#### NOTES-FUNC-DEL-5: DELETE changes no version and ignores If-Match
+- **Claim.** DELETE (first or repeated) leaves `version` and `updatedAt` unchanged and sets only `deletedAt`. It ignores `If-Match`, because delete is reversible (restore) and so can't lose data.
+- **Falsifier.** v1 → DELETE → DELETE → restore gives `version=2`. A DELETE carrying a stale `If-Match` → 204.
+
+#### NOTES-TECH-ERR-3: Body media rules are uniform across operations
+- **Claim.** Any request with a **non-empty** body whose media type is not `application/json` gets 415, on every operation, including restore and DELETE (after the visibility 404). An **empty** body on an operation that requires one (create, PATCH) gets 400, whatever its `Content-Type`. A JSON body on restore or DELETE is ignored.
+- **Falsifier.** A non-member restoring with a `text/plain` body → 404. A member doing the same → 415. A member restoring with no body → 200. An empty POST body with JSON, text/plain or no Content-Type → 400.
+
+#### NOTES-TECH-ERR-4: Each adjacent precedence pair is falsified
+- **Claim.** ERR-2's order holds for each adjacent pair: 401>404, 404>413, 413>400, 400>422, and 428 on stale data with no `If-Match`.
+- **Falsifier.** A bad token on another team's note → 401. A non-member sending an oversized body → 404. An oversized malformed body → 413. A malformed body with a valid `If-Match` → 400. No `If-Match` after the note has moved on → 428.
+
+#### NOTES-SEC-AUTHN-2: Unknown routes don't reveal the API surface
+- **Claim.** Without a valid token, any path except `/health` gets 401, including unknown routes and verbs. With a token, unknown routes and verbs, a trailing slash (`/notes/{id}/`) and malformed percent-escapes (`/notes/%E0`) all get the byte-identical 404.
+- **Falsifier.** `GET /nope` with no token → 401. `GET /notes/%E0` as carol → the same bytes as a random UUID. `GET /notes/{id}/` → the same 404.
+
+#### NOTES-SEC-AUTHZ-4: The 404 body is identical for every verb and for deleted notes
+- **Claim.** A non-member's PATCH, DELETE and restore, and a member's GET or PATCH of a deleted note, all return the same 404 bytes as a random id.
+- **Falsifier.** Compare each body with `bodyEquals` against the random-UUID 404.
+
+#### NOTES-FUNC-VALID-3: Errors for non-object bodies name the JSON root
+- **Claim.** A body that is valid JSON but not an object (array, string, number, null) gets 422 with `errors[].field = "$"` (RFC 9535 root). `__proto__` is an unknown field and gets 422.
+- **Falsifier.** `[]`, `"x"`, `1` and `null` each get 422 with field `$`. `{"title":"t","__proto__":{}}` gets 422 naming `__proto__`.
+
+#### NOTES-TECH-FMT-2: Trimming uses Unicode White_Space, and lengths count code points
+- **Claim.** Titles are trimmed of Unicode `White_Space` characters (including NBSP, U+2003 and U+3000; not U+200B or U+FEFF). Lengths count code points: `e`+U+0301 counts 2, and a ZWJ family emoji counts 5.
+- **Falsifier.** `"\u00a0hi\u3000"` is stored as `"hi"`. A title made only of NBSP → 422. A lone ZWSP title is valid. 200 code points with combiners → 201; 202 → 422.
+
+---
+
+## Profiles (Set: profile:<name>; ADR-0004)
+Smaller technical constraints that apply only to some environments. They're not part of the core suite.
+
+#### PROFILE-TRANSPORT-1: A 413 closes the connection (Set: profile:http1-keepalive)
+- **Claim.** When a server refuses to read an oversized body on a keep-alive HTTP/1.1 connection, it sends `Connection: close` so the socket isn't reused with unread bytes.
+- **Falsifier.** After a 413, the next request on the same client succeeds (no `fetch failed`).
+
+#### PROFILE-PHP-1: The PHP built-in server runs workers (Set: profile:php-cli-server)
+- **Claim.** `PHP_CLI_SERVER_WORKERS ≥ 2`, so one slow request doesn't block the others. SQLite file-locking keeps the writes safe.
+- **Falsifier.** The bench `contention` scenario on the PHP container shows 0 lost updates.
+
+#### PROFILE-SQLITE-1: Storage is single-writer SQLite (Set: profile:sqlite)
+- **Claim.** All writes go through SQLite, which serializes them. Atomicity (CONC-5) comes from conditional UPDATE statements, not from application locks.
+- **Falsifier.** The bench `contention` scenario shows 0 lost updates on every backend.
+
 
 ## Tier 3: team management and search (outline)
 - `NOTES-FUNC-TEAM-2..4`: create a team (the creator becomes its owner). Only the owner can add or remove members. A removed member immediately loses access.

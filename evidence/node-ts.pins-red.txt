@@ -1,0 +1,108 @@
+ok   health-open [NOTES-SEC-AUTHN-1]
+ok   authn-missing-token [NOTES-SEC-AUTHN-1]
+ok   authn-bad-token [NOTES-SEC-AUTHN-1]
+ok   authn-malformed-scheme [NOTES-SEC-AUTHN-1]
+ok   me-alice [NOTES-FUNC-ME-1]
+ok   teams-carol-only-blue [NOTES-FUNC-TEAM-1]
+ok   teams-bob-member [NOTES-FUNC-TEAM-1]
+ok   create-note [NOTES-FUNC-NOTE-1]
+ok   create-note-location [NOTES-FUNC-NOTE-1]
+ok   create-note-location-header [NOTES-FUNC-NOTE-1]
+ok   teammate-reads-and-lists [NOTES-FUNC-NOTE-2]
+ok   nonmember-note-404 [NOTES-SEC-AUTHZ-1]
+ok   nonmember-404-before-validation [NOTES-SEC-AUTHZ-1]
+ok   nonmember-team-404 [NOTES-SEC-AUTHZ-2]
+ok   team-isolation-in-lists [NOTES-SEC-AUTHZ-2]
+ok   patch-title-only [NOTES-FUNC-NOTE-3]
+ok   delete-note [NOTES-FUNC-NOTE-4]
+ok   validate-empty-title [NOTES-FUNC-VALID-1]
+ok   validate-missing-title [NOTES-FUNC-VALID-1]
+ok   validate-long-title [NOTES-FUNC-VALID-1]
+ok   validate-max-title-ok [NOTES-FUNC-VALID-1]
+ok   validate-title-type [NOTES-FUNC-VALID-1]
+ok   validate-long-body [NOTES-FUNC-VALID-1]
+ok   validate-unknown-field [NOTES-FUNC-VALID-1]
+ok   validate-malformed-json [NOTES-FUNC-VALID-1]
+ok   validate-non-object-json [NOTES-FUNC-VALID-1]
+ok   validate-patch-empty [NOTES-FUNC-VALID-1]
+ok   validate-rejects-do-not-persist [NOTES-FUNC-VALID-1]
+ok   unknown-route-problem [NOTES-TECH-ERR-1]
+ok   payload-too-large [NOTES-TECH-ERR-1]
+ok   contract-core-shapes [NOTES-TECH-CONTRACT-1]
+ok   identical-404-bodies [NOTES-SEC-AUTHZ-3]
+ok   precedence-404-before-415 [NOTES-TECH-ERR-2]
+ok   precedence-415 [NOTES-TECH-ERR-2]
+ok   precedence-422-before-428 [NOTES-TECH-ERR-2]
+ok   formats-timestamps-location [NOTES-TECH-FMT-1]
+ok   formats-newest-first [NOTES-TECH-FMT-1]
+ok   formats-code-points [NOTES-TECH-FMT-1]
+ok   readonly-and-null-bodies [NOTES-FUNC-VALID-2]
+ok   etag-tracks-version [NOTES-FUNC-CONC-1]
+ok   patch-requires-if-match [NOTES-FUNC-CONC-2]
+ok   lost-update-prevented [NOTES-FUNC-CONC-3]
+ok   delete-idempotent-soft [NOTES-FUNC-DEL-1]
+ok   restore-brings-back [NOTES-FUNC-DEL-2]
+ok   archived-is-trash-view [NOTES-FUNC-DEL-3]
+ok   pin-ifmatch-weak [NOTES-FUNC-CONC-4]
+FAIL pin-ifmatch-list-contains-current [NOTES-FUNC-CONC-4]
+       step 2 (PATCH /notes/${n.id}): status: expected 200, got 412 {"type":"https://teamnotes.example/problems/precondition-failed","title":"Precondition Failed","status":412,"detail":"The note changed since you read it."}
+ok   pin-ifmatch-list-all-stale [NOTES-FUNC-CONC-4]
+FAIL pin-ifmatch-list-with-star [NOTES-FUNC-CONC-4]
+       step 2 (PATCH /notes/${n.id}): status: expected 428, got 412 {"type":"https://teamnotes.example/problems/precondition-failed","title":"Precondition Failed","status":412,"detail":"The note changed since you read it."}
+FAIL pin-archived-yes [NOTES-FUNC-DEL-4]
+       step 1 (GET /teams/team-red/notes?archived=yes): status: expected 422, got 200 {"items":[{"id":"10630614-22c4-4712-97b9-fee049186292","teamId":"team-red","authorId":"alice","title":"adv ykg01f","body":"","version":1,"createdAt":"2026-10-26T20:53:41.851Z","updatedAt":"2026-10-26T
+       step 1 (GET /teams/team-red/notes?archived=yes): errors[] missing field 'archived'
+FAIL pin-archived-1 [NOTES-FUNC-DEL-4]
+       step 1 (GET /teams/team-red/notes?archived=1): status: expected 422, got 200 {"items":[{"id":"10630614-22c4-4712-97b9-fee049186292","teamId":"team-red","authorId":"alice","title":"adv ykg01f","body":"","version":1,"createdAt":"2026-10-26T20:53:41.851Z","updatedAt":"2026-10-26T
+       step 1 (GET /teams/team-red/notes?archived=1): errors[] missing field 'archived'
+FAIL pin-archived-empty [NOTES-FUNC-DEL-4]
+       step 1 (GET /teams/team-red/notes?archived=): status: expected 422, got 200 {"items":[{"id":"10630614-22c4-4712-97b9-fee049186292","teamId":"team-red","authorId":"alice","title":"adv ykg01f","body":"","version":1,"createdAt":"2026-10-26T20:53:41.851Z","updatedAt":"2026-10-26T
+       step 1 (GET /teams/team-red/notes?archived=): errors[] missing field 'archived'
+FAIL pin-archived-TRUE [NOTES-FUNC-DEL-4]
+       step 1 (GET /teams/team-red/notes?archived=TRUE): status: expected 422, got 200 {"items":[{"id":"10630614-22c4-4712-97b9-fee049186292","teamId":"team-red","authorId":"alice","title":"adv ykg01f","body":"","version":1,"createdAt":"2026-10-26T20:53:41.851Z","updatedAt":"2026-10-26T
+       step 1 (GET /teams/team-red/notes?archived=TRUE): errors[] missing field 'archived'
+ok   pin-empty-body-json-ct [NOTES-TECH-ERR-3]
+FAIL pin-empty-body-no-ct [NOTES-TECH-ERR-3]
+       step 1 (POST /teams/team-red/notes): status: expected 400, got 415 {"type":"https://teamnotes.example/problems/unsupported-media-type","title":"Unsupported Media Type","status":415,"detail":"Content-Type must be application/json."}
+FAIL pin-empty-body-text-plain [NOTES-TECH-ERR-3]
+       step 1 (POST /teams/team-red/notes): status: expected 400, got 415 {"type":"https://teamnotes.example/problems/unsupported-media-type","title":"Unsupported Media Type","status":415,"detail":"Content-Type must be application/json."}
+FAIL pin-empty-patch-no-ct [NOTES-TECH-ERR-3]
+       step 2 (PATCH /notes/${n.id}): status: expected 400, got 415 {"type":"https://teamnotes.example/problems/unsupported-media-type","title":"Unsupported Media Type","status":415,"detail":"Content-Type must be application/json."}
+FAIL pin-unknown-route-no-token [NOTES-SEC-AUTHN-2]
+       step 1 (GET /nope): status: expected 401, got 404 {"type":"https://teamnotes.example/problems/not-found","title":"Not Found","status":404}
+FAIL pin-unknown-verb-no-token [NOTES-SEC-AUTHN-2]
+       step 1 (PUT /me): status: expected 401, got 404 {"type":"https://teamnotes.example/problems/not-found","title":"Not Found","status":404}
+ok   pin-unknown-route-with-token [NOTES-SEC-AUTHN-2]
+ok   pin-delete-does-not-bump [NOTES-FUNC-DEL-5]
+ok   pin-nonobject-field-array [NOTES-FUNC-VALID-3]
+ok   pin-nonobject-field-string [NOTES-FUNC-VALID-3]
+ok   pin-nonobject-field-number [NOTES-FUNC-VALID-3]
+ok   pin-nonobject-field-null [NOTES-FUNC-VALID-3]
+ok   pin-trim-nbsp [NOTES-TECH-FMT-2]
+ok   pin-trim-emspace [NOTES-TECH-FMT-2]
+ok   pin-trim-ideographic [NOTES-TECH-FMT-2]
+ok   pin-trim-tab-newline [NOTES-TECH-FMT-2]
+ok   pin-trim-only-nbsp-empty [NOTES-TECH-FMT-2]
+ok   pin-zwsp-not-whitespace [NOTES-TECH-FMT-2]
+ok   pin-combining-200cp-ok [NOTES-TECH-FMT-2]
+ok   pin-combining-202cp-rejected [NOTES-TECH-FMT-2]
+ok   pin-zwj-family-counts-cp [NOTES-TECH-FMT-2]
+FAIL pin-malformed-escape-404 [NOTES-SEC-AUTHN-2]
+       step 2 (GET /notes/%E0): status: expected 404, got 500 {"type":"https://teamnotes.example/problems/internal","title":"Internal Server Error","status":500}
+       step 2 (GET /notes/%E0): body not byte-identical: expected {"type":"https://teamnotes.example/problems/not-found","title":"Not Found","status":404}, got {"type":"https://teamnotes.example/problems/internal","title":"Internal Server Error","status":500}
+       step 2 (GET /notes/%E0): contract (NOTES-TECH-CONTRACT-1): status 500 not declared for getNote
+FAIL pin-trailing-slash-404 [NOTES-SEC-AUTHN-2]
+       step 3 (GET /notes/${n.id}/): status: expected 404, got 200 {"id":"949f7b02-f9d3-4e50-83f4-dc8906b7ad61","teamId":"team-red","authorId":"alice","title":"slash 1p34h4","body":"","version":1,"createdAt":"2026-10-26T20:53:41.963Z","updatedAt":"2026-10-26T20:53:41
+       step 3 (GET /notes/${n.id}/): body not byte-identical: expected {"type":"https://teamnotes.example/problems/not-found","title":"Not Found","status":404}, got {"id":"949f7b02-f9d3-4e50-83f4-dc8906b7ad61","teamId":"team-red","authorId":"alice","title":"slash 1p34h4","body":"","ve
+FAIL pin-415-any-nonjson-body [NOTES-TECH-ERR-3]
+       step 4 (POST /notes/${n.id}/restore): status: expected 415, got 200 {"id":"8b28f30b-3251-49a4-b23d-f986d209504d","teamId":"team-red","authorId":"alice","title":"rb hndr5a","body":"","version":2,"createdAt":"2026-10-26T20:53:41.973Z","updatedAt":"2026-10-26T20:53:41.97
+       step 4 (POST /notes/${n.id}/restore): header content-type: expected application/problem+json, got application/json
+ok   pin-delete-ignores-if-match [NOTES-FUNC-DEL-5]
+FAIL pin-ifmatch-opaque-string [NOTES-FUNC-CONC-4]
+       step 2 (PATCH /notes/${n.id}): status: expected 412, got 200 {"id":"d15fab0f-aae2-4ac5-9f31-01fdaf2f1b5a","teamId":"team-red","authorId":"alice","title":"x","body":"","version":2,"createdAt":"2026-10-26T20:53:41.991Z","updatedAt":"2026-10-26T20:53:41.994Z"}
+ok   pin-identical-404-all-verbs [NOTES-SEC-AUTHZ-4]
+ok   pin-precedence-pairs [NOTES-TECH-ERR-4]
+ok   pin-proto-field-rejected [NOTES-FUNC-VALID-3]
+ok   pin-concurrent-patches-one-wins [NOTES-FUNC-CONC-5]
+
+68/83 cases passed · ACs: 28 passed, 4 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3101
