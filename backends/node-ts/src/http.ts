@@ -54,7 +54,17 @@ async function readBody(req: IncomingMessage): Promise<string> {
     if (size > MAX_BODY_BYTES) throw new BodyError(413, 'request body too large');
     chunks.push(chunk as Buffer);
   }
-  return Buffer.concat(chunks).toString('utf8');
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)); } catch {
+    throw new BodyError(400, 'request body is not valid UTF-8');
+  }
+}
+
+/** I-JSON (RFC 7493): no lone surrogate in any string, key or value. */
+export function isWellFormed(v: unknown): boolean {
+  if (typeof v === 'string') return v.isWellFormed();
+  if (Array.isArray(v)) return v.every(isWellFormed);
+  if (v !== null && typeof v === 'object') return Object.entries(v).every(([k, x]) => k.isWellFormed() && isWellFormed(x));
+  return true;
 }
 
 /**
@@ -66,6 +76,7 @@ async function takeBody(req: IncomingMessage): Promise<{ text: string } | { repl
   let text: string;
   try { text = await readBody(req); } catch (e) {
     if (!(e instanceof BodyError)) throw e;
+    if (e.status === 400) return { reply: badRequest('Request body is not valid UTF-8.') };
     if (!isJson(req)) return { reply: { ...unsupportedMediaType(), headers: close } };
     return { reply: { ...problem(e.status, 'payload-too-large', 'Payload Too Large'), headers: close } };
   }
@@ -78,9 +89,12 @@ async function readJson(req: IncomingMessage): Promise<{ value: unknown } | { re
   const body = await takeBody(req);
   if ('reply' in body) return body;
   if (body.text === '') return { reply: badRequest('Request body is required.') };
-  try { return { value: JSON.parse(body.text) }; } catch {
+  let value: unknown;
+  try { value = JSON.parse(body.text); } catch {
     return { reply: badRequest('Request body is not valid JSON.') };
   }
+  if (!isWellFormed(value)) return { reply: badRequest('Request body is not valid JSON.') };
+  return { value };
 }
 
 function authenticate(req: IncomingMessage, store: Store): User | null {
@@ -90,10 +104,18 @@ function authenticate(req: IncomingMessage, store: Store): User | null {
 
 async function route(req: IncomingMessage, store: Store): Promise<Reply> {
   const method = req.method ?? 'GET';
-  const url = new URL(req.url ?? '/', 'http://x');
-  // A trailing slash or a malformed percent-escape is simply an unknown route.
+  // Parse the raw target ourselves: new URL('//', base) would treat the path as a host (AUTHN-3).
+  const rawTarget = req.url ?? '/';
+  const qi = rawTarget.search(/[?#]/);
+  const pathname = qi < 0 ? rawTarget : rawTarget.slice(0, qi);
+  const query = new URLSearchParams(qi >= 0 && rawTarget[qi] === '?' ? rawTarget.slice(qi + 1).split('#')[0] : '');
+  // A trailing slash, an empty segment or a malformed percent-escape is simply an unknown route.
   let segs: string[] | null = null;
-  try { if (!url.pathname.endsWith('/') || url.pathname === '/') segs = url.pathname.split('/').filter(Boolean).map(decodeURIComponent); } catch { /* unknown route */ }
+  try {
+    if (pathname.startsWith('/') && !pathname.includes('//') && (!pathname.endsWith('/') || pathname === '/')) {
+      segs = pathname.split('/').filter(Boolean).map(decodeURIComponent);
+    }
+  } catch { /* unknown route */ }
   const [a, b, c] = segs ?? [];
 
   if (method === 'GET' && segs?.length === 1 && a === 'health') return ok({ status: 'ok' });
@@ -123,7 +145,7 @@ async function route(req: IncomingMessage, store: Store): Promise<Reply> {
     const teamId = b!;
     if (!store.isMember(teamId, user.id)) return notFound();
     if (method === 'GET') {
-      const raw = url.searchParams.get('archived');
+      const raw = query.get('archived');
       if (raw !== null && raw !== 'true' && raw !== 'false') return invalid([{ field: 'archived', message: 'must be true or false' }]);
       return ok({ items: store.listNotes(teamId, raw === 'true') });
     }
