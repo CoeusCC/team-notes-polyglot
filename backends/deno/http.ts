@@ -49,13 +49,23 @@ async function readRaw(req: Request): Promise<Raw> {
   return { ok: true, bytes: buf.subarray(0, total) };
 }
 
+/** True if every string (keys included) in a parsed JSON value is free of lone surrogates. */
+function wellFormed(v: unknown): boolean {
+  if (typeof v === "string") return v.isWellFormed();
+  if (Array.isArray(v)) return v.every(wellFormed);
+  if (v && typeof v === "object") return Object.entries(v).every(([k, x]) => k.isWellFormed() && wellFormed(x));
+  return true;
+}
+
 /** For operations that require a JSON body: empty -> 400, malformed -> 400. */
 async function readJson(req: Request): Promise<Body> {
   const raw = await readRaw(req);
   if (!raw.ok) return raw;
   if (raw.bytes.length === 0) return { ok: false, res: problem(400, "Request body required") };
   try {
-    return { ok: true, value: JSON.parse(new TextDecoder().decode(raw.bytes)) };
+    const value = JSON.parse(new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(raw.bytes));
+    if (!wellFormed(value)) throw new Error("lone surrogate");
+    return { ok: true, value };
   } catch {
     return { ok: false, res: problem(400, "Malformed JSON") };
   }
