@@ -1,0 +1,107 @@
+<title>Team Notes Service</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a single reading column with a sticky section index on wide screens; diagrams sit in "plate" frames like spec figures. */
+:root {
+  --paper: #f5f6f3; --ink: #1d2320; --muted: #5d6762; --rule: #d5dbd6;
+  --plate: #ffffff; --accent: #2f6b55; --accent-ink: #ffffff; --warn: #9a5a12; --bad: #a33a2c;
+  --display: "Fraunces", Georgia, serif; --body: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141917; --ink: #e3e9e5; --muted: #9aa69f; --rule: #2c3531; --plate: #1b221f; --accent: #7cc4a6; --accent-ink: #0d1411; --warn: #e0a95a; --bad: #ec8a7b; color-scheme: dark } }
+:root[data-theme="dark"] { --paper: #141917; --ink: #e3e9e5; --muted: #9aa69f; --rule: #2c3531; --plate: #1b221f; --accent: #7cc4a6; --accent-ink: #0d1411; --warn: #e0a95a; --bad: #ec8a7b; color-scheme: dark }
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+.wrap { max-width: 1060px; margin: 0 auto; padding-block: 40px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 48px; }
+nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-size: 14px; display: grid; gap: 6px; }
+nav a { color: var(--muted); text-decoration: none; } nav a:hover, nav a:focus-visible { color: var(--accent); }
+nav b { font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+main { min-width: 0; max-width: 68ch; }
+h1 { font: 600 clamp(32px, 5vw, 48px)/1.1 var(--display); margin: 0 0 12px; text-wrap: balance; }
+h2 { font: 600 26px/1.2 var(--display); margin: 56px 0 12px; text-wrap: balance; }
+.lede { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
+code, .mono { font-family: var(--mono); font-size: .9em; }
+.plate { background: var(--plate); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; margin: 20px 0; overflow-x: auto; }
+.plate figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+td.s { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chain { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font: 600 15px var(--mono); }
+.chain span { background: var(--accent); color: var(--accent-ink); padding: 4px 10px; border-radius: 4px; }
+.chain i { color: var(--muted); font-style: normal; }
+.pill { display: inline-block; font: 600 12px var(--mono); padding: 1px 7px; border-radius: 3px; border: 1px solid currentColor; }
+.ok { color: var(--accent); } .no { color: var(--bad); } .wn { color: var(--warn); }
+@media (max-width: 760px) { .wrap { grid-template-columns: 1fr; gap: 16px; } nav { position: static; grid-auto-flow: column; overflow-x: auto; gap: 14px; } nav b { display: none; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+
+<div class="wrap">
+<nav aria-label="Sections"><b>On this page</b>
+  <a href="#model">Model</a><a href="#visibility">Visibility</a><a href="#concurrency">Concurrency</a><a href="#delete">Delete &amp; restore</a><a href="#errors">Errors</a><a href="#teams">Teams</a><a href="#impls">Implementations</a>
+</nav>
+<main>
+<h1>Team Notes Service</h1>
+<p class="lede">A REST backend where small teams share notes. Every member of a team can read and edit its notes. Outsiders can't tell that a note exists, and two people editing at once can't silently overwrite each other.</p>
+
+<h2 id="model">The model</h2>
+<p>There are three things: <b>users</b>, <b>teams</b> and <b>notes</b>. A user belongs to teams as an <i>owner</i> or a <i>member</i>. A note belongs to exactly one team, keeps its author, and carries a <code>version</code> that goes up by one on every change.</p>
+<figure class="plate"><pre class="mermaid">
+erDiagram
+  USER ||--o{ MEMBERSHIP : has
+  TEAM ||--o{ MEMBERSHIP : has
+  TEAM ||--o{ NOTE : owns
+  USER ||--o{ NOTE : wrote
+  MEMBERSHIP { string role "owner | member" }
+  NOTE { uuid id  string title  string body  int version  time deletedAt }
+</pre><figcaption>One SQLite schema (<code>spec/schema.sql</code>) is shared by all five implementations.</figcaption></figure>
+
+<h2 id="visibility">Visibility: one 404 for everything you can't see</h2>
+<p>A note in someone else's team, a note that never existed, a malformed id, a deleted note and an unknown route all return the <b>same bytes</b>, a 404 problem document. A curious user learns nothing by probing ids. The one 403 in the API goes to a team member who isn't the owner and tries to change membership, because they can already see the team.</p>
+<div class="plate"><table>
+<tr><th>Carol asks for…</th><th>Status</th><th>Body</th></tr>
+<tr><td>Alice's note in team-red</td><td class="s">404</td><td class="mono">identical</td></tr>
+<tr><td>A random UUID</td><td class="s">404</td><td class="mono">identical</td></tr>
+<tr><td><code>/notes/%E0</code> or <code>/notes/{id}/</code></td><td class="s">404</td><td class="mono">identical</td></tr>
+<tr><td>Anything, with no token</td><td class="s">401</td><td>Authentication comes before routing</td></tr>
+</table></div>
+
+<h2 id="concurrency">Concurrency: no lost updates</h2>
+<p>Every read returns <code>ETag: "&lt;version&gt;"</code>. To edit, you send it back in <code>If-Match</code>. The server checks and increments in one statement, <code>UPDATE … WHERE id = ? AND version = ?</code>. If someone else got there first, you get <span class="pill wn">412</span> and the current ETag, so you can re-read and retry. With no precondition at all you get <span class="pill wn">428</span>: unconditional overwrites aren't allowed.</p>
+<figure class="plate"><pre class="mermaid">
+sequenceDiagram
+  participant A as Alice
+  participant S as Server
+  participant B as Bob
+  A->>S: GET /notes/42
+  S-->>A: 200 · ETag "1"
+  B->>S: GET /notes/42
+  S-->>B: 200 · ETag "1"
+  A->>S: PATCH If-Match "1"
+  S-->>A: 200 · ETag "2"
+  B->>S: PATCH If-Match "1"
+  S-->>B: 412 · ETag "2" (Bob re-reads, no overwrite)
+</pre><figcaption>Tested sequentially, and with 16 simultaneous PATCHes, where exactly one wins (NOTES-FUNC-CONC-5).</figcaption></figure>
+
+<h2 id="delete">Delete and restore</h2>
+<p>DELETE is a soft delete. It's idempotent, keeps the content, and leaves the version alone. <code>POST /notes/{id}/restore</code> brings the note back and bumps the version, so anyone still holding a version from before the delete gets 412 instead of quietly editing a resurrected note. <code>?archived=true</code> lists the team's trash.</p>
+
+<h2 id="errors">Errors and their order</h2>
+<p>Every error is an RFC 9457 <code>application/problem+json</code> document. When a request breaks several rules at once, the first one in this chain wins, in every implementation:</p>
+<div class="plate"><div class="chain"><span>401</span><i>→</i><span>404</span><i>→</i><span>415</span><i>→</i><span>413</span><i>→</i><span>400</span><i>→</i><span>422</span><i>→</i><span>428</span><i>→</i><span>412</span></div>
+<p style="margin:12px 0 0;font-size:14px;color:var(--muted)">Authentication → visibility → media type → size → JSON syntax → validation → precondition → version. Visibility is decided before anything about the body is revealed.</p></div>
+
+<h2 id="teams">Teams</h2>
+<p>Anyone can create a team with a readable slug and becomes its owner. Only the owner adds or removes members. Access follows membership immediately: a removed member gets the same 404 on their very next request, even for notes they wrote. Those notes stay with the team. The last owner can't leave, so no team is ever left without an administrator.</p>
+
+<h2 id="impls">Five implementations, one contract</h2>
+<div class="plate"><table>
+<tr><th>Backend</th><th>Stack</th><th>Runtime deps</th></tr>
+<tr><td>node-ts</td><td>Node 26 · node:http · node:sqlite</td><td class="s">0</td></tr>
+<tr><td>deno</td><td>Deno 2.9 · Deno.serve · node:sqlite</td><td class="s">0</td></tr>
+<tr><td>python</td><td>stdlib http.server · sqlite3</td><td class="s">0</td></tr>
+<tr><td>php</td><td>PHP 8.5 built-in server · PDO SQLite</td><td class="s">0</td></tr>
+<tr><td>rust</td><td>axum · rusqlite (bundled)</td><td class="s">small</td></tr>
+</table></div>
+<p>Source: <span class="mono">github.com/CoeusCC/team-notes-polyglot</span>. The contract is <code>spec/openapi.yaml</code>, and the acceptance criteria are <code>spec/acceptance-criteria.md</code>.</p>
+</main>
+</div>
