@@ -10,7 +10,7 @@ info:
     * **Visibility:** a resource outside the caller's teams is answered with `404`, never `403`,
       so the API does not reveal whether it exists (ADR-0001).
     * **Errors:** every error is an RFC 9457 `application/problem+json` document. Precedence:
-      401 → 404 → 415 → 413 → 400 → 422 → 428 → 412 (NOTES-TECH-ERR-2, ADR-0003).
+      401 → 404 → 403 → 415 → 413 → 400 → 422 → 409 → 428 → 412 (NOTES-TECH-ERR-2/5, ADR-0003/0006).
     * **Concurrency:** every single-note response carries `ETag: "<version>"`. PATCH requires a matching
       `If-Match`: a missing header or `*` gets 428, a stale one gets 412 (ADR-0002).
     * **Deletion:** DELETE is soft and idempotent. `POST /notes/{id}/restore` undoes it, and `?archived=true` lists the trash.
