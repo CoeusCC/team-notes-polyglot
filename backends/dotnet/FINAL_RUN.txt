@@ -3,8 +3,7 @@ ok   authn-missing-token [NOTES-SEC-AUTHN-1]
 ok   authn-bad-token [NOTES-SEC-AUTHN-1]
 ok   authn-malformed-scheme [NOTES-SEC-AUTHN-1]
 ok   me-alice [NOTES-FUNC-ME-1]
-FAIL teams-carol-only-blue [NOTES-FUNC-TEAM-1]
-       step 1 (GET /teams): items: expected team-blue, got t-ne7zga,team-blue
+ok   teams-carol-only-blue [NOTES-FUNC-TEAM-1]
 ok   teams-bob-member [NOTES-FUNC-TEAM-1]
 ok   create-note [NOTES-FUNC-NOTE-1]
 ok   create-note-location [NOTES-FUNC-NOTE-1]
@@ -94,4 +93,4 @@ ok   redteam-double-slash-no-5xx [NOTES-SEC-AUTHN-3]
 ok   redteam-invalid-utf8-400 [NOTES-TECH-FMT-3]
 ok   redteam-nul-roundtrip [NOTES-TECH-FMT-3]
 
-93/94 cases passed · ACs: 38 passed, 1 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3007
+94/94 cases passed · ACs: 39 passed, 0 refuted, 0 unverified (ratified, no case) · BASE_URL=http://localhost:3007

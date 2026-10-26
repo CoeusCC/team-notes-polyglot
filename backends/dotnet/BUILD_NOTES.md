@@ -7,3 +7,4 @@
 - Unit tests: not written (time box).
 - Spec ambiguities / choices: empty `If-Match` value treated as missing (428); `/health` with non-GET and no token gets 401; GET with a non-empty non-JSON body gets 415 (uniform rule); member roster ordered owner first then by id; `type` of problems is `about:blank`; duplicate JSON keys are not rejected.
 - Gotchas: Unicode escapes in source got mangled by file writing, so White_Space is expressed with numeric code points.
+- Note: the suite is not re-runnable against a used DB (teams-carol-only-blue sees teams from the previous run); FINAL_RUN.txt was taken on a fresh container.
