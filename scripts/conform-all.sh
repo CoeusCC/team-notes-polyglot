@@ -18,7 +18,8 @@ start() {
   local b=$1 p=$2
   case $b in
     node-ts) (cd backends/node-ts && PORT=$p exec node src/server.ts) ;;
-    *)       PORT=$p DB_PATH=${TMPDIR:-/tmp}/notes-$b-$$.db exec backends/$b/run.sh ;;
+    php)     PORT=$p DB_PATH=${TMPDIR:-/tmp}/notes-$b-$$.db exec backends/$b/run.sh ;;   # php -S runs one process per request: needs a file DB
+    *)       PORT=$p DB_PATH=:memory: exec backends/$b/run.sh ;;   # :memory: also works inside Docker-based run.sh (host paths don't)
   esac
 }
 
