@@ -16,3 +16,8 @@ Clock: Patrick's TestGorilla timer is the authority. It started at **14:48 CDT**
 - `evidence/node-ts.tier1.txt` sha256 `7c0e71d3abae7321` · ok   payload-too-large [NOTES-TECH-ERR-1]  30/30 cases passed · ACs: 11/11 passed · BASE_URL=http://localhost:3001 
 - cycle time: no closed issues yet
 - decision: GO. Patrick ratified the Tier 1 ACs. 30/30 cases, 11/11 ACs. Tier 2 decisions recorded in ADR-0002; Tier 2 cards await ratification.
+
+## 2026-10-26T15:36:15-05:00 · Gate 3 (early): Path B, rebuilds
+- commit `cb06256` · builddigest `50cdda7495ea9fdc` · uncommitted files: 7
+- cycle time: no closed issues yet
+- decision: Patrick at 15:35: skip Tier 3 and rebuild from the spec in Python, PHP, Deno and Rust (Sonnet agents in isolated worktrees, with no access to backends/node-ts). Each records FIRST_RUN (before any fixes) and FINAL_RUN conformance, iterations and elapsed time. Tier 2 on node-ts is running in parallel. Tier 3 moves to 'what I'd do next'.
