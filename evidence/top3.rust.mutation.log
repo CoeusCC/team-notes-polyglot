@@ -1,0 +1,47 @@
+Wrote <tmp>/-home-user-Projects-project/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/top3/rp/backends/rust/.metrics/mutate/team_notes_rust/domain.edn
+Wrote <tmp>/-home-user-Projects-project/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/top3/rp/backends/rust/.metrics/mutate/team_notes_rust/domain/Body.edn
+Wrote <tmp>/-home-user-Projects-project/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/top3/rp/backends/rust/.metrics/mutate/team_notes_rust/domain/Precondition.edn
+Wrote <tmp>/-home-user-Projects-project/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/top3/rp/backends/rust/.metrics/mutate/team_notes_rust/domain/Title.edn
+KILLED    src/domain.rs:29 == -> !=
+KILLED    src/domain.rs:29 0 -> 1
+KILLED    src/domain.rs:29 || -> &&
+KILLED    src/domain.rs:29 > -> >=
+KILLED    src/domain.rs:35 0 -> 1
+KILLED    src/domain.rs:46 > -> >=
+KILLED    src/domain.rs:52 0 -> 1
+KILLED    src/domain.rs:102 delete !
+KILLED    src/domain.rs:117 == -> !=
+KILLED    src/domain.rs:117 0 -> 1
+KILLED    src/domain.rs:135 && -> ||
+KILLED    src/domain.rs:135 || -> &&
+KILLED    src/domain.rs:135 || -> &&
+KILLED    src/domain.rs:135 == -> !=
+KILLED    src/domain.rs:151 1 -> 0
+KILLED    src/domain.rs:157 delete !
+KILLED    src/domain.rs:160 delete !
+KILLED    src/domain.rs:164 true -> false
+KILLED    src/domain.rs:187 delete !
+KILLED    src/domain.rs:188 || -> &&
+KILLED    src/domain.rs:195 == -> !=
+KILLED    src/domain.rs:212 && -> ||
+KILLED    src/domain.rs:212 delete !
+Function             Namespace                              Killed  Survived  Uncovered  Sites   Score
+------------------------------------------------------------------------------------------------------
+err                  team_notes_rust::domain                     0         0          0      0    n/a
+etag                 team_notes_rust::domain                     0         0          0      0    n/a
+is_json_content_type team_notes_rust::domain                     0         0          0      0    n/a
+matches              team_notes_rust::domain::Precondition       0         0          0      0    n/a
+parse_fields         team_notes_rust::domain                     0         0          0      0    n/a
+as_str               team_notes_rust::domain::Title              1         0          0      1 100.0%
+as_str               team_notes_rust::domain::Body               1         0          0      1 100.0%
+bearer_token         team_notes_rust::domain                     2         0          0      2 100.0%
+parse                team_notes_rust::domain::Title              4         0          0      4 100.0%
+parse                team_notes_rust::domain::Body               1         0          0      1 100.0%
+parse_create         team_notes_rust::domain                     1         0          0      1 100.0%
+parse_if_match       team_notes_rust::domain                     3         0          0      3 100.0%
+parse_patch          team_notes_rust::domain                     2         0          0      2 100.0%
+parse_team           team_notes_rust::domain                     4         0          0      4 100.0%
+valid_slug           team_notes_rust::domain                     4         0          0      4 100.0%
+------------------------------------------------------------------------------------------------------
+Total                                                           23         0          0     23  100.0%
+exit=0

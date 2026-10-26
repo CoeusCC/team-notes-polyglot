@@ -1,0 +1,3 @@
+cold rust: 361 ms (docker run to first 200, k=1)
+cold node-ts: 361 ms (docker run to first 200, k=8)
+cold deno: 303 ms (docker run to first 200, k=5)

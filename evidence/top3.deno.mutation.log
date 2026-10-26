@@ -1,0 +1,80 @@
+WARNING: 62 covered mutations selected in domain.ts.
+Wrote <tmp>/-home-user-Projects-project/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/top3/dp/backends/deno/.metrics/mutate/domain.edn
+KILLED    domain.ts:24 === -> !==
+KILLED    domain.ts:24 || -> &&
+KILLED    domain.ts:24 !== -> ===
+KILLED    domain.ts:24 || -> &&
+KILLED    domain.ts:25 false -> true
+KILLED    domain.ts:31 delete !
+KILLED    domain.ts:35 !== -> ===
+KILLED    domain.ts:39 < -> <=
+KILLED    domain.ts:39 1 -> 0
+KILLED    domain.ts:39 || -> &&
+KILLED    domain.ts:39 > -> >=
+KILLED    domain.ts:44 !== -> ===
+KILLED    domain.ts:45 > -> >=
+KILLED    domain.ts:48 delete !
+KILLED    domain.ts:48 && -> ||
+KILLED    domain.ts:48 === -> !==
+KILLED    domain.ts:48 0 -> 1
+KILLED    domain.ts:48 && -> ||
+KILLED    domain.ts:48 === -> !==
+KILLED    domain.ts:48 0 -> 1
+KILLED    domain.ts:51 false -> true
+KILLED    domain.ts:51 true -> false
+KILLED    domain.ts:55 true -> false
+KILLED    domain.ts:56 delete !
+KILLED    domain.ts:57 true -> false
+KILLED    domain.ts:57 ?? -> ||
+KILLED    domain.ts:60 false -> true
+KILLED    domain.ts:70 === -> !==
+KILLED    domain.ts:72 === -> !==
+KILLED    domain.ts:72 || -> &&
+KILLED    domain.ts:72 === -> !==
+KILLED    domain.ts:80 ?? -> ||
+KILLED    domain.ts:80 0 -> 1
+KILLED    domain.ts:80 === -> !==
+KILLED    domain.ts:86 === -> !==
+KILLED    domain.ts:86 || -> &&
+KILLED    domain.ts:86 === -> !==
+KILLED    domain.ts:86 true -> false
+KILLED    domain.ts:86 false -> true
+KILLED    domain.ts:87 === -> !==
+KILLED    domain.ts:87 true -> false
+KILLED    domain.ts:87 true -> false
+KILLED    domain.ts:88 false -> true
+KILLED    domain.ts:95 === -> !==
+KILLED    domain.ts:95 || -> &&
+KILLED    domain.ts:95 !== -> ===
+KILLED    domain.ts:95 || -> &&
+KILLED    domain.ts:96 false -> true
+KILLED    domain.ts:100 !== -> ===
+KILLED    domain.ts:100 && -> ||
+KILLED    domain.ts:100 !== -> ===
+KILLED    domain.ts:102 !== -> ===
+KILLED    domain.ts:102 === -> !==
+KILLED    domain.ts:103 delete !
+KILLED    domain.ts:105 !== -> ===
+KILLED    domain.ts:105 === -> !==
+KILLED    domain.ts:109 < -> <=
+KILLED    domain.ts:109 1 -> 0
+KILLED    domain.ts:109 || -> &&
+KILLED    domain.ts:109 > -> >=
+KILLED    domain.ts:112 false -> true
+KILLED    domain.ts:112 true -> false
+Function          Namespace  Killed  Survived  Uncovered  Sites   Score
+-----------------------------------------------------------------------
+cpLength          domain          0         0          0      0    n/a
+etagFor           domain          0         0          0      0    n/a
+isoNow            domain          0         0          0      0    n/a
+trimWs            domain          0         0          0      0    n/a
+isJsonContentType domain          3         0          0      3 100.0%
+parseArchived     domain          9         0          0      9 100.0%
+parseCreate       domain          4         0          0      4 100.0%
+parseIfMatch      domain          4         0          0      4 100.0%
+parsePatch        domain          1         0          0      1 100.0%
+parseTeam         domain         19         0          0     19 100.0%
+validate          domain         22         0          0     22 100.0%
+-----------------------------------------------------------------------
+Total                            62         0          0     62  100.0%
+exit=0
