@@ -55,20 +55,15 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
 </div>
 
 <h2>Timeline of gates</h2>
-<p class="src">docs/build-digest.md · times are CDT; the assessment clock started 14:48</p>
+<p class="src">docs/build-digest.md · times are CDT from commit history · gates are listed in time order</p>
 <div class="sheet"><ol class="time">
-  <li><time>15:11</time>Repo, plan, ADR-0001 and draft ACs pushed. Grok split the plan into 68 issues.</li>
-  <li><time>15:21</time><b>Gate 1</b>: Node/TS minimum version, 27/27 cases. Patrick ratifies Tier 1.</li>
-  <li><time>15:38</time><b>Gate 2</b>: ETag/If-Match, soft delete, restore. 45/45; 5/5 faults caught.</li>
-  <li class="turn"><time>15:35</time><b>Gate 3</b>, decided early: rebuild from the spec instead of adding features.</li>
-  <li><time>15:39</time>Deno, Python, PHP and Rust: <b>45/45 on first run</b>, 2.5–4 minutes each.</li>
-  <li class="turn"><time>15:50</time>The green rebuilds still <i>disagreed</i> in 7 places. They became 10 core cards plus 3 profiles. Patrick reversed one Claude recommendation (uniform 415).</li>
-  <li class="turn"><time>15:58</time>Tier 3 (teams) reinstated because the project was ahead of schedule. All 5 backends reach 88/88 in 3–4 minutes each.</li>
-  <li><time>16:06</time>403/409 order pinned. Official run: <b>5/5 at 89/89, 37/37 ACs</b>.</li>
-  <li><time>16:09</time>Red team (fuzzer, mutation, Grok probes) finds 500s, lone-surrogate corruption and NUL truncation. These became cards FMT-3 and AUTHN-3, fixed in every backend.</li>
-  <li><time>16:17</time>Go, Java, .NET and Bun built from the spec in Docker: 94/94 on first run (Java 93/94).</li>
-  <li class="turn"><time>16:18</time>"Do the ACs still hold?" A probe across 5 backends found 3 new divergences, which became card AUTHN-4.</li>
-  <li><time>16:52</time><b>Gate 4, freeze</b>: <b>9/9 backends at 97/97, 40/40 ACs</b>.</li>
+  <li><time>15:28</time><b>Gate 1</b>: Node/TS minimum version passes 27/27. Patrick approves the first 12 rules.</li>
+  <li class="turn"><time>15:36</time><b>Gate 3</b>, decided early: rebuild from the rules in other languages instead of adding features.</li>
+  <li><time>15:38</time><b>Gate 2</b>: version checks, soft delete and restore. 45/45; 5 of 5 planted bugs caught.</li>
+  <li><time>15:39</time>Deno, Python, PHP and Rust, built from the rules alone, pass <b>45/45 on their first run</b>.</li>
+  <li class="turn"><time>15:54</time>Green backends still disagreed in 7 places. These became 10 new rules. Patrick overruled one agent recommendation (a uniform 415).</li>
+  <li><time>16:09</time>Red team (fuzzer, mutation testing, Grok's probes) finds crashes and data corruption. These became new rules, fixed everywhere by 16:19.</li>
+  <li><time>16:52</time><b>Gate 4, freeze</b>: <b>9 of 9 backends at 97/97, 40 of 40 rules</b>. Go, Java, .NET and Bun were added in the last 35 minutes.</li>
 </ol></div>
 
 <h2>From the spec alone, first try</h2>
@@ -128,6 +123,27 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
 <tr><td>php</td><td class="n">586</td><td class="n">639</td><td class="n">333</td><td class="n">1,107</td><td class="n">33</td><td class="n">240.7</td><td class="n">251.5</td></tr>
 </table>
 <p class="note">Contention: 32 workers race to edit one note, and only writes with a current If-Match succeed, so most requests correctly get 412. Python and PHP run on development servers, which proves the contract but not production throughput. Deno's write p99 shows long tail pauses.</p></div>
+
+<h2>Top three, head to head</h2>
+<p>Ranked by correctness first (97/97, 0 red-team violations), then by the Docker benchmark.</p>
+<p class="src">evidence/top3.md</p>
+<div class="sheet"><table>
+<tr><th></th><th>rust</th><th>node-ts</th><th>deno</th></tr>
+<tr><td>Conformance · red-team violations</td><td class="n">97/97 · 0</td><td class="n">97/97 · 0</td><td class="n">97/97 · 0</td></tr>
+<tr><td>Mutation score (domain module)</td><td class="n">100% (23/23)</td><td class="n">97.7% (42/43)</td><td class="n">100% (62/62)</td></tr>
+<tr><td>Benchmark score</td><td class="n">100</td><td class="n">57.5</td><td class="n">45.6</td></tr>
+<tr><td>Write req/s · p99</td><td class="n">10,655 · 10.8 ms</td><td class="n">2,876 · 44.4 ms</td><td class="n">1,774 · 670.9 ms</td></tr>
+<tr><td>Source lines · image</td><td class="n">785 · 120 MB</td><td class="n">584 · 382 MB</td><td class="n">493 · 268 MB</td></tr>
+</table><p class="note">The node-ts mutation score comes from a run before its last domain change.</p></div>
+
+<h2 id="gaps">Known issues and gaps</h2>
+<div class="sheet"><table>
+<tr><th>Issue</th><th>Status</th></tr>
+<tr><td>Python returned a connection reset instead of 413 for a 2.2 MB body once in CI (1 of 2 runs)</td><td>Not reproduced locally in 20 runs. Transport profile.</td></tr>
+<tr><td>Python and PHP run on development HTTP servers, with weak request framing (conflicting Content-Length and Transfer-Encoding)</td><td>Found by Grok's red team. Use a production server.</td></tr>
+<tr><td>Hidden notes answer about 30 µs slower than missing ones on Deno and PHP</td><td>Timing side channel. Not yet pinned by a rule.</td></tr>
+<tr><td>No pagination, rate limiting, security headers or dependency audit</td><td>Listed in the README under "What I'd change".</td></tr>
+</table></div>
 
 <h2>Who decided what</h2>
 <div class="sheet"><table>
