@@ -142,7 +142,7 @@ Each backend or feature is either all green and merged, or reverted. Nothing hal
   2. How we proved it: the tiers and gates timeline, AC → case → verdict, falsification and mutation results, and backend first-run error counts.
 
   Published as private claude.ai Artifacts and linked from the README. A static HTML copy goes in `docs/explainer/`.
-- **Transcripts:** copy the session JSONL and `subagents/*.jsonl` from `~/.claude/projects/-home-user-Projects-project/` to `docs/transcripts/`, scan for secrets and redact them, then make the final commit and push.
+- **Transcripts:** copy the session JSONL and `subagents/*.jsonl` from `~/.claude/projects/<repo path with / as ->/` to `docs/transcripts/`, scan for secrets and redact them, then make the final commit and push.
 
 ## Appendix: draft prompt for the primary Grok bot
 I'll fill in the real repo URL, Discussion URLs and Project URL after the push.
