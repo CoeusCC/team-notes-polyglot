@@ -204,6 +204,17 @@ Shared fixtures (seeded by `spec/schema.sql`):
 - **Claim.** The full order is **401 → 404 → 403 → 415 → 413 → 400 → 422 → 409 → 428 → 412**. Permission is decided before the body is read, so a caller who isn't allowed learns nothing about their payload. A state conflict (409) is reported only for otherwise-valid input.
 - **Falsifier.** Bob (a member, not the owner) sends PUT on a member with a `text/plain` body → 403, not 415. Creating a team with a taken slug and an empty name → 422, not 409.
 
+#### NOTES-TECH-FMT-3: Strings must be valid Unicode, and limits are exact (from red team + mutation testing, 2026-10-26)
+- **Claim.** `title` and `body` must be sequences of Unicode scalar values. Request bodies must be **I-JSON** (RFC 7493). A lone surrogate escape such as `"\ud800"` anywhere in the body gets **400**, the same as malformed JSON, because it can't be stored and read back unchanged (decided by Patrick: 400 over 422). The limits are inclusive: a body of exactly 100,000 code points is accepted and 100,001 is rejected.
+- **Origin.** The red-team fuzzer found node-ts accepting a lone surrogate and returning a different title on read (an invariant violation). Mutation testing found that no case covered the exact body limit (`>` → `>=` survived).
+- **Interface.** Invalid UTF-8 bytes are malformed JSON (400). Any valid scalar, U+0000 included, is stored and returned byte-for-byte.
+- **Falsifier.** POST with title `"\ud800"` → 400. A body containing `"x\udfff"` → 400. Raw bytes `FF FE` inside a string → 400. A title `"a\u0000b"` and a body `"keep\u0000secret-tail"` round-trip exactly (Grok red team found Deno truncating at NUL). A body of exactly 100,000 `b` → 201.
+
+#### NOTES-SEC-AUTHN-3: Malformed paths never produce 5xx (from red team, 2026-10-26)
+- **Claim.** Any request path, including `//`, `///notes`, `/./` or percent-junk, gets 401 without a token and the identical 404 with one. It never gets a 5xx.
+- **Origin.** The red-team fuzzer (invariant I1) found `GET //` and `POST //` returning 500 on node-ts.
+- **Falsifier.** `GET //` with no token → 401. `GET //` and `POST //` as alice → 404, byte-identical to a random-UUID 404.
+
 ## Profiles (Set: profile:<name>; ADR-0004)
 Smaller technical constraints that apply only to some environments. They're not part of the core suite.
 

@@ -3410,6 +3410,151 @@
      }
     }
    ]
+  },
+  {
+   "id": "redteam-lone-surrogate-rejected",
+   "falsifies": "NOTES-TECH-FMT-3",
+   "source": "red team fuzzer (seed 2)",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"\\ud800\"}",
+     "expect": {
+      "status": 400
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"ok\",\"body\":\"x\\udfff\"}",
+     "expect": {
+      "status": 400
+     }
+    }
+   ]
+  },
+  {
+   "id": "mutation-body-limit-inclusive",
+   "falsifies": "NOTES-TECH-FMT-3",
+   "source": "mutation survivor (python domain.py >= at 100000)",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"t\",\"body\":\"<repeat:100000:b>\"}",
+     "expect": {
+      "status": 201
+     }
+    }
+   ]
+  },
+  {
+   "id": "redteam-double-slash-no-5xx",
+   "falsifies": "NOTES-SEC-AUTHN-3",
+   "source": "red team fuzzer I1",
+   "steps": [
+    {
+     "method": "GET",
+     "path": "//",
+     "noContract": true,
+     "expect": {
+      "status": 401
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/00000000-0000-4000-8000-000000000000",
+     "expect": {
+      "status": 404
+     },
+     "saveText": "h"
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "//",
+     "noContract": true,
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "//",
+     "body": {},
+     "noContract": true,
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "///notes",
+     "noContract": true,
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "redteam-invalid-utf8-400",
+   "falsifies": "NOTES-TECH-FMT-3",
+   "source": "Grok red team #3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBodyBase64": "eyJ0aXRsZSI6ImH//iJ9",
+     "expect": {
+      "status": 400
+     }
+    }
+   ]
+  },
+  {
+   "id": "redteam-nul-roundtrip",
+   "falsifies": "NOTES-TECH-FMT-3",
+   "source": "Grok red team #2 (deno truncated after U+0000)",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/team-red/notes",
+     "rawBody": "{\"title\":\"a\\u0000b ${run}\",\"body\":\"keep\\u0000secret-tail\"}",
+     "expect": {
+      "status": 201,
+      "json": {
+       "title": "a\u0000b ${run}",
+       "body": "keep\u0000secret-tail"
+      }
+     },
+     "save": "n"
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${n.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "title": "a\u0000b ${run}",
+       "body": "keep\u0000secret-tail"
+      }
+     }
+    }
+   ]
   }
  ]
 }
