@@ -1,0 +1,261 @@
+openapi: 3.1.0
+info:
+  title: Team Notes API
+  version: 0.1.0-tier1
+  description: |
+    Notes shared within small teams. Each note belongs to exactly one team, and every
+    member of that team can read and edit it.
+
+    * **Auth:** every endpoint except `/health` needs `Authorization: Bearer <token>`.
+    * **Visibility:** a resource outside the caller's teams is answered with `404`, never `403`,
+      so the API does not reveal whether it exists (ADR-0001).
+    * **Errors:** every error is an RFC 9457 `application/problem+json` document.
+    * **Source of truth:** behavior is pinned down by `spec/acceptance-criteria.md` and checked by `conformance/`.
+servers:
+  - url: http://localhost:3001
+security:
+  - bearer: []
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      security: []
+      responses:
+        '200':
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { const: ok }
+
+  /me:
+    get:
+      operationId: getMe
+      responses:
+        '200':
+          description: The caller
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Me' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /teams:
+    get:
+      operationId: listMyTeams
+      responses:
+        '200':
+          description: Teams the caller belongs to
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Team' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /teams/{teamId}/notes:
+    parameters:
+      - $ref: '#/components/parameters/TeamId'
+    get:
+      operationId: listTeamNotes
+      description: The team's notes, newest first.
+      responses:
+        '200':
+          description: The team's notes
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NoteList' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      operationId: createNote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NoteCreate' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema: { type: string }
+              description: /notes/{id}
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Note' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /notes/{noteId}:
+    parameters:
+      - $ref: '#/components/parameters/NoteId'
+    get:
+      operationId: getNote
+      responses:
+        '200':
+          description: The note
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Note' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      operationId: updateNote
+      description: A partial update. Only the fields present change, and `version` increments by one.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NotePatch' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Note' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+    delete:
+      operationId: deleteNote
+      responses:
+        '204': { description: Deleted }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+
+  parameters:
+    TeamId:
+      name: teamId
+      in: path
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 64 }
+    NoteId:
+      name: noteId
+      in: path
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 64 }
+
+  responses:
+    BadRequest:
+      description: Malformed request (e.g. invalid JSON)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid bearer token
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found, or not visible to the caller
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unprocessable:
+      description: Validation failed
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ValidationProblem' }
+
+  schemas:
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer, minimum: 400, maximum: 599 }
+        detail: { type: string }
+        instance: { type: string }
+
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          required: [errors]
+          properties:
+            errors:
+              type: array
+              minItems: 1
+              items:
+                type: object
+                required: [field, message]
+                properties:
+                  field: { type: string }
+                  message: { type: string }
+
+    Team:
+      type: object
+      additionalProperties: false
+      required: [id, name, role]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        role: { enum: [owner, member] }
+
+    Me:
+      type: object
+      additionalProperties: false
+      required: [id, name, teams]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        teams:
+          type: array
+          items: { $ref: '#/components/schemas/Team' }
+
+    Note:
+      type: object
+      additionalProperties: false
+      required: [id, teamId, authorId, title, body, version, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        teamId: { type: string }
+        authorId: { type: string }
+        title: { type: string, minLength: 1, maxLength: 200 }
+        body: { type: string, maxLength: 100000 }
+        version: { type: integer, minimum: 1 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    NoteList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Note' }
+
+    NoteCreate:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200, description: 'Trimmed; must be non-empty after trimming.' }
+        body: { type: string, maxLength: 100000, default: '' }
+
+    NotePatch:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        body: { type: string, maxLength: 100000 }
