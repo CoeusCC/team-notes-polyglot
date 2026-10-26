@@ -7,3 +7,4 @@ evidence/tmp/
 .obsidian/
 .claude/worktrees/
 evidence/*.server.log
+.dogfood/
