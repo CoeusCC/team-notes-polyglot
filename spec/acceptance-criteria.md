@@ -83,13 +83,35 @@ Shared fixtures (seeded by `spec/schema.sql`):
 
 ---
 
-## Tier 2: concurrency and soft delete (outline, cards to be written)
-- `NOTES-FUNC-CONC-1`: `GET` returns `ETag: "<version>"`.
-- `NOTES-FUNC-CONC-2`: `PATCH` without `If-Match` gets `428`.
-- `NOTES-FUNC-CONC-3`: `PATCH` with a stale `If-Match` gets `412` and leaves the note unchanged (the lost-update falsifier).
-- `NOTES-FUNC-DEL-1`: `DELETE` is a soft delete and is idempotent (a second call also gets `204`).
-- `NOTES-FUNC-DEL-2`: `POST /notes/{id}/restore` brings a note back.
-- `NOTES-FUNC-DEL-3`: lists hide deleted notes unless `?archived=true` is passed.
+## Tier 2: concurrency and soft delete (draft cards, awaiting ratification)
+
+#### NOTES-FUNC-CONC-1: Reads expose the version as a strong ETag
+- **Claim.** `GET /notes/{id}`, `POST` (201), `PATCH` (200) and `POST …/restore` (200) return `ETag: "<version>"`, which always equals the body's `version`.
+- **Falsifier.** Create a note: `ETag` is `"1"`. Patch it: `ETag` is `"2"`. GET then returns `ETag` `"2"`.
+
+#### NOTES-FUNC-CONC-2: Updates require a precondition
+- **Claim.** A `PATCH` without `If-Match` gets `428 Precondition Required` and changes nothing.
+- **Forbids.** Unconditional updates, which would let lost updates through.
+- **Falsifier.** PATCH with no `If-Match` → 428. GET afterwards still shows `version=1` and the old title.
+- *Supersedes Tier 1:* once ratified, the PATCH steps in the NOTES-FUNC-NOTE-3 and NOTES-SEC-AUTHZ-1 cases send `If-Match`.
+
+#### NOTES-FUNC-CONC-3: A stale writer cannot overwrite a newer version (lost update)
+- **Claim.** When `If-Match` doesn't equal the current ETag, `PATCH` gets `412 Precondition Failed`, the note is unchanged, and the response carries the current `ETag`.
+- **Forbids.** Two writers holding the same ETag both succeeding.
+- **Falsifier.** Alice and Bob both read v1. Alice PATCHes with `If-Match: "1"` → 200, v2. Bob PATCHes with `If-Match: "1"` → 412. GET shows Alice's title at v2.
+
+#### NOTES-FUNC-DEL-1: Delete is soft and idempotent
+- **Claim.** `DELETE /notes/{id}` on a live or already-deleted note in the caller's team returns `204`. Afterwards the note is hidden from GET and PATCH (404), but its data is kept.
+- **Falsifier.** DELETE → 204, DELETE again → 204, then GET → 404.
+
+#### NOTES-FUNC-DEL-2: Deleted notes can be restored
+- **Claim.** `POST /notes/{id}/restore` by a team member returns 200 with the note and increments `version`. GET works again afterwards. Restoring a live note is a no-op 200 that leaves the version unchanged.
+- **Forbids.** Non-members restoring (404). Losing content through delete followed by restore.
+- **Falsifier.** Create, DELETE, restore → 200 with the same title and body and `version=2`. Carol restoring → 404.
+
+#### NOTES-FUNC-DEL-3: Lists hide deleted notes unless asked
+- **Claim.** `GET /teams/{teamId}/notes` excludes deleted notes. With `?archived=true` it lists **only** deleted notes, each with a `deletedAt` value.
+- **Falsifier.** A deleted note is absent from the default list and present in `?archived=true`. A live note is the reverse.
 
 ## Tier 3: team management and search (outline)
 - `NOTES-FUNC-TEAM-2..4`: create a team (the creator becomes its owner). Only the owner can add or remove members. A removed member immediately loses access.
