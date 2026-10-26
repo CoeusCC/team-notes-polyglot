@@ -117,17 +117,44 @@ fn note_response(status: StatusCode, n: &Note) -> Response {
     with_etag(json_response(status, n), n.version)
 }
 
+/// Decode every %XX escape (so unreserved characters match their literal form); malformed escapes stay literal.
+fn percent_decode(s: &str) -> String {
+    let b = s.as_bytes();
+    let mut out = Vec::with_capacity(b.len());
+    let mut i = 0;
+    while i < b.len() {
+        let hex = |c: u8| (c as char).to_digit(16);
+        if b[i] == b'%' && i + 2 < b.len() {
+            if let (Some(h), Some(l)) = (hex(b[i + 1]), hex(b[i + 2])) {
+                out.push((h * 16 + l) as u8);
+                i += 3;
+                continue;
+            }
+        }
+        out.push(b[i]);
+        i += 1;
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
 pub async fn handle(State(db): State<Db>, req: Request) -> Response {
     let (parts, body) = req.into_parts();
     let raw = read_body(body).await;
     let path = parts.uri.path().to_string();
-    let segs: Vec<&str> = path.trim_start_matches('/').split('/').collect();
+    let decoded: Vec<String> = path.trim_start_matches('/').split('/').map(percent_decode).collect();
+    let segs: Vec<&str> = decoded.iter().map(String::as_str).collect();
 
     if parts.method == Method::GET && segs == ["health"] {
         return json_response(StatusCode::OK, &json!({"status": "ok"}));
     }
     let conn = db.lock().unwrap_or_else(|p| p.into_inner());
-    let user = match domain::bearer_token(header_str(&parts.headers, header::AUTHORIZATION)) {
+    // More than one Authorization header is ambiguous: never authenticate (AUTHN-4).
+    let auth = if parts.headers.get_all(header::AUTHORIZATION).iter().count() > 1 {
+        None
+    } else {
+        domain::bearer_token(header_str(&parts.headers, header::AUTHORIZATION))
+    };
+    let user = match auth {
         None => return unauthorized(),
         Some(t) => match store::user_by_token(&conn, t) {
             Ok(Some(u)) => u,
@@ -135,6 +162,10 @@ pub async fn handle(State(db): State<Db>, req: Request) -> Response {
             Err(e) => return internal(e),
         },
     };
+    // Never resolve dot segments: any "." or ".." is an unknown route (AUTHN-4).
+    if segs.iter().any(|s| *s == "." || *s == "..") {
+        return not_found();
+    }
     let result = route(&conn, &user, &parts.method, &segs, &parts.headers, &raw, parts.uri.query());
     result.unwrap_or_else(internal)
 }
