@@ -69,3 +69,19 @@ test('null is not an object', () => {
   assert.equal(validatePatch(null).ok, false);
   assert.equal(validateCreate(null).ok, false);
 });
+
+test('title trimming uses Unicode White_Space (FMT-2)', () => {
+  const title = (t: string) => { const r = validateCreate({ title: t }); return r.ok ? r.value.title : null; };
+  assert.equal(title(' hi　'), 'hi');
+  assert.equal(title(' hi '), 'hi');
+  assert.equal(title('\t\nhi\u0085 '), 'hi');
+  assert.equal(title('​'), '​'); // ZWSP is not White_Space
+  assert.equal(title('﻿x﻿'), '﻿x﻿'); // neither is BOM
+  assert.equal(title(' 　'), null);
+});
+
+test('title length counts code points (FMT-2)', () => {
+  assert.equal(validateCreate({ title: 'é'.repeat(100) }).ok, true);
+  assert.equal(validateCreate({ title: 'é'.repeat(101) }).ok, false);
+  assert.equal(validateCreate({ title: '\u{1F468}‍\u{1F469}‍\u{1F467}'.repeat(40) }).ok, true);
+});
