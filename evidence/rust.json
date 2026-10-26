@@ -608,7 +608,7 @@
     "NOTES-SEC-AUTHN-3": "passed"
   },
   "backend": "rust",
-  "commit": "f7fa111",
-  "builddigest": "ca08c9c77992ec26",
-  "at": "2026-10-26T21:13:06.881Z"
+  "commit": "8dab64f",
+  "builddigest": "6451e3b6544fe1da",
+  "at": "2026-10-26T21:13:38.859Z"
 }
