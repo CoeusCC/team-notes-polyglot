@@ -31,6 +31,7 @@ mkdir -p evidence
 status=0
 for b in "${backends[@]}"; do
   p=${PORT[$b]}
+  if curl -sf "http://localhost:$p/health" >/dev/null 2>&1; then echo "$b: port $p already serving; refusing (stale server would fake verdicts)" >&2; status=1; continue; fi
   start "$b" "$p" >"evidence/$b.server.log" 2>&1 &
   pid=$!
   for _ in $(seq 1 120); do curl -sf "http://localhost:$p/health" >/dev/null && break; sleep 0.5; done

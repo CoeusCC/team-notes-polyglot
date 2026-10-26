@@ -3,7 +3,7 @@
 # Prints "CAUGHT <fault> by <refuted ACs>" or "MISSED <fault>"; exits non-zero if any fault is MISSED.
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PORT=3101
+PORT=${FALSIFY_PORT:-3141}
 FAULTS=(ignore-if-match hard-delete restore-keeps-version leak-403 no-trim)
 WORK="$(mktemp -d)"
 PIDFILE="$WORK/server.pid"
@@ -22,6 +22,8 @@ for f in "${FAULTS[@]}"; do
   # Fresh in-memory DB per fault: the server is a new process with DB_PATH=:memory:.
   # cd first, then background node itself, so $! is node's pid (not a wrapper subshell's).
   cd "$ROOT/backends/node-ts" || exit 2
+  # Refuse a busy port: a stale server would answer /health and silently replace the faulty build under test.
+  if curl -sf "http://localhost:$PORT/health" >/dev/null 2>&1; then echo "ERROR: port $PORT already serving; refusing (stale server would fake results)"; exit 2; fi
   FAULT="$f" PORT=$PORT DB_PATH=:memory: node src/server.ts >"$WORK/server.log" 2>&1 &
   echo $! >"$PIDFILE"
   cd "$ROOT" || exit 2
