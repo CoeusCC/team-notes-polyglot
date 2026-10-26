@@ -15,7 +15,9 @@ function cpLength(string $s): int
 
 function trimTitle(string $s): string
 {
-    return preg_replace('/^[\s\p{Z}\x{FEFF}]+|[\s\p{Z}\x{FEFF}]+$/u', '', $s) ?? $s;
+    // Unicode White_Space exactly (not U+200B, not U+FEFF, which are not White_Space).
+    $ws = '[\x{9}-\x{D}\x{20}\x{85}\x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}]+';
+    return preg_replace("/^$ws|$ws\$/u", '', $s) ?? $s;
 }
 
 function nowIso(): string
@@ -41,21 +43,32 @@ function etagFor(int $version): string
 }
 
 /**
- * Evaluate an If-Match header against the current version.
- * Returns 'ok', 'required' (428) or 'stale' (412).
+ * Evaluate an If-Match header against the current version (RFC 9110 strong comparison).
+ * Returns 'ok', 'required' (428) or 'stale' (412). Any `*` entry gives 'required';
+ * otherwise only a strong tag byte-equal to the current ETag matches (weak and unquoted never do).
  */
 function checkIfMatch(?string $header, int $version): string
 {
-    $h = $header === null ? '' : trim($header);
-    if ($h === '' || $h === '*') {
-        return 'required';
-    }
-    foreach (explode(',', $h) as $candidate) {
-        if (trim($candidate) === etagFor($version)) {
-            return 'ok';
+    $entries = [];
+    foreach (explode(',', $header ?? '') as $e) {
+        $e = trim($e, " \t");
+        if ($e !== '') {
+            $entries[] = $e;
         }
     }
-    return 'stale';
+    if (!$entries || in_array('*', $entries, true)) {
+        return 'required';
+    }
+    return in_array(etagFor($version), $entries, true) ? 'ok' : 'stale';
+}
+
+/** Parse ?archived=: absent -> false; only "true"/"false" valid; anything else null. */
+function parseArchived(mixed $v): ?bool
+{
+    if ($v === null) {
+        return false;
+    }
+    return $v === 'true' ? true : ($v === 'false' ? false : null);
 }
 
 /**
@@ -65,7 +78,7 @@ function checkIfMatch(?string $header, int $version): string
 function validateFields(mixed $data, bool $isCreate): array
 {
     if (!($data instanceof stdClass)) {
-        return [[], [['field' => '(body)', 'message' => 'must be a JSON object']]];
+        return [[], [['field' => '$', 'message' => 'must be a JSON object']]];
     }
     $fields = get_object_vars($data);
     $errors = [];
