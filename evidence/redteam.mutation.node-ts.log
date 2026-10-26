@@ -1,9 +1,9 @@
-Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.note.edn
-Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.note.edn
-Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.precondition.edn
-Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.note.edn
-Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.precondition.edn
-Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.validation.edn
+Wrote <tmp>/scratchpad/proj/.metrics/mutate/domain.note.edn
+Wrote <tmp>/scratchpad/proj/.metrics/mutate/domain.note.edn
+Wrote <tmp>/scratchpad/proj/.metrics/mutate/domain.precondition.edn
+Wrote <tmp>/scratchpad/proj/.metrics/mutate/domain.note.edn
+Wrote <tmp>/scratchpad/proj/.metrics/mutate/domain.precondition.edn
+Wrote <tmp>/scratchpad/proj/.metrics/mutate/domain.validation.edn
 KILLED    backends/node-ts/src/domain/note.ts:42 === -> !==
 KILLED    backends/node-ts/src/domain/note.ts:49 1 -> 0
 KILLED    backends/node-ts/src/domain/precondition.ts:10 ?. -> .
