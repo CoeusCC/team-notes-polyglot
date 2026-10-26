@@ -2,6 +2,8 @@
 
 [![conformance](https://github.com/CoeusCC/team-notes-polyglot/actions/workflows/conformance.yml/badge.svg)](https://github.com/CoeusCC/team-notes-polyglot/actions/workflows/conformance.yml)
 
+**For reviewers:** [Design choices](#design-choices-i-spent-the-most-time-on) · [What I'd change](#what-id-change-add-or-stop-doing-with-more-time) · [Security and known gaps](#security-posture-and-known-gaps)
+
 **Start here:** [`START-HERE.md`](START-HERE.md) · How it works: [`docs/SERVICE.md`](docs/SERVICE.md) · Every acceptance criterion at a glance: [`docs/ACCEPTANCE.md`](docs/ACCEPTANCE.md) · API reference: [`docs/api.html`](docs/api.html)
 
 This is a REST backend for a note-taking service shared among small teams:
