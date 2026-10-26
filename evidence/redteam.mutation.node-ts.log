@@ -1,0 +1,64 @@
+Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.note.edn
+Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.note.edn
+Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.precondition.edn
+Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.note.edn
+Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.precondition.edn
+Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj/.metrics/mutate/domain.validation.edn
+KILLED    backends/node-ts/src/domain/note.ts:42 === -> !==
+KILLED    backends/node-ts/src/domain/note.ts:49 1 -> 0
+KILLED    backends/node-ts/src/domain/precondition.ts:10 ?. -> .
+KILLED    backends/node-ts/src/domain/precondition.ts:11 === -> !==
+KILLED    backends/node-ts/src/domain/precondition.ts:11 || -> &&
+KILLED    backends/node-ts/src/domain/precondition.ts:11 === -> !==
+KILLED    backends/node-ts/src/domain/precondition.ts:11 || -> &&
+KILLED    backends/node-ts/src/domain/precondition.ts:11 === -> !==
+KILLED    backends/node-ts/src/domain/precondition.ts:13 1 -> 0
+KILLED    backends/node-ts/src/domain/precondition.ts:13 0 -> 1
+KILLED    backends/node-ts/src/domain/validation.ts:19 === -> !==
+KILLED    backends/node-ts/src/domain/validation.ts:19 && -> ||
+KILLED    backends/node-ts/src/domain/validation.ts:19 !== -> ===
+KILLED    backends/node-ts/src/domain/validation.ts:19 && -> ||
+KILLED    backends/node-ts/src/domain/validation.ts:19 delete !
+KILLED    backends/node-ts/src/domain/validation.ts:22 !== -> ===
+KILLED    backends/node-ts/src/domain/validation.ts:27 < -> <=
+KILLED    backends/node-ts/src/domain/validation.ts:27 1 -> 0
+KILLED    backends/node-ts/src/domain/validation.ts:27 || -> &&
+KILLED    backends/node-ts/src/domain/validation.ts:27 > -> >=
+KILLED    backends/node-ts/src/domain/validation.ts:35 !== -> ===
+KILLED    backends/node-ts/src/domain/validation.ts:39 > -> >=
+KILLED    backends/node-ts/src/domain/validation.ts:49 delete !
+KILLED    backends/node-ts/src/domain/validation.ts:56 delete !
+KILLED    backends/node-ts/src/domain/validation.ts:56 false -> true
+KILLED    backends/node-ts/src/domain/validation.ts:61 > -> >=
+KILLED    backends/node-ts/src/domain/validation.ts:61 0 -> 1
+KILLED    backends/node-ts/src/domain/validation.ts:61 || -> &&
+KILLED    backends/node-ts/src/domain/validation.ts:61 === -> !==
+SURVIVED  backends/node-ts/src/domain/validation.ts:61 || -> &&
+KILLED    backends/node-ts/src/domain/validation.ts:61 === -> !==
+KILLED    backends/node-ts/src/domain/validation.ts:61 false -> true
+KILLED    backends/node-ts/src/domain/validation.ts:62 true -> false
+KILLED    backends/node-ts/src/domain/validation.ts:66 delete !
+KILLED    backends/node-ts/src/domain/validation.ts:66 false -> true
+KILLED    backends/node-ts/src/domain/validation.ts:70 !== -> ===
+KILLED    backends/node-ts/src/domain/validation.ts:71 !== -> ===
+KILLED    backends/node-ts/src/domain/validation.ts:72 === -> !==
+KILLED    backends/node-ts/src/domain/validation.ts:72 0 -> 1
+KILLED    backends/node-ts/src/domain/validation.ts:73 > -> >=
+KILLED    backends/node-ts/src/domain/validation.ts:73 0 -> 1
+KILLED    backends/node-ts/src/domain/validation.ts:73 false -> true
+KILLED    backends/node-ts/src/domain/validation.ts:73 true -> false
+Function       Namespace            Killed  Survived  Uncovered  Sites   Score
+------------------------------------------------------------------------------
+etag           domain.precondition       0         0          0      0    n/a
+length         domain.validation         0         0          0      0    n/a
+validateCreate domain.validation         9         1          0     10  90.0%
+checkBody      domain.validation         2         0          0      2 100.0%
+checkTitle     domain.validation         5         0          0      5 100.0%
+isPlainObject  domain.validation         5         0          0      5 100.0%
+newNoteFields  domain.note               1         0          0      1 100.0%
+parseIfMatch   domain.precondition       8         0          0      8 100.0%
+toNote         domain.note               1         0          0      1 100.0%
+unknownFields  domain.validation         1         0          0      1 100.0%
+validatePatch  domain.validation        10         0          0     10 100.0%
+------------------------------------------------------------------------------
+Total                                   42         1          0     43   97.7%

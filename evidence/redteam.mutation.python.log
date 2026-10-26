@@ -1,0 +1,34 @@
+Wrote /tmp/claude-1000/-home-pszeinert-Projects-bluestaq/05669a8b-318d-49ce-bb3a-49c246302fda/scratchpad/proj2/.metrics/mutate/backends.python.domain.edn
+KILLED    backends/python/domain.py:22 + -> -
+KILLED    backends/python/domain.py:28 True -> False
+SURVIVED  backends/python/domain.py:30 False -> True
+KILLED    backends/python/domain.py:34 delete not
+KILLED    backends/python/domain.py:38 delete not
+KILLED    backends/python/domain.py:38 1 -> 0
+KILLED    backends/python/domain.py:38 <= -> <
+KILLED    backends/python/domain.py:38 <= -> <
+KILLED    backends/python/domain.py:38 or -> and
+KILLED    backends/python/domain.py:38 delete not
+KILLED    backends/python/domain.py:45 delete not
+SURVIVED  backends/python/domain.py:48 > -> >=
+KILLED    backends/python/domain.py:48 or -> and
+KILLED    backends/python/domain.py:48 delete not
+KILLED    backends/python/domain.py:75 delete not
+KILLED    backends/python/domain.py:86 delete not
+KILLED    backends/python/domain.py:90 delete not
+KILLED    backends/python/domain.py:97 or -> and
+KILLED    backends/python/domain.py:97 == -> !=
+Function           Namespace               Killed  Survived  Uncovered  Sites   Score
+-------------------------------------------------------------------------------------
+_check_fields      backends.python.domain       0         0          0      0    n/a
+etag               backends.python.domain       0         0          0      0    n/a
+trim               backends.python.domain       0         0          0      0    n/a
+_encodable         backends.python.domain       1         1          0      2  50.0%
+_check_body        backends.python.domain       3         1          0      4  75.0%
+_check_title       backends.python.domain       7         0          0      7 100.0%
+check_precondition backends.python.domain       2         0          0      2 100.0%
+now_iso            backends.python.domain       1         0          0      1 100.0%
+validate_create    backends.python.domain       1         0          0      1 100.0%
+validate_patch     backends.python.domain       2         0          0      2 100.0%
+-------------------------------------------------------------------------------------
+Total                                          17         2          0     19   89.5%

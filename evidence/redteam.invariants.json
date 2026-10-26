@@ -1,0 +1,1091 @@
+{
+  "generated": "2026-10-26T21:04:19.365Z",
+  "ops": 1500,
+  "seeds": [
+    1,
+    2
+  ],
+  "results": [
+    {
+      "target": "node-ts",
+      "url": "http://127.0.0.1:3201",
+      "seed": 1,
+      "ops": 1500,
+      "requests": 2818,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 8,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 2951,
+      "checks": {
+        "I1": 2810,
+        "I2": 2810,
+        "I3": 732,
+        "I4": 346,
+        "I5": 40,
+        "I6": 251,
+        "I7": 416,
+        "I8": 464,
+        "M": 1223
+      },
+      "violationCounts": {
+        "I1": 28,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "alice GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol OPTIONS /",
+            "#0 probe none OPTIONS /",
+            "#0 probe alice GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "carol GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none OPTIONS /",
+            "#0 probe alice GET //",
+            "#0 probe carol GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "none GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice GET //",
+            "#0 probe carol GET //",
+            "#0 probe none GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "alice POST // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol GET //",
+            "#0 probe none GET //",
+            "#0 probe alice POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "carol POST // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none GET //",
+            "#0 probe alice POST //",
+            "#0 probe carol POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "none POST // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice POST //",
+            "#0 probe carol POST //",
+            "#0 probe none POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "alice DELETE //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol POST //",
+            "#0 probe none POST //",
+            "#0 probe alice DELETE //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "carol DELETE //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none POST //",
+            "#0 probe alice DELETE //",
+            "#0 probe carol DELETE //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "none DELETE //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice DELETE //",
+            "#0 probe carol DELETE //",
+            "#0 probe none DELETE //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "alice PATCH // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol DELETE //",
+            "#0 probe none DELETE //",
+            "#0 probe alice PATCH //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "carol PATCH // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none DELETE //",
+            "#0 probe alice PATCH //",
+            "#0 probe carol PATCH //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "none PATCH // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice PATCH //",
+            "#0 probe carol PATCH //",
+            "#0 probe none PATCH //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "alice HEAD //",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol PATCH //",
+            "#0 probe none PATCH //",
+            "#0 probe alice HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "carol HEAD //",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none PATCH //",
+            "#0 probe alice HEAD //",
+            "#0 probe carol HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "none HEAD //",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice HEAD //",
+            "#0 probe carol HEAD //",
+            "#0 probe none HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "alice OPTIONS //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol HEAD //",
+            "#0 probe none HEAD //",
+            "#0 probe alice OPTIONS //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "carol OPTIONS //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none HEAD //",
+            "#0 probe alice OPTIONS //",
+            "#0 probe carol OPTIONS //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 0,
+          "desc": "none OPTIONS //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice OPTIONS //",
+            "#0 probe carol OPTIONS //",
+            "#0 probe none OPTIONS //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 251,
+          "desc": "bob GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#249 create alice team-red {\"title\":\"{\\\"a\\\":1}\"}",
+            "#250 list carol team-red",
+            "#251 hostile bob GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 411,
+          "desc": "carol GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#409 list alice team-red?archived=true&archived=false",
+            "#410 patch bob note#3 v2(deleted) ifmatch=missing:undefined {\"body\":\"\"}",
+            "#411 hostile carol GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 766,
+          "desc": "none GET // If-Match:W/\"1\"",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#764 get carol note#23",
+            "#765 create bad team-red {\"title\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "#766 hostile none GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 816,
+          "desc": "bob POST // body={}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#814 patch bob note#4 v1(deleted) ifmatch=current:\"1\" {\"body\":12345678901234567000}",
+            "#815 restore bob note#10 (model deleted=false)",
+            "#816 hostile bob POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 1124,
+          "desc": "bob GET // If-Match:\"1\"",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1122 list bad team-red?archived=",
+            "#1123 patch carol note#34 v1 ifmatch=star:* {\"title\":\"\\ud800\"}",
+            "#1124 hostile bob GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 1292,
+          "desc": "hdr OPTIONS //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1290 list bob team-blue?archived=false",
+            "#1291 create carol team-blue {\"title\":false}",
+            "#1292 hostile alice OPTIONS // auth=\"Bearer TOK_ALICE\""
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 1327,
+          "desc": "bob POST // If-Match:\"1\"",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1325 patch none note#42 v1 ifmatch=garbage:99999999999999999999 {\"title\":\"hello\"}",
+            "#1326 patch carol note#30 v1(deleted) ifmatch=weak:W/\"1\" {\"title\":\"  padded  \"}",
+            "#1327 hostile bob POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 1393,
+          "desc": "bad GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1391 patch alice note#8 v1(deleted) ifmatch=current:\"1\" {\"body\":\"body text\"}",
+            "#1392 hostile bob PUT /notes/../teams/team-red/notes",
+            "#1393 hostile bad GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 1447,
+          "desc": "alice HEAD // If-Match:W/\"1\"",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1445 patch alice note#17 v2 ifmatch=current:\"2\" {\"title\":null}",
+            "#1446 hostile alice OPTIONS /notes/30602bdc-94ea-4ce8-bd1d-88cb6b9dc240%20",
+            "#1447 hostile alice HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 1,
+          "op": 1461,
+          "desc": "alice PATCH // body=null",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1459 list bad team-blue?archived=true",
+            "#1460 list none team-blue?archived=TRUE&x=%E0",
+            "#1461 hostile alice PATCH //"
+          ]
+        }
+      ],
+      "notesCreated": 51
+    },
+    {
+      "target": "node-ts",
+      "url": "http://127.0.0.1:3201",
+      "seed": 2,
+      "ops": 1500,
+      "requests": 2804,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 16,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 3907,
+      "checks": {
+        "I1": 2788,
+        "I2": 2788,
+        "I3": 783,
+        "I4": 382,
+        "I5": 37,
+        "I6": 217,
+        "I7": 457,
+        "I8": 467,
+        "M": 1241
+      },
+      "violationCounts": {
+        "I1": 26,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 1
+      },
+      "violations": [
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "alice GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol OPTIONS /",
+            "#0 probe none OPTIONS /",
+            "#0 probe alice GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "carol GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none OPTIONS /",
+            "#0 probe alice GET //",
+            "#0 probe carol GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "none GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice GET //",
+            "#0 probe carol GET //",
+            "#0 probe none GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "alice POST // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol GET //",
+            "#0 probe none GET //",
+            "#0 probe alice POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "carol POST // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none GET //",
+            "#0 probe alice POST //",
+            "#0 probe carol POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "none POST // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice POST //",
+            "#0 probe carol POST //",
+            "#0 probe none POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "alice DELETE //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol POST //",
+            "#0 probe none POST //",
+            "#0 probe alice DELETE //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "carol DELETE //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none POST //",
+            "#0 probe alice DELETE //",
+            "#0 probe carol DELETE //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "none DELETE //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice DELETE //",
+            "#0 probe carol DELETE //",
+            "#0 probe none DELETE //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "alice PATCH // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol DELETE //",
+            "#0 probe none DELETE //",
+            "#0 probe alice PATCH //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "carol PATCH // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none DELETE //",
+            "#0 probe alice PATCH //",
+            "#0 probe carol PATCH //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "none PATCH // If-Match:\"1\" body={\"title\":\"p\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice PATCH //",
+            "#0 probe carol PATCH //",
+            "#0 probe none PATCH //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "alice HEAD //",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol PATCH //",
+            "#0 probe none PATCH //",
+            "#0 probe alice HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "carol HEAD //",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none PATCH //",
+            "#0 probe alice HEAD //",
+            "#0 probe carol HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "none HEAD //",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice HEAD //",
+            "#0 probe carol HEAD //",
+            "#0 probe none HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "alice OPTIONS //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe carol HEAD //",
+            "#0 probe none HEAD //",
+            "#0 probe alice OPTIONS //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "carol OPTIONS //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe none HEAD //",
+            "#0 probe alice OPTIONS //",
+            "#0 probe carol OPTIONS //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 0,
+          "desc": "none OPTIONS //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#0 probe alice OPTIONS //",
+            "#0 probe carol OPTIONS //",
+            "#0 probe none OPTIONS //"
+          ]
+        },
+        {
+          "inv": "M",
+          "seed": 2,
+          "op": 15,
+          "desc": "alice PATCH /notes/b4f06105-0b5e-49bd-8e93-cb4e51b0bce0 If-Match:\"1\" body={\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...(466b)",
+          "detail": "untouched title changed",
+          "minimalSequence": [
+            "#6 create bob team-red {\"title\":\"\\ud800\"}",
+            "#8 restore none note#1 (model deleted=false)",
+            "#15 patch alice note#1 v1 ifmatch=current:\"1\" {\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          ],
+          "lastOps": [
+            "#13 patch bob note#0 v1 ifmatch=list:\"2\", \"3\" {\"title\":\"Ünï 😀\"}",
+            "#14 hostile carol PATCH /teams/team-red/notes?archived=true&archived=true",
+            "#15 patch alice note#1 v1 ifmatch=current:\"1\" {\"body\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 143,
+          "desc": "none PUT //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#141 create carol team-nope {\"title\":\"  padded  \",\"body\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "#142 list bob team-red?archived=false",
+            "#143 hostile none PUT //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 146,
+          "desc": "carol HEAD // If-Match:*",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#144 create carol team-red true",
+            "#145 hostile bad PUT /notes/%2e%2e%2fteams",
+            "#146 hostile carol HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 355,
+          "desc": "alice PATCH // body={\"title\":\"x\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#353 create carol team-blue {\"title\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"body\":\"\"}",
+            "#354 hostile alice PUT /notes/f7dd9d3f-3a84-44f7-97cc-6f8cb80db17e/",
+            "#355 hostile alice PATCH //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 581,
+          "desc": "bob GET // If-Match:\"1\",\"2\"",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#579 get none note#2",
+            "#580 delete alice note#1",
+            "#581 hostile bob GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 705,
+          "desc": "alice HEAD //",
+          "detail": "status 500: ",
+          "minimalSequence": [],
+          "lastOps": [
+            "#703 delete alice note#16",
+            "#704 patch bob note#21 v1 ifmatch=current:\"1\" {\"title\":\"a b\\tc\"}",
+            "#705 hostile alice HEAD //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 950,
+          "desc": "carol GET //",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#948 get carol note#26",
+            "#949 hostile carol OPTIONS /notes/f7dd9d3f-3a84-44f7-97cc-6f8cb80db17e/",
+            "#950 hostile carol GET //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 1246,
+          "desc": "none POST // If-Match:\"1\",\"2\" body={\"title\":\"x\",\"body\":\"\u0000\"}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1244 create none team-red {\"title\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "#1245 create bob team-red []",
+            "#1246 hostile none POST //"
+          ]
+        },
+        {
+          "inv": "I1",
+          "seed": 2,
+          "op": 1330,
+          "desc": "hdr POST // body={}",
+          "detail": "status 500: {\"type\":\"https://teamnotes.example/problems/internal\",\"title\":\"Internal Server Error\",\"status\":500}",
+          "minimalSequence": [],
+          "lastOps": [
+            "#1328 get alice note#32",
+            "#1329 patch alice note#18 v3 ifmatch=current:\"3\" {\"body\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "#1330 hostile carol POST // auth=\"Bearer TOK_ALICE\""
+          ]
+        }
+      ],
+      "notesCreated": 56
+    },
+    {
+      "target": "deno",
+      "url": "http://127.0.0.1:3202",
+      "seed": 1,
+      "ops": 1500,
+      "requests": 2818,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 1735,
+      "checks": {
+        "I1": 2818,
+        "I2": 2818,
+        "I3": 734,
+        "I4": 346,
+        "I5": 40,
+        "I6": 251,
+        "I7": 416,
+        "I8": 467,
+        "M": 1231
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 51
+    },
+    {
+      "target": "deno",
+      "url": "http://127.0.0.1:3202",
+      "seed": 2,
+      "ops": 1500,
+      "requests": 2804,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 1811,
+      "checks": {
+        "I1": 2804,
+        "I2": 2804,
+        "I3": 785,
+        "I4": 382,
+        "I5": 37,
+        "I6": 217,
+        "I7": 457,
+        "I8": 470,
+        "M": 1257
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 56
+    },
+    {
+      "target": "php",
+      "url": "http://127.0.0.1:3203",
+      "seed": 1,
+      "ops": 1500,
+      "requests": 2818,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 3294,
+      "checks": {
+        "I1": 2818,
+        "I2": 2818,
+        "I3": 734,
+        "I4": 346,
+        "I5": 40,
+        "I6": 251,
+        "I7": 415,
+        "I8": 467,
+        "M": 1231
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 51
+    },
+    {
+      "target": "php",
+      "url": "http://127.0.0.1:3203",
+      "seed": 2,
+      "ops": 1500,
+      "requests": 2794,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 3701,
+      "checks": {
+        "I1": 2794,
+        "I2": 2794,
+        "I3": 807,
+        "I4": 342,
+        "I5": 41,
+        "I6": 241,
+        "I7": 413,
+        "I8": 481,
+        "M": 1281
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 54
+    },
+    {
+      "target": "python",
+      "url": "http://127.0.0.1:3204",
+      "seed": 1,
+      "ops": 1500,
+      "requests": 2818,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 15788,
+      "checks": {
+        "I1": 2818,
+        "I2": 2818,
+        "I3": 734,
+        "I4": 346,
+        "I5": 40,
+        "I6": 251,
+        "I7": 414,
+        "I8": 467,
+        "M": 1231
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 51
+    },
+    {
+      "target": "python",
+      "url": "http://127.0.0.1:3204",
+      "seed": 2,
+      "ops": 1500,
+      "requests": 2794,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 17213,
+      "checks": {
+        "I1": 2794,
+        "I2": 2794,
+        "I3": 807,
+        "I4": 342,
+        "I5": 41,
+        "I6": 241,
+        "I7": 412,
+        "I8": 481,
+        "M": 1281
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 54
+    },
+    {
+      "target": "rust",
+      "url": "http://127.0.0.1:3206",
+      "seed": 1,
+      "ops": 1500,
+      "requests": 2818,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 851,
+      "checks": {
+        "I1": 2818,
+        "I2": 2818,
+        "I3": 734,
+        "I4": 346,
+        "I5": 40,
+        "I6": 251,
+        "I7": 414,
+        "I8": 467,
+        "M": 1231
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 51
+    },
+    {
+      "target": "rust",
+      "url": "http://127.0.0.1:3206",
+      "seed": 2,
+      "ops": 1500,
+      "requests": 2794,
+      "transportFailures": 0,
+      "toleratedOversizeResets": 0,
+      "bursts": 12,
+      "burstsExactlyOneWinner": 12,
+      "ms": 1036,
+      "checks": {
+        "I1": 2794,
+        "I2": 2794,
+        "I3": 807,
+        "I4": 342,
+        "I5": 41,
+        "I6": 241,
+        "I7": 412,
+        "I8": 481,
+        "M": 1281
+      },
+      "violationCounts": {
+        "I1": 0,
+        "I2": 0,
+        "I3": 0,
+        "I4": 0,
+        "I5": 0,
+        "I6": 0,
+        "I7": 0,
+        "I8": 0,
+        "M": 0
+      },
+      "violations": [],
+      "notesCreated": 54
+    }
+  ]
+}
