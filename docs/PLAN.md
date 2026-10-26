@@ -119,7 +119,7 @@ We favor iteration and cycle time over perfection, to leave time for review and 
 
 **Proof:** run the Stryker mutation tests with both the unit tests and the conformance suite, giving an "AC mutation score."
 
-**Gate 3, the strategic decision:** with about 65 minutes left we choose one of two paths (I'll ask you with AskUserQuestion, giving a recommendation):
+**Gate 3, the strategic decision:** (revised timeline below) we choose one of two paths (I'll ask you with AskUserQuestion, giving a recommendation):
 - **Path A, more features:** for example a CloudEvents change feed, note history, or rate limiting.
 - **Path B, prove the AC approach (my expected recommendation):** rebuild the service in new languages and paradigms from only the spec, ACs and cases.
   - **How:** one subagent per backend, each in its own worktree with no access to the reference code.
@@ -181,3 +181,11 @@ I'll fill in the real repo URL, Discussion URLs and Project URL after the push.
 - **What goes in it:** gate notes, hand-off notes and review findings are written as notes there, and mirrored to the Bot bus.
 - **Tier 2:** concurrent edits by the two agents exercise `If-Match` for real.
 - **Evidence:** we export the notes to `docs/dogfood/notes.json`, and the friction we hit feeds "what I'd change."
+
+## Addendum: corrected clock (15:30 CDT)
+Patrick's TestGorilla timer is the authority: it started at **14:48**. **Feature freeze is at 16:48**, the target submission at 17:35, and the hard stop at 17:48. Grok's milestones are now:
+- **Tier 1:** done; Gate 1 was a GO at 15:29.
+- **Tier 2:** 15:35–16:10
+- **Tier 3:** 16:10–16:30. This tier is optional. If Gate 2 slips, cut Tier 3 and go straight to the Gate 3 decision.
+- **Tier 4:** the rebuilds may start in parallel after Gate 1, until 16:48.
+- **Tier 5:** polish, explainer artifacts and transcripts from 16:48. Submit by 17:35.
