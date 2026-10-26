@@ -17,8 +17,8 @@ builder.WebHost.ConfigureKestrel(o =>
 {
     o.Limits.MaxRequestBodySize = null; // we enforce the 2 MiB cap ourselves
     o.AddServerHeader = false;
+    o.Listen(System.Net.IPAddress.Any, int.Parse(port), lo => lo.Use(HostFix.Wrap));
 });
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 var app = builder.Build();
 app.Run(api.Handle);
 app.Run();
@@ -227,6 +227,7 @@ public class Api(Store s)
 
     User? Authenticate(HttpContext ctx)
     {
+        if (ctx.Request.Headers.Authorization.Count > 1) return null;
         var h = ctx.Request.Headers.Authorization.ToString();
         if (h.Length < 8 || !h.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return null;
         var token = h.Substring(7).Trim();
@@ -308,7 +309,7 @@ public class Api(Store s)
             for (int i = 0; i < parts.Length; i++)
             {
                 var d = Text.StrictPercentDecode(parts[i]);
-                if (d == null || d.Length == 0) { ok = false; break; }
+                if (d == null || d.Length == 0 || d == "." || d == "..") { ok = false; break; }
                 dec[i] = d;
             }
             if (ok) segs = dec;

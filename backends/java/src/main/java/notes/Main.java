@@ -122,6 +122,8 @@ public class Main {
     }
 
     static String authenticate(HttpExchange ex) {
+        List<String> all = ex.getRequestHeaders().get("Authorization");
+        if (all != null && all.size() > 1) return null;
         String h = ex.getRequestHeaders().getFirst("Authorization");
         if (h == null) return null;
         int sp = h.indexOf(' ');
@@ -157,7 +159,11 @@ public class Main {
         List<String> p = new ArrayList<>();
         for (int i = 1; i < seg.length; i++) {
             if (seg[i].isEmpty()) throw problem(404);
-            try { p.add(URLDecoder.decode(seg[i].replace("+", "%2B"), StandardCharsets.UTF_8)); }
+            try {
+                String d = URLDecoder.decode(seg[i].replace("+", "%2B"), StandardCharsets.UTF_8);
+                if (d.equals(".") || d.equals("..")) throw problem(404);
+                p.add(d);
+            }
             catch (IllegalArgumentException e) { throw problem(404); }
         }
         int n = p.size();

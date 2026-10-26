@@ -221,10 +221,10 @@ export function createApp(db: Database) {
     throw NOT_FOUND();
   }
 
-  return async function handle(req: Request): Promise<Response> {
+  return async function handle(req: Request, rawTarget?: string): Promise<Response> {
     try {
       // Raw path: never normalised or decoded before routing.
-      const rest = req.url.replace(/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^/?#]*/, '');
+      const rest = rawTarget ?? req.url.replace(/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^/?#]*/, '');
       const qi = rest.indexOf('?');
       const path = (qi < 0 ? rest : rest.slice(0, qi)).split('#')[0]!;
       const search = qi < 0 ? '' : rest.slice(qi + 1).split('#')[0]!;
@@ -232,12 +232,21 @@ export function createApp(db: Database) {
 
       if (path === '/health' && method === 'GET') return json(200, { status: 'ok' });
 
-      const m = /^bearer +(.+)$/i.exec(req.headers.get('authorization') ?? '');
+      // Duplicate Authorization headers are joined with ", " by the runtime: reject (AUTHN-4).
+      const authz = req.headers.get('authorization') ?? '';
+      const m = authz.includes(',') ? null : /^bearer +(.+)$/i.exec(authz);
       const user = m ? q.user.get(createHash('sha256').update(m[1]!.trim()).digest('hex')) : null;
       if (!user) throw new HttpError(401, 'Unauthorized', undefined, { 'www-authenticate': 'Bearer' });
 
       if (!path.startsWith('/')) throw NOT_FOUND();
-      return await route(req, method, path.slice(1).split('/'), search, user);
+      // Decode percent-encoded unreserved characters only (RFC 3986 6.2.2.2); never resolve dot segments.
+      const norm = path.replace(/%([0-9A-Fa-f]{2})/g, (all, h: string) => {
+        const c = String.fromCharCode(parseInt(h, 16));
+        return /[A-Za-z0-9\-._~]/.test(c) ? c : all;
+      });
+      const segs = norm.slice(1).split('/');
+      if (segs.some((s) => s === '.' || s === '..')) throw NOT_FOUND();
+      return await route(req, method, segs, search, user);
     } catch (e) {
       if (e instanceof HttpError) return problemRes(e);
       console.error(e);

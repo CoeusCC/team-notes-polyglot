@@ -12,6 +12,7 @@ import (
 	"io"
 	"log"
 	"mime"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -88,6 +89,9 @@ func problem(w http.ResponseWriter, status int, detail string, errs []fieldErr, 
 func notFound(w http.ResponseWriter) { problem(w, 404, "", nil, nil) }
 
 func (a *app) auth(r *http.Request) (user, bool) {
+	if len(r.Header.Values("Authorization")) > 1 {
+		return user{}, false
+	}
 	h := r.Header.Get("Authorization")
 	if len(h) < 8 || !strings.EqualFold(h[:7], "bearer ") {
 		return user{}, false
@@ -175,7 +179,7 @@ func (a *app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	seg := make([]string, len(parts))
 	for i, p := range parts {
 		d, err := url.PathUnescape(p)
-		if err != nil || p == "" {
+		if err != nil || p == "" || d == "." || d == ".." {
 			notFound(w)
 			return
 		}
@@ -617,7 +621,11 @@ func main() {
 	}
 	log.Println("listening on :" + port)
 	srv := &http.Server{Addr: ":" + port, Handler: &app{db: db}}
-	log.Fatal(srv.ListenAndServe())
+	ln, err := net.Listen("tcp", srv.Addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Fatal(srv.Serve(hostListener{ln}))
 }
 
 func newUUID() string {
