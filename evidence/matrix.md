@@ -1,6 +1,6 @@
 # Conformance matrix
 
-commit `8dab64f` · builddigest `6451e3b6544fe1da` · 2026-10-26T21:13:38.896Z
+commit `f65f6a0` · builddigest `a5f3f72d0e3fdef3` · 2026-10-26T21:14:59.521Z
 
 | AC | deno | node-ts | php | python | rust |
 |---|---|---|---|---|---|

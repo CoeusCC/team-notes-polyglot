@@ -608,7 +608,7 @@
     "NOTES-SEC-AUTHN-3": "passed"
   },
   "backend": "deno",
-  "commit": "8dab64f",
-  "builddigest": "6451e3b6544fe1da",
-  "at": "2026-10-26T21:13:28.958Z"
+  "commit": "f65f6a0",
+  "builddigest": "a5f3f72d0e3fdef3",
+  "at": "2026-10-26T21:14:48.564Z"
 }
