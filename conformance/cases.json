@@ -2905,6 +2905,446 @@
      }
     }
    ]
+  },
+  {
+   "id": "team-create-owner",
+   "falsifies": "NOTES-FUNC-TEAM-2",
+   "steps": [
+    {
+     "as": "carol",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "t-${run}",
+      "name": "  Carol Crew  "
+     },
+     "expect": {
+      "status": 201,
+      "headers": {
+       "location": "/teams/t-${run}"
+      },
+      "json": {
+       "id": "t-${run}",
+       "name": "Carol Crew",
+       "role": "owner"
+      }
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams",
+     "expect": {
+      "status": 200,
+      "json": {
+       "items": [
+        {
+         "id": "t-${run}",
+         "role": "owner"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams/t-${run}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "id": "t-${run}",
+       "role": "owner"
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "t-${run}",
+      "name": "dupe"
+     },
+     "expect": {
+      "status": 409,
+      "headers": {
+       "content-type": "application/problem+json"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "team-create-validation",
+   "falsifies": "NOTES-FUNC-TEAM-2",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "AB",
+      "name": "x"
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "id"
+      ]
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "ok-${run}",
+      "name": "   "
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "name"
+      ]
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "ok2-${run}",
+      "name": "n",
+      "owner": "bob"
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "owner"
+      ]
+     }
+    },
+    {
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "anon-${run}",
+      "name": "n"
+     },
+     "expect": {
+      "status": 401
+     }
+    }
+   ]
+  },
+  {
+   "id": "team-owner-only-membership",
+   "falsifies": "NOTES-FUNC-TEAM-3",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "t-${run}",
+      "name": "Alpha"
+     },
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "carol",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/carol",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/bob",
+     "expect": {
+      "status": 200,
+      "json": {
+       "id": "bob",
+       "role": "member"
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/bob",
+     "expect": {
+      "status": 200,
+      "json": {
+       "id": "bob",
+       "role": "member"
+      }
+     }
+    },
+    {
+     "as": "bob",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/carol",
+     "expect": {
+      "status": 403,
+      "headers": {
+       "content-type": "application/problem+json"
+      }
+     }
+    },
+    {
+     "as": "bob",
+     "method": "DELETE",
+     "path": "/teams/t-${run}/members/alice",
+     "expect": {
+      "status": 403
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/nobody",
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "userId"
+      ]
+     }
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/teams/t-${run}/members/alice",
+     "expect": {
+      "status": 409
+     }
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/teams/t-${run}/members/carol",
+     "expect": {
+      "status": 204
+     }
+    }
+   ]
+  },
+  {
+   "id": "team-access-follows-membership",
+   "falsifies": "NOTES-FUNC-TEAM-4",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "t-${run}",
+      "name": "Beta"
+     },
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams/t-${run}/notes",
+     "body": {
+      "title": "before carol ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "old"
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/notes/${old.id}",
+     "expect": {
+      "status": 404
+     },
+     "saveText": "h"
+    },
+    {
+     "as": "alice",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/carol",
+     "expect": {
+      "status": 200
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/notes/${old.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "title": "before carol ${run}"
+      }
+     }
+    },
+    {
+     "as": "carol",
+     "method": "POST",
+     "path": "/teams/t-${run}/notes",
+     "body": {
+      "title": "by carol ${run}"
+     },
+     "expect": {
+      "status": 201
+     },
+     "save": "mine"
+    },
+    {
+     "as": "alice",
+     "method": "DELETE",
+     "path": "/teams/t-${run}/members/carol",
+     "expect": {
+      "status": 204
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/notes/${mine.id}",
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams/t-${run}/notes",
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams/t-${run}/members",
+     "expect": {
+      "status": 404,
+      "bodyEquals": "${h}"
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/notes/${mine.id}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "authorId": "carol"
+      }
+     }
+    },
+    {
+     "as": "alice",
+     "method": "GET",
+     "path": "/teams/t-${run}/notes",
+     "expect": {
+      "status": 200,
+      "itemsContain": "${mine.id}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "team-get-and-roster",
+   "falsifies": "NOTES-FUNC-TEAM-5",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "t-${run}",
+      "name": "Gamma"
+     },
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/bob",
+     "expect": {
+      "status": 200
+     }
+    },
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/teams/t-${run}",
+     "expect": {
+      "status": 200,
+      "json": {
+       "id": "t-${run}",
+       "name": "Gamma",
+       "role": "member"
+      }
+     }
+    },
+    {
+     "as": "bob",
+     "method": "GET",
+     "path": "/teams/t-${run}/members",
+     "expect": {
+      "status": 200,
+      "itemsExactly": [
+       "alice",
+       "bob"
+      ],
+      "json": {
+       "items": [
+        {
+         "id": "alice",
+         "role": "owner"
+        },
+        {
+         "id": "bob",
+         "role": "member"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams/t-${run}",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams/t-${run}/members",
+     "expect": {
+      "status": 404
+     }
+    },
+    {
+     "as": "carol",
+     "method": "GET",
+     "path": "/teams/no-such-team-zz",
+     "expect": {
+      "status": 404
+     }
+    }
+   ]
   }
  ]
 }

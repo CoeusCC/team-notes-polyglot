@@ -1,9 +1,9 @@
 ---
 title: "Team Notes - acceptance criteria"
-status: "tiers 1-2 ratified"
+status: "tiers 1-3 ratified (tier 3 = team management)"
 ratified_by: "Patrick"
 ratified_on: "2026-10-26"
-ratified_tiers: "1,2"
+ratified_tiers: "1,2,3"
 format: "SpecDLC card (Claim / Binds / Interface / Forbids / Permits / Falsifier)"
 ---
 
@@ -180,6 +180,26 @@ Shared fixtures (seeded by `spec/schema.sql`):
 
 ---
 
+## Tier 3: team management (Set: core; ratified by Patrick, 2026-10-26; ADR-0006)
+*Tags, search and paging are cut and listed under "what I'd do next".*
+
+#### NOTES-FUNC-TEAM-2: Anyone can create a team and becomes its owner
+- **Claim.** `POST /teams` with `{"id": "<slug>", "name": "<name>"}` returns 201, `Location: /teams/{id}`, and the team `{id, name, role: "owner"}`. `id` must match `^[a-z0-9-]{3,40}$`. `name` is 1–80 code points after trimming. Unknown fields get 422. A taken `id` gets 409 (problem+json).
+- **Falsifier.** Carol creates `t-<run>` → 201 with `role=owner`, and `/teams` lists it. Creating it again → 409. `id: "AB"` → 422 naming `id`.
+
+#### NOTES-FUNC-TEAM-3: Only the owner manages membership
+- **Claim.** `PUT /teams/{teamId}/members/{userId}` adds a member (200, `{id, name, role: "member"}`; idempotent). `DELETE` removes one (204; idempotent). Only the owner may do either. A member who isn't the owner gets **403**. A non-member gets the identical 404. An unknown `userId` gets 422 naming `userId`. Removing the last owner gets 409.
+- **Interface.** 403 is allowed here because a member already knows the team exists (ADR-0006).
+- **Falsifier.** In a new team, bob (a plain member) adding carol → 403. Carol (a non-member) adding herself → 404. Adding `nobody` → 422. The owner removing herself → 409.
+
+#### NOTES-FUNC-TEAM-4: Access follows membership immediately; notes stay with the team
+- **Claim.** A newly added member can read notes created before they joined. A removed member gets the identical 404 on that team's list, notes and members on their very next request, including notes they wrote. Their notes remain visible to the remaining members.
+- **Falsifier.** Carol is added, writes a note, and is removed. Carol GETting her own note → 404. The owner still sees it.
+
+#### NOTES-FUNC-TEAM-5: Members can see the team and its roster
+- **Claim.** `GET /teams/{teamId}` returns `{id, name, role}` (the caller's role). `GET /teams/{teamId}/members` returns `{items: [{id, name, role}]}`. Non-members get the identical 404 for both.
+- **Falsifier.** After adding bob, the roster is exactly the owner and bob, with their roles. Carol, a non-member, gets 404 for both.
+
 ## Profiles (Set: profile:<name>; ADR-0004)
 Smaller technical constraints that apply only to some environments. They're not part of the core suite.
 
@@ -195,8 +215,3 @@ Smaller technical constraints that apply only to some environments. They're not 
 - **Claim.** All writes go through SQLite, which serializes them. Atomicity (CONC-5) comes from conditional UPDATE statements, not from application locks.
 - **Falsifier.** The bench `contention` scenario shows 0 lost updates on every backend.
 
-
-## Tier 3: team management and search (outline)
-- `NOTES-FUNC-TEAM-2..4`: create a team (the creator becomes its owner). Only the owner can add or remove members. A removed member immediately loses access.
-- `NOTES-FUNC-TAG-1`, `NOTES-FUNC-SEARCH-1`: tags are lowercased and capped at 10. `?tag=` filters by tag. `?q=` does a case-insensitive substring search over title and body.
-- `NOTES-FUNC-PAGE-1`: `limit` (1–100, default 20) plus an opaque `cursor`. Paging through all pages returns every note exactly once.
