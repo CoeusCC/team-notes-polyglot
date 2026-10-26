@@ -1,0 +1,32 @@
+name: AC / task
+description: One acceptance-criterion card or task, 30 minutes of work or less
+labels: []
+body:
+  - type: input
+    id: alias
+    attributes:
+      label: AC alias or task id
+      placeholder: NOTES-FUNC-CONC-3
+    validations: { required: true }
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Tier
+      options: ["tier:0", "tier:1", "tier:2", "tier:3", "tier:4", "tier:5"]
+    validations: { required: true }
+  - type: textarea
+    id: falsifier
+    attributes:
+      label: Falsifier
+      description: The concrete test that would refute the claim (for an AC), or the check that proves the task is done.
+    validations: { required: true }
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of done
+      value: |
+        - [ ] AC card + conformance case(s) + spec updated in the same PR
+        - [ ] `node --test` green
+        - [ ] conformance run green against the reference backend
+        - [ ] reviewed by an agent or human who did not write it
+    validations: { required: true }
