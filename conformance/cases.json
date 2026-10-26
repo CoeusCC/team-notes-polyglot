@@ -3345,6 +3345,71 @@
      }
     }
    ]
+  },
+  {
+   "id": "team-precedence-403-409",
+   "falsifies": "NOTES-TECH-ERR-5",
+   "steps": [
+    {
+     "as": "alice",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "t-${run}",
+      "name": "Delta"
+     },
+     "expect": {
+      "status": 201
+     }
+    },
+    {
+     "as": "alice",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/bob",
+     "expect": {
+      "status": 200
+     }
+    },
+    {
+     "as": "bob",
+     "method": "PUT",
+     "path": "/teams/t-${run}/members/carol",
+     "headers": {
+      "content-type": "text/plain"
+     },
+     "rawBody": "garbage",
+     "expect": {
+      "status": 403
+     }
+    },
+    {
+     "as": "bob",
+     "method": "DELETE",
+     "path": "/teams/t-${run}/members/alice",
+     "headers": {
+      "content-type": "text/plain"
+     },
+     "rawBody": "garbage",
+     "expect": {
+      "status": 403
+     }
+    },
+    {
+     "as": "carol",
+     "method": "POST",
+     "path": "/teams",
+     "body": {
+      "id": "t-${run}",
+      "name": "   "
+     },
+     "expect": {
+      "status": 422,
+      "errorFields": [
+       "name"
+      ]
+     }
+    }
+   ]
   }
  ]
 }

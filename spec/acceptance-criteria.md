@@ -200,6 +200,10 @@ Shared fixtures (seeded by `spec/schema.sql`):
 - **Claim.** `GET /teams/{teamId}` returns `{id, name, role}` (the caller's role). `GET /teams/{teamId}/members` returns `{items: [{id, name, role}]}`. Non-members get the identical 404 for both.
 - **Falsifier.** After adding bob, the roster is exactly the owner and bob, with their roles. Carol, a non-member, gets 404 for both.
 
+#### NOTES-TECH-ERR-5: 403 and 409 have fixed places in the error order (ratified by Patrick 2026-10-26; ADR-0006)
+- **Claim.** The full order is **401 → 404 → 403 → 415 → 413 → 400 → 422 → 409 → 428 → 412**. Permission is decided before the body is read, so a caller who isn't allowed learns nothing about their payload. A state conflict (409) is reported only for otherwise-valid input.
+- **Falsifier.** Bob (a member, not the owner) sends PUT on a member with a `text/plain` body → 403, not 415. Creating a team with a taken slug and an empty name → 422, not 409.
+
 ## Profiles (Set: profile:<name>; ADR-0004)
 Smaller technical constraints that apply only to some environments. They're not part of the core suite.
 
