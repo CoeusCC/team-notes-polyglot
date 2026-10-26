@@ -26,9 +26,9 @@ redact() {
     -e 's/(Bearer +)[A-Za-z0-9._~+\/-]{32,}/\1REDACTED/g' \
     -e 's/-----BEGIN [A-Z ]*PRIVATE KEY-----.*-----END [A-Z ]*PRIVATE KEY-----/[PRIVATE KEY REDACTED]/g' \
     -e 's#/tmp/claude-[0-9]+#<tmp>#g' \
-    "${args[@]}" \
     -e "s#/home/$USER#~#g" \
     -e "s#$USER#user#g" \
+    "${args[@]}" \
     -e 's#[A-Za-z0-9._%+-]+@(outlook|gmail|hotmail|yahoo|icloud|proton)\.(com|me)#<email>#gI' \
     ${extra:+-e "s/($extra)/tok_REDACTED/g"}
 }

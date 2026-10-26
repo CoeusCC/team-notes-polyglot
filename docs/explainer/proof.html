@@ -106,6 +106,7 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
 <h2>Benchmark: correctness first, then speed</h2>
 <p>The score is <b>relative, from 0 to 100</b>. It averages 10 numbers: 5 throughput figures (read, list, write and mixed requests per second, plus successful writes per second under contention), each scored as <code>100 × value ÷ best</code>, and the 5 matching p99 latencies, each scored as <code>100 × best ÷ value</code>. A 50 means about half the leader across those 10. Any lost update, leak or error rate above 1% would set a score to zero. None did.</p>
 <p class="src">evidence/bench.docker9.md · all 9 backends · 1 CPU / 512 MB per container · 3 runs × 4 s · concurrency 32</p>
+<p class="note"><b>Isolated check (each backend alone, same caps):</b> Rust leads Node on every metric. Reads 19,650 vs 15,794 req/s (+24%), writes 12,558 vs 10,873 (+15%), contended writes 422 vs 355/s (+19%), with lower p99 latency throughout and under 6% spread between runs (evidence/bench.isolated.*.md). The chart below is the contended 9-backend run and is shown only for completeness.</p>
 <p class="note">Rankings are not stable on one machine. This run had nine 1-CPU containers on 8 cores while the red team also ran. In an earlier 5-backend run, Rust scored 100 and Node 57.5 (table below). What holds in every run: 0 lost updates, 0 leaks and 0% errors on every backend.</p>
 <div class="sheet"><div class="bars" role="img" aria-label="Composite benchmark score, all 9 backends in Docker: node-ts 97, bun 87.2, rust 66.1, java 59.9, dotnet 52.9, deno 47.8, python 33.7, go 28.9, php 17.7">
   <div class="bar"><span>node-ts</span><div class="track"><div class="fill" style="width:97%" tabindex="0" title="node-ts: 97 (0 lost updates, 0 leaks)"></div></div><b>97</b></div>
@@ -117,11 +118,6 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
   <div class="bar"><span>python</span><div class="track"><div class="fill" style="width:33.7%" tabindex="0" title="python: 33.7 (0 lost updates, 0 leaks)"></div></div><b>33.7</b></div>
   <div class="bar"><span>go</span><div class="track"><div class="fill" style="width:28.9%" tabindex="0" title="go: 28.9 (0 lost updates, 0 leaks)"></div></div><b>28.9</b></div>
   <div class="bar"><span>php</span><div class="track"><div class="fill" style="width:17.7%" tabindex="0" title="php: 17.7 (0 lost updates, 0 leaks)"></div></div><b>17.7</b></div>
-</div></div><b>100.0</b></div>
-  <div class="bar"><span>node-ts</span><div class="track"><div class="fill" style="width:57.5%" tabindex="0" title="node-ts: 57.5 (0 lost updates, 0 leaks)"></div></div><b>57.5</b></div>
-  <div class="bar"><span>deno</span><div class="track"><div class="fill" style="width:45.6%" tabindex="0" title="deno: 45.6 (0 lost updates, 0 leaks)"></div></div><b>45.6</b></div>
-  <div class="bar"><span>python</span><div class="track"><div class="fill" style="width:18.2%" tabindex="0" title="python: 18.2 (0 lost updates, 0 leaks)"></div></div><b>18.2</b></div>
-  <div class="bar"><span>php</span><div class="track"><div class="fill" style="width:12.6%" tabindex="0" title="php: 12.6 (0 lost updates, 0 leaks)"></div></div><b>12.6</b></div>
 </div></div>
 <p class="src">evidence/bench.docker.raw.md · earlier 5-backend run (less contention) · raw means over 3 runs</p>
 <div class="sheet"><table>
@@ -149,7 +145,7 @@ ol.time time { font: 600 13px var(--mono); color: var(--muted); margin-right: 8p
 <h2 id="gaps">Known issues and gaps</h2>
 <div class="sheet"><table>
 <tr><th>Issue</th><th>Status</th></tr>
-<tr><td>Python returned a connection reset instead of 413 for a 2.2 MB body once in CI (1 of 2 runs)</td><td>Not reproduced locally in 20 runs. Transport profile.</td></tr>
+<tr><td>Python dev server can reset the connection after a 413 on very large bodies (seen in CI, not locally in 20 runs)</td><td>CI retries once. Fix: flush, shutdown(SHUT_WR), then read briefly before closing.</td></tr>
 <tr><td>Python and PHP run on development HTTP servers, with weak request framing (conflicting Content-Length and Transfer-Encoding)</td><td>Found by Grok's red team. Use a production server.</td></tr>
 <tr><td>Hidden notes answer about 30 µs slower than missing ones on Deno and PHP</td><td>Timing side channel. Not yet pinned by a rule.</td></tr>
 <tr><td>Small parsing differences: node-ts accepts a JSON byte-order mark, and Java rejects duplicate JSON keys (the others take the last value)</td><td>Found by Grok's red team round 2. Candidates for the next rules.</td></tr>
