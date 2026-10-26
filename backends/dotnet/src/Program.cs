@@ -214,7 +214,12 @@ public class Api(Store s)
 
     public async Task Handle(HttpContext ctx)
     {
-        try { await Route(ctx); }
+        try
+        {
+            var rh = ctx.Request.Headers;
+            if (rh.ContainsKey("Content-Length") && rh.ContainsKey("Transfer-Encoding")) throw Err(400); // RFC 9112 6.1 framing error
+            await Route(ctx);
+        }
         catch (ApiException e) { await WriteProblem(ctx, e); }
         catch (Exception ex)
         {
