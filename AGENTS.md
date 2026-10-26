@@ -26,3 +26,8 @@ Follow `.claude/skills/ub-mode/SKILL.md`:
 - Make operations idempotent.
 - Work in small verifiable units.
 - Commit often, and say why, what changed and how you proved it.
+
+## Running things
+- Reference backend: `cd backends/node-ts && npm start`, which serves on port 3001.
+- Conformance: `BASE_URL=http://localhost:3001 node conformance/run.mjs`.
+- Multi-agent fan-out (Claude): use `/workflows`, and always set the model explicitly. Use **Sonnet** for implementation and **Haiku** for research or lookups. Use Opus only for orchestration and adversarial review.
